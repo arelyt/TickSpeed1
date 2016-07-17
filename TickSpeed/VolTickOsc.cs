@@ -24,8 +24,13 @@ namespace TickSpeed
                 var valueVolBuy = trades.Sum(t => t.Direction.ToString() == "Buy" ? t.Quantity : 0);
                 var valueVolSell = trades.Sum(t => t.Direction.ToString() == "Sell" ? t.Quantity : 0);
                 // Считаем осциллятор
-                values[i] = ((valueTickBuy - valueTickSell)/(valueTickBuy + valueTickSell) +
-                             (valueVolBuy - valueVolSell)/(valueVolBuy + valueVolSell))*100;
+
+                // Проверка на ненулевую сумму тиков
+                if ((valueTickBuy + valueTickSell) > 0.001 && (valueVolBuy + valueVolSell) > 0.001)
+                    values[i] = ((valueTickBuy - valueTickSell)/(valueTickBuy + valueTickSell) +
+                                 (valueVolBuy - valueVolSell)/(valueVolBuy + valueVolSell))*100;
+                else
+                    values[i] = 1;
             }
             return values;
         }

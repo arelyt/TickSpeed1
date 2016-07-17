@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -22,14 +23,16 @@ namespace TickSpeed
             for (var i = 1; i < count; i++)
             {
                 var trades = security.GetTrades(i);
-                var value = 0;
 
                 datme[i] = TimeSpan.FromTicks(security.Bars[i].Date.Ticks - security.Bars[i - 1].Date.Ticks).TotalSeconds;
 
-                for (var k = 0; k < trades.Count; k++)
-                    value += trades[k].Direction == Direction ? 1 : 0;
+                var value = trades.Sum(t => t.Direction == Direction ? 1 : 0);
 
-                values[i] = value / datme[i] * datme[i];
+                //  Проверка на ненулевое время (м.б. ошибка в тиковых данных или их отсутствие. Принудительно делим на 0.1)
+                if (datme[i] > 0.0001)
+                    values[i] = value / datme[i] * datme[i];
+                else
+                    values[i] = value / 0.1;
             }
             return values;
         }
