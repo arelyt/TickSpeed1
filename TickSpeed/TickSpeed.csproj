@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="RusAlgo.Helper">
-      <HintPath>..\..\..\..\..\Downloads\RusAlgo.Handlers.Public-v1.3\RusAlgo.Handlers.Public\RusAlgo.Handlers.Public_bin\RusAlgo.Helper.dll</HintPath>
+      <HintPath>\\Mac\Home\Downloads\RusAlgo.Handlers.Public-v1.3\RusAlgo.Handlers.Public\RusAlgo.Handlers.Public_bin\RusAlgo.Helper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
