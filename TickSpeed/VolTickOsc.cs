@@ -28,7 +28,7 @@ namespace TickSpeed
                 // Проверка на ненулевую сумму тиков
                 if ((valueTickBuy + valueTickSell) > 0.001 && (valueVolBuy + valueVolSell) > 0.001)
                     values[i] = ((valueTickBuy - valueTickSell)/(valueTickBuy + valueTickSell) +
-                                 (valueVolBuy - valueVolSell)/(valueVolBuy + valueVolSell))*100;
+                                 (valueVolBuy - valueVolSell)/(valueVolBuy + valueVolSell))*100.0;
                 else
                     values[i] = 1;
             }
