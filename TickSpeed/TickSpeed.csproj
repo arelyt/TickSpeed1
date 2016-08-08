@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CandleOI.cs" />
+    <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tacc.cs" />
