@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -19,18 +20,23 @@ namespace TickSpeed
             for (var i = 0; i < count; i++)
             {
                 var trades = security.GetTrades(i);
-                double valueTickBuy = trades.Sum(t => t.Direction.ToString() == "Buy" ? 1 : 0);
-                double valueTickSell = trades.Sum(t => t.Direction.ToString() == "Sell" ? 1 : 0);
-                var valueVolBuy = trades.Sum(t => t.Direction.ToString() == "Buy" ? t.Quantity : 0);
-                var valueVolSell = trades.Sum(t => t.Direction.ToString() == "Sell" ? t.Quantity : 0);
+                var valueTickBuy  = 0.0;
+                var valueTickSell = 0.0;
+                var valueVolBuy   = 0.0;
+                var valueVolSell  = 0.0;
+
+                foreach (var t in trades)
+                {
+                    var trd = t;
+                    valueTickBuy += t.Direction.ToString() == "Buy" ? 1 : 0;
+                    valueVolBuy += t.Direction.ToString() == "Buy" ? trd.Quantity : 0;
+                    valueTickSell += t.Direction.ToString() == "Sell" ? 1 : 0;
+                    valueVolSell += t.Direction.ToString() == "Sell" ? trd.Quantity : 0;
+                }
                 // Считаем осциллятор
 
-                // Проверка на ненулевую сумму тиков
-                if ((valueTickBuy + valueTickSell) > 0.001 && (valueVolBuy + valueVolSell) > 0.001)
-                    values[i] = ((valueTickBuy - valueTickSell)/(valueTickBuy + valueTickSell)*0.6 +
-                                 (valueVolBuy - valueVolSell)/(valueVolBuy + valueVolSell)*0.4)*100.0;
-                else
-                    values[i] = 1;
+                values[i] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                                 (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
             }
             return values;
         }
