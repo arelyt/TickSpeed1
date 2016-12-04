@@ -15,7 +15,7 @@ namespace TickSpeed
     {
         public interface ISwtDen
         {
-            double[] func_denoise_sw1d_1(double[] in1);
+            double[] func_denoise_sw1d_1_auto(double[] in1);
         }
 
         public IList<double> Execute(ISecurity security)
@@ -51,8 +51,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_dep"));
-                result = sigDen.func_denoise_sw1d_1(values);
+                ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
+                result = sigDen.func_denoise_sw1d_1_auto(values);
             }
             catch (MATLABException ex)
             {
