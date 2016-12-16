@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-16"?>
+<GraphViewData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Options xsi:type="LabOptions">
+    <BarSize>6</BarSize>
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <IntervalBase>MINUTE</IntervalBase>
+    <Interval>1</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>0001-01-01T00:00:00</DateFrom>
+    <UseDateFrom>false</UseDateFrom>
+    <DateTo>2011-03-06T00:02:00</DateTo>
+    <UseDateTo>false</UseDateTo>
+    <DecompressMethod>Method1</DecompressMethod>
+    <TradeFromBar>0</TradeFromBar>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>false</RtUpdates>
+    <GraphOptions>
+      <BarSize>6</BarSize>
+      <Indent>0</Indent>
+      <HideValues>false</HideValues>
+      <IntervalBase>MINUTE</IntervalBase>
+      <Interval>1</Interval>
+    </GraphOptions>
+    <NotUsePositions>false</NotUsePositions>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <AutoEntryBars>0</AutoEntryBars>
+    <AutoCloseBars>0</AutoCloseBars>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <TakeProfitNoSlippage>false</TakeProfitNoSlippage>
+    <OpenPositionNoSlippage>false</OpenPositionNoSlippage>
+    <ByMarketAsLimt>false</ByMarketAsLimt>
+    <InvalidStopsByMarket>false</InvalidStopsByMarket>
+    <InitDeposit>0</InitDeposit>
+    <LabCalcType>Default</LabCalcType>
+    <TradeMode>All</TradeMode>
+  </Options>
+  <Template IsSubTemplate="false">
+    <Items>
+      <Item xsi:type="SecuritySourceItem" Name="Источник1" CodeName="var0">
+        <Center>
+          <X>50</X>
+          <Y>20</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Закрытие</ItemName>
+          <ItemName>Покупка</ItemName>
+          <ItemName>PosActiveNa</ItemName>
+          <ItemName>Продажа</ItemName>
+        </Children>
+        <NotTradable>false</NotTradable>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="Закрытие" CodeName="var1" ShowInputs="true">
+        <Center>
+          <X>66</X>
+          <Y>116.58066620443967</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>150</ItemName>
+          <ItemName>ПересеСверху</ItemName>
+          <ItemName>ПересеСнизу</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.Close, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="TwoOrMoreInputsItem" Name="ПересеСверху" CodeName="var2" ShowInputs="true">
+        <Center>
+          <X>258</X>
+          <Y>51.747332871106295</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПоРынку</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>150</InputName>
+          <InputName>Закрытие</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="TwoOrMoreInputsItem" Name="ПересеСнизу" CodeName="var3" ShowInputs="true">
+        <Center>
+          <X>257</X>
+          <Y>131.33066620443967</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Покупка</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossUnder, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>150</InputName>
+          <InputName>Закрытие</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="150" CodeName="var8" ShowInputs="true">
+        <Center>
+          <X>81</X>
+          <Y>223.58066620443967</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПересеСверху</ItemName>
+          <ItemName>ПересеСнизу</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.EMA, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="Покупка" CodeName="var6" ShowInputs="true">
+        <Center>
+          <X>478</X>
+          <Y>47.663999537773009</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПоРынку</ItemName>
+          <ItemName>ПоСтопу</ItemName>
+          <ItemName>ТрейлСтоп</ItemName>
+        </Children>
+        <Parameters />
+        <Inputs>
+          <InputName>ПересеСнизу</InputName>
+          <InputName>Источник1</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByMarketItem" Name="ПоРынку" CodeName="var5" ShowInputs="true">
+        <Center>
+          <X>719</X>
+          <Y>66.247332871106352</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>Покупка</InputName>
+          <InputName>ПересеСверху</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByStopItem" Name="ПоСтопу" CodeName="var7" ShowInputs="true">
+        <Center>
+          <X>696</X>
+          <Y>183.41399953777298</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>Покупка</InputName>
+          <InputName>ТрейлСтоп</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="ТрейлСтоп" CodeName="var4" ShowInputs="true">
+        <Center>
+          <X>455.22666666666669</X>
+          <Y>156.58066620443967</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПоСтопу</ItemName>
+        </Children>
+        <Parameters>
+          <Parameter Name="TrailLoss" TypeName="Double" Value="0.2" />
+          <Parameter Name="TrailEnable" TypeName="Double" Value="0.2" />
+          <Parameter Name="StopLoss" TypeName="Double" Value="0.2" />
+        </Parameters>
+        <HandlerTypeName>TSLab.Script.Handlers.TrailStop, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="PosActiveNa" CodeName="PosActiveNa" ShowInputs="true">
+        <Center>
+          <X>98.226666666666688</X>
+          <Y>344.16399953777284</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Продажа</ItemName>
+        </Children>
+        <Parameters>
+          <Parameter Name="Name" TypeName="String" Value="ПоСтопу" />
+        </Parameters>
+        <HandlerTypeName>Posactive.PosActiveNameExit, PosActiveName, Version=1.0.4069.41195, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="Продажа" CodeName="var9" ShowInputs="true">
+        <Center>
+          <X>332.22666666666669</X>
+          <Y>337.66399953777295</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ТрейлСтоп1</ItemName>
+          <ItemName>ПоСтопу1</ItemName>
+        </Children>
+        <Parameters>
+          <Parameter Name="Long" TypeName="bool" Value="False" />
+        </Parameters>
+        <Inputs>
+          <InputName>PosActiveNa</InputName>
+          <InputName>Источник1</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByStopItem" Name="ПоСтопу1" CodeName="var10" ShowInputs="true">
+        <Center>
+          <X>614</X>
+          <Y>464.413999537773</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>ТрейлСтоп1</InputName>
+          <InputName>Продажа</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="ТрейлСтоп1" CodeName="var11" ShowInputs="true">
+        <Center>
+          <X>373.22666666666669</X>
+          <Y>437.58066620443969</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ПоСтопу1</ItemName>
+        </Children>
+        <Parameters>
+          <Parameter Name="TrailLoss" TypeName="Double" Value="0.1" />
+          <Parameter Name="TrailEnable" TypeName="Double" Value="0.1" />
+          <Parameter Name="StopLoss" TypeName="Double" Value="0.1" />
+        </Parameters>
+        <HandlerTypeName>TSLab.Script.Handlers.TrailStop, TSLab.Script.Handlers, Version=1.1.17.49, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+    </Items>
+    <Panes>
+      <Pane SizePct="70" Name="Главное" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="255" AltColor="0" Opacity="0" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" SourceName="Источник1" />
+        </GraphsList>
+      </Pane>
+    </Panes>
+  </Template>
+  <Mappings>
+    <Sources>
+      <Source DataSourceName="Transaq" SecurityId="GAZP:1" Name="Источник1">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters>
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="150" CodeName="var8_Period" Visible="true" UsedInOptimization="false" TypeName="Double" Value="20" MinValue="10" MaxValue="100" Step="5" />
+    </Parameters>
+  </Mappings>
+  <Iterations>100</Iterations>
+  <OptParametersRecords />
+</GraphViewData>

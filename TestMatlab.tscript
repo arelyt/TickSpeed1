@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExportScriptData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Code><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<GraphDataBase xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GraphViewData">
+  <EditData VersionString="2.3" TemplateClass="Script">
+    <ViewModel>
+      <Model Scale="1">
+        <Block Key="Источник1" Category="TradableSecurity" Location="0 0" TypeName="TradableSecuritySourceItem">
+          <EditItem Guid="199bf0fc-6d38-4ec0-a7b9-f03e3045e116" CodeName="Источник1" IsParametersVisible="false" OnlyValueHandlersCanUsed="false" />
+        </Block>
+        <Block Key="Закрытие1" Category="TradeMath" Location="215 80" TypeName="ConverterItem">
+          <EditItem Guid="b6ca975f-31c2-4562-9363-10a35b97ae94" CodeName="Закрытие1" IsParametersVisible="false" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Close, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Pane Key="Главная" Category="GraphPane" Location="0 180" Order="0" IsVisible="true" HideLegend="false" LeftAxisPrecision="2" LeftAxisByPercents="false" LeftDownHysteresis="0" LeftUpHysteresis="0" RightAxisPrecision="-1" RightAxisByPercents="false" RightDownHysteresis="0" RightUpHysteresis="0" />
+        <Block Key="SWTDEN" Category="Arelyt" Location="218.33333333333331 174.33333333333331" TypeName="ConverterItem">
+          <EditItem Guid="e62adb5a-8b7d-4c14-bcd8-e94a2f9b5183" CodeName="SWTDEN" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SwtdenClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="SMMA" Category="Indicators" Location="-5.6666666666667993 377.66666666666669" TypeName="ConverterItem">
+          <EditItem Guid="64784882-92f7-4246-8738-6b2b4c48d84a" CodeName="SMMA" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.SMMA, TSLab.Script.Handlers, Version=2.0.13.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Shift" TypeName="Int32" Value="0" />
+              <Parameter Name="Period" TypeName="Int32" Value="5" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="BUY" Category="Formula" Location="417.66666666666663 132.33333333333331" TypeName="BoolCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="170" ResizablePartHeight="65.333333333333329" OpenParams="true">
+          <EditItem Guid="7595e653-0a9e-4916-8da3-55dbbefe6388" CodeName="BUY" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.BoolCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.13.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="SMMA[i] &gt; SMMA[i-1]" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="SELL" Category="Formula" Location="427.00000000000006 305" TypeName="BoolCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="172.99999999999994" ResizablePartHeight="65.333333333333329" OpenParams="true">
+          <EditItem Guid="46be02d0-3301-4161-9c3d-80ce93d71641" CodeName="SELL" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.BoolCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.13.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="SMMA[i] &lt; SMMA[i-1]" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ОткрПозиПоРынк" Category="OpenPosition" Location="664.33333333333337 2.0000000000000142" TypeName="OpenPositionByMarketItem">
+          <EditItem Guid="6aafab88-5b9d-4c97-a6dd-15c1ef19ea73" CodeName="ОткрПозиПоРынк" IsParametersVisible="true" OnlyValueHandlersCanUsed="true">
+            <Parameters>
+              <Parameter Name="Long" TypeName="Boolean" Value="true" />
+              <Parameter Name="Shares" TypeName="Double" Value="1" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ОткрПозиПоРынк1" Category="OpenPosition" Location="681.66666666666663 279.33333333333331" TypeName="OpenPositionByMarketItem">
+          <EditItem Guid="4a0605fe-721f-4bbf-a470-7cfb65613cb7" CodeName="ОткрПозиПоРынк1" IsParametersVisible="true" OnlyValueHandlersCanUsed="true">
+            <Parameters>
+              <Parameter Name="Long" TypeName="Boolean" Value="false" />
+              <Parameter Name="Shares" TypeName="Double" Value="1" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ЗакрПозиПоРынк" Category="ClosePosition" Location="961.66666666666674 69.999999999999986" TypeName="ClosePositionByMarketItem">
+          <EditItem Guid="3205e425-a91e-4873-b803-28fbaf491831" CodeName="ЗакрПозиПоРынк" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" />
+        </Block>
+        <Block Key="ЗакрПозиПоРынк1" Category="ClosePosition" Location="964.33333333333326 140.66666666666669" TypeName="ClosePositionByMarketItem">
+          <EditItem Guid="a2457ebf-d3a5-4d55-98dd-769fda1c7440" CodeName="ЗакрПозиПоРынк1" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" />
+        </Block>
+        <Block Key="АбсолютКомисси" Category="TradeMath" Location="249.66666666666663 -3.9999999999999858" TypeName="ConverterItem">
+          <EditItem Guid="cc0d9974-7f04-4fdb-ba52-b9a9f5d5acab" CodeName="АбсолютКомисси" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.AbsolutCommission, TSLab.Script.Handlers, Version=2.0.13.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Commission" TypeName="Double" Value="2" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Link From="Источник1" To="Закрытие1" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="Источник1" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartCandleLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16722859" AltColor="-65536" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="Источник1" To="SWTDEN" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="SWTDEN" To="Главная" FromPort="Out" ToPort="LEFT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16314645" AltColor="-16764460" Opacity="0" HideLastValue="false" Thickness="2" PaneSide="LEFT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="SWTDEN" To="SMMA" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="SMMA" To="Главная" FromPort="Out" ToPort="LEFT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-5275536" AltColor="-9268346" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="LEFT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="SMMA" To="BUY" FromPort="Out" ToPortNum="0" />
+        <Link From="SMMA" To="SELL" FromPort="Out" ToPortNum="1" />
+        <Link From="BUY" To="ОткрПозиПоРынк" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="Источник1" To="ОткрПозиПоРынк" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="ОткрПозиПоРынк1" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="ОткрПозиПоРынк" To="ЗакрПозиПоРынк" FromPort="Out" ToPort="Pos" ToPortNum="0" />
+        <Link From="ОткрПозиПоРынк1" To="ЗакрПозиПоРынк1" FromPort="Out" ToPort="Pos" ToPortNum="0" />
+        <Link From="BUY" To="ЗакрПозиПоРынк1" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="Источник1" To="АбсолютКомисси" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="SELL" To="ЗакрПозиПоРынк" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="SELL" To="ОткрПозиПоРынк1" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+      </Model>
+    </ViewModel>
+  </EditData>
+  <Options xsi:type="LabOptions">
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <LegendTransparency>0</LegendTransparency>
+    <TimeScale>Adaptive</TimeScale>
+    <LegendForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </LegendForegroundColor>
+    <ChartBackgroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>1</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Default>
+    </ChartBackgroundColor>
+    <ChartForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </ChartForegroundColor>
+    <ChartGridColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>49</R>
+        <G>49</G>
+        <B>49</B>
+        <ScA>1</ScA>
+        <ScR>0.0307134446</ScR>
+        <ScG>0.0307134446</ScG>
+        <ScB>0.0307134446</ScB>
+      </Default>
+    </ChartGridColor>
+    <ChartRulerBackgroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>83</R>
+        <G>83</G>
+        <B>83</B>
+        <ScA>1</ScA>
+        <ScR>0.0865004659</ScR>
+        <ScG>0.0865004659</ScG>
+        <ScB>0.0865004659</ScB>
+      </Default>
+    </ChartRulerBackgroundColor>
+    <ChartRulerForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </ChartRulerForegroundColor>
+    <IntervalBase>SECONDS</IntervalBase>
+    <Interval>1</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>2016-07-07T00:00:00</DateFrom>
+    <UseDateFrom>true</UseDateFrom>
+    <DateTo>2016-07-07T23:00:00</DateTo>
+    <UseDateTo>true</UseDateTo>
+    <MaxDays>0</MaxDays>
+    <SessionBegin>2000-01-01T00:00:00</SessionBegin>
+    <SessionEnd>2000-01-01T00:00:00</SessionEnd>
+    <DecompressMethod>Method1</DecompressMethod>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>false</RtUpdates>
+    <CalcForEachSecurity>false</CalcForEachSecurity>
+    <TradeFromBar>0</TradeFromBar>
+    <IsSplittedProfitByInstruments>false</IsSplittedProfitByInstruments>
+    <NotUsePositions>false</NotUsePositions>
+    <InitDeposit>0</InitDeposit>
+    <LabCalcType>Default</LabCalcType>
+    <TradeMode>All</TradeMode>
+  </Options>
+  <Mappings>
+    <Sources>
+      <Source DataSourceName="Финам" SecurityId="RIU6:4" Name="Источник1" VisualTypeName="Торгуемый инструмент" IsOption="false">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters />
+    <ParameterGroups />
+    <AutoParameters />
+  </Mappings>
+  <Iterations>100</Iterations>
+  <OptParametersRecords />
+  <OptParametersRecordsFolders />
+</GraphDataBase>]]></Code>
+  <Settings2><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<XmlLabSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Options>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <AutoEntryBars>0</AutoEntryBars>
+    <AutoCloseBars>0</AutoCloseBars>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <TakeProfitNoSlippage>false</TakeProfitNoSlippage>
+    <OpenPositionNoSlippage>false</OpenPositionNoSlippage>
+    <ByMarketAsLimt>false</ByMarketAsLimt>
+    <InvalidStopsByMarket>false</InvalidStopsByMarket>
+    <RemoveInactivePositions>true</RemoveInactivePositions>
+    <WarnSkippedOpenPositions>true</WarnSkippedOpenPositions>
+    <NotOpenIfHasSkippedExit>false</NotOpenIfHasSkippedExit>
+    <NoCalcInfo>false</NoCalcInfo>
+    <MaxBarsForSignal>0</MaxBarsForSignal>
+    <WaitExecutionExitBars>0</WaitExecutionExitBars>
+    <WaitExecutionEntryBars>0</WaitExecutionEntryBars>
+    <SimulatePositionOrdering>true</SimulatePositionOrdering>
+  </Options>
+  <Mappings>
+    <Sources />
+    <Parameters />
+    <ParameterGroups />
+    <AutoParameters />
+  </Mappings>
+  <AppearanceOptions>
+    <Background>
+      <A>255</A>
+      <R>245</R>
+      <G>245</G>
+      <B>245</B>
+      <ScA>1</ScA>
+      <ScR>0.913098633</ScR>
+      <ScG>0.913098633</ScG>
+      <ScB>0.913098633</ScB>
+    </Background>
+    <Foreground>
+      <A>255</A>
+      <R>0</R>
+      <G>0</G>
+      <B>0</B>
+      <ScA>1</ScA>
+      <ScR>0</ScR>
+      <ScG>0</ScG>
+      <ScB>0</ScB>
+    </Foreground>
+    <ShowCaption>true</ShowCaption>
+  </AppearanceOptions>
+  <Layout>&lt;XmlLabLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+	&lt;MainChartWindow Id="Main"&gt;
+		&lt;Docking&gt;&amp;lt;?xml version="1.0" encoding="utf-16"?&amp;gt;&amp;lt;DockSiteLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SerializationFormat="All" Version="2"&amp;gt;&amp;lt;AutoHideHost /&amp;gt;&amp;lt;Content xsi:type="Workspace"&amp;gt;&amp;lt;Content xsi:type="TabbedMdiHost"&amp;gt;&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="57bed204-6c02-4705-b8f0-0a8ee214fb93"&amp;gt;&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="57bed204-6c02-4705-b8f0-0a8ee214fb93" /&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;ToolWindows&amp;gt;&amp;lt;ToolWindow UniqueId="57bed204-6c02-4705-b8f0-0a8ee214fb93" SerializationId="Graph" IsOpen="true" State="Document" /&amp;gt;&amp;lt;/ToolWindows&amp;gt;&amp;lt;/DockSiteLayout&amp;gt;&lt;/Docking&gt;
+	&lt;/MainChartWindow&gt;
+	&lt;Docking&gt;&amp;lt;DockSiteLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SerializationFormat="All" Version="2"&amp;gt;
+	&amp;lt;AutoHideHost /&amp;gt;
+	&amp;lt;Content xsi:type="Workspace"&amp;gt;
+		&amp;lt;Content xsi:type="TabbedMdiHost"&amp;gt;
+			&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="c55bfe34-6b4a-46d4-a126-17b60740114f"&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="c55bfe34-6b4a-46d4-a126-17b60740114f" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="657b484b-72d3-401e-946f-9ae36b8dbfbb" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="965b84d0-55c7-461c-84d4-a151e600679a" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="dcbc4733-f37b-452b-92d3-3ec6898ce04f" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="ccd45ff9-b125-46aa-98d4-173e6b9c6702" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="8f6dac5c-2be0-4510-a067-c53a100f358e" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="32f3873b-1ca4-4354-87e1-10b4df97a380" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="cbc489cb-9778-4b6b-a1f6-c49f66c332a7" /&amp;gt;
+			&amp;lt;/Content&amp;gt;
+		&amp;lt;/Content&amp;gt;
+	&amp;lt;/Content&amp;gt;
+	&amp;lt;ToolWindows&amp;gt;
+		&amp;lt;ToolWindow UniqueId="c55bfe34-6b4a-46d4-a126-17b60740114f" SerializationId="EditorViewModel" Name="Editor" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="657b484b-72d3-401e-946f-9ae36b8dbfbb" SerializationId="ChartViewModel" Name="Graph" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="965b84d0-55c7-461c-84d4-a151e600679a" SerializationId="PerformanceViewModel" Name="Performance" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="dcbc4733-f37b-452b-92d3-3ec6898ce04f" SerializationId="TradesViewModel" Name="Trades" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="ccd45ff9-b125-46aa-98d4-173e6b9c6702" SerializationId="OptimizationViewModel" Name="Optimization" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="8f6dac5c-2be0-4510-a067-c53a100f358e" SerializationId="ParametersViewModel" Name="Parameters" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="32f3873b-1ca4-4354-87e1-10b4df97a380" SerializationId="LogViewModel" Name="Log" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="cbc489cb-9778-4b6b-a1f6-c49f66c332a7" SerializationId="ProfitModel" Name="Profit" ContainerDockedSize="1432,682.666666666667" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+	&amp;lt;/ToolWindows&amp;gt;
+&amp;lt;/DockSiteLayout&amp;gt;&lt;/Docking&gt;
+	&lt;LabModels&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;EditorViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ChartViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;PerformanceViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;TradesViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;OptimizationViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ParametersViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;LogViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ProfitModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+	&lt;/LabModels&gt;
+	&lt;LabWindows /&gt;
+&lt;/XmlLabLayout&gt;</Layout>
+  <WindowBarSizes />
+  <GraphPaneSizes />
+</XmlLabSettings>]]></Settings2>
+</ExportScriptData>
