@@ -63,6 +63,7 @@
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleSWT.cs" />
     <Compile Include="swtden.cs" />
     <Compile Include="Tacc.cs" />
     <Compile Include="TickCandle.cs" />

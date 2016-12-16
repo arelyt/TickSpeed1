@@ -28,18 +28,18 @@ namespace TickSpeed
             if (sec.IntervalBase.ToString() == "TICK" && sec.Interval.ToString() == "10")
                 throw new Exception("Base Interval wrong. Please set to Tick 10");
             {
-                var oiBars = new DataBar[Context.BarsCount];
-                oiBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Interest, sec.Bars[1].Interest,
-                    sec.Bars[1].Interest, sec.Bars[1].Interest);
+                var volBars = new DataBar[Context.BarsCount];
+                volBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Volume, sec.Bars[1].Volume,
+                    sec.Bars[1].Volume, sec.Bars[1].Volume);
                 for (int i = 1; i < Context.BarsCount; i++)
                 {
 
                     var date = sec.Bars[i].Date;
-                    var oiOpen = sec.Bars[i - 1].Interest;
-                    var oiClose = sec.Bars[i].Interest;
+                    var volOpen = sec.Bars[i - 1].Volume;
+                    var volClose = sec.Bars[i].Volume;
 
-                    var oiHigh = Math.Max(oiOpen, oiClose);
-                    var oiLow = Math.Min(oiOpen, oiClose);
+                    var volHigh = Math.Max(volOpen, volClose);
+                    var volLow = Math.Min(volOpen, volClose);
 
                     // если нужен расчет с учетом теней и фактических сделок
                     if (CalcFullCandle)
@@ -48,23 +48,23 @@ namespace TickSpeed
 
                         if (ticks.AnyNotNull())
                         {
-                            oiOpen = ticks.First().OpenInterest;
-                            oiClose = ticks.Last().OpenInterest;
-                            oiHigh = ticks.Max(t => t.OpenInterest);
-                            oiLow = ticks.Min(t => t.OpenInterest);
+                            volOpen = ticks.First().OpenInterest;
+                            volClose = ticks.Last().OpenInterest;
+                            volHigh = ticks.Max(t => t.OpenInterest);
+                            volLow = ticks.Min(t => t.OpenInterest);
                         }
                     }
 
-                    var oiVolume = Math.Abs(oiClose - oiOpen);
+                    var volVolume = Math.Abs(volClose - volOpen);
 
-                    var bar = new DataBar(date, oiOpen, oiHigh, oiLow, oiClose, oiVolume);
+                    var bar = new DataBar(date, volOpen, volHigh, volLow, volClose, volVolume);
 
-                    oiBars[i] = bar;
+                    volBars[i] = bar;
                 }
 
                 // клонируем с подменой баров, получаем типо инструмент, но свечи иные.
-                var oiSec = sec.CloneAndReplaceBars(oiBars);
-                return oiSec;
+                var volSec = sec.CloneAndReplaceBars(volBars);
+                return volSec;
             }
         }
     }
