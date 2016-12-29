@@ -6,10 +6,20 @@ using MathWorks.MATLAB.ProductionServer.Client;
 namespace TickSpeed
 {
     // Объемно-тиковый осциллятор.
+   
+    public enum Wavelets
+    {
+        Dobeshy = 0,
+        Morle = 1
+
+    }
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
     public class SWTFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
     {
+        [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
+        public Wavelets Wave { get; set; }
+
         [HandlerParameter(true, "1", Name = "WaveletBase(1-DB, 2-SYM)", Max = "2", Min = "1", Step = "1")]
         public int WaveletBase { get; set; }
 

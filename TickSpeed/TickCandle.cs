@@ -22,7 +22,7 @@ namespace TickSpeed
 
         [HandlerParameter(Name = "Полный расчет", Default = "false", NotOptimized = true)]
         public bool CalcFullCandle { get; set; }
-
+        public TradeDirection Direction { get; set; }
         public ISecurity Execute(ISecurity sec)
         {
             if (sec.IntervalBase.ToString() == "TICK" && sec.Interval.ToString() == "10")
@@ -45,7 +45,7 @@ namespace TickSpeed
                     if (CalcFullCandle)
                     {
                         var ticks = sec.GetTrades(i);
-
+                        var tt = ticks[i].Direction;
                         if (ticks.AnyNotNull())
                         {
                             volOpen = ticks.First().OpenInterest;
