@@ -9,8 +9,8 @@ namespace TickSpeed
    
     public enum Wavelets
     {
-        Dobeshy = 0,
-        Morle = 1
+        Daubechies = 0,
+        Morlet = 1
 
     }
     [HandlerCategory("Arelyt")]
