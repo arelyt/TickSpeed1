@@ -37,7 +37,7 @@ namespace TickSpeed
                 volBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Open, sec.Bars[1].High,
                     sec.Bars[1].Low, sec.Bars[1].Close, sec.Bars[1].Volume);
 
-                for (var i = 1; i < tickcandlecount; i += CandleWidth)
+                for (var i = 1; i < tickcandlecount-CandleWidth; i += CandleWidth)
                 {
                     var price = new double[CandleWidth];
                     var buycount = 0;
