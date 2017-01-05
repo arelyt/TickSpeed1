@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
 
@@ -10,7 +11,7 @@ namespace TickSpeed
     public enum Wavelets
     {
         Daubechies = 0,
-        Morlet = 1
+        Symlets = 1
 
     }
     [HandlerCategory("Arelyt")]
@@ -20,10 +21,10 @@ namespace TickSpeed
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public Wavelets Wave { get; set; }
 
-        [HandlerParameter(true, "1", Name = "WaveletBase(1-DB, 2-SYM)", Max = "2", Min = "1", Step = "1")]
-        public int WaveletBase { get; set; }
+        [HandlerParameter(true, "1", Name = "Order")]
+        public int order { get; set; }
 
-        [HandlerParameter(true, "3", Name = "Level", Max = "7", Min = "1", Step = "1")]
+        [HandlerParameter(true, "3", Name = "Level", Max = "10", Min = "1", Step = "1")]
         public double Level { get; set; }
 
        public interface ISwtDen
@@ -33,19 +34,22 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
-            var Name = "";
-            switch (WaveletBase)
+            string name;
+            switch (Wave)
             {
-                case 1:
-                    Name = "db3";
+                case Wavelets.Daubechies:
+                    name = "db";
                     break;
-                case 2:
-                    Name = "sym3";
+                case Wavelets.Symlets:
+                    name = "sym";
                     break;
+                
                 default:
-                    Name = "db3";
+                    name = "db";
                     break;
             }
+            var wName = name + order.ToString();
+
             var count = myDoubles.Count;
             var result = new double[count];
             var values = new double[count];
@@ -55,14 +59,14 @@ namespace TickSpeed
             }
             // Начинаем Signal denoising process
 
-            // Wavelet DB3 Level 5
+            // Create client
             MWClient client = new MWHttpClient();
             try
             {
                 ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
-                result = sigDen.func_denoise_sw1d_1_auto(values, Name, Level);
+                result = sigDen.func_denoise_sw1d_1_auto(values, wName, Level);
             }
-            catch (MATLABException ex)
+            catch (MATLABException)
             {
 
             }
