@@ -30,43 +30,48 @@ namespace TickSpeed
             if (sec.IntervalBase.ToString() == "TICK" && sec.Interval.ToString() == "1")
 
             {
+                var cw = CandleWidth;
                 var tickcandlecount = Context.BarsCount;
-                var newcandlecount = Convert.ToInt32(tickcandlecount / CandleWidth);
+                var newcandlecount = Convert.ToInt32(tickcandlecount / cw) + 1;
                 //                var vto = new double[newcandlecount];
                 var volBars = new DataBar[newcandlecount];
-                volBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Open, sec.Bars[1].High,
-                    sec.Bars[1].Low, sec.Bars[1].Close, sec.Bars[1].Volume);
+                // volBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Open, sec.Bars[1].High,
+                //    sec.Bars[1].Low, sec.Bars[1].Close, sec.Bars[1].Volume);
 
-                for (var i = 1; i < tickcandlecount-CandleWidth; i += CandleWidth)
+                for (var i = 0; i < newcandlecount; i ++)
                 {
-                    var price = new double[CandleWidth];
+                    var price = new double[cw];
                     var buycount = 0;
                     var sellcount = 0;
                     double volbuy = 0;
                     double volsell = 0;
                     double vto = 0;
 
-                    for (var j = 0; j < CandleWidth; j++)
+                    for (var j = cw*i; (j < (i + 1)*cw) && (j < tickcandlecount); j++)
                     {
-                        price[j] = sec.GetTrades(i + j).First().Price;
+                        // price[j] = sec.Bars[j].Open;
 
-                        if (sec.GetTrades(i + j).First().Direction.ToString() == "Buy")
+                        if (sec.GetTrades(j).First().Direction.ToString() == "Buy")
                         {
                             buycount++;
-                            volbuy = volbuy + sec.GetTrades(i + j).First().Volume;
+                            volbuy = volbuy + sec.Bars[j].Volume;
                         }
                         else
                         {
                             sellcount++;
-                            volsell = volsell + sec.GetTrades(i + j).First().Volume;
+                            volsell = volsell + sec.Bars[j].Volume;
                         }
 
                         vto = (buycount * volbuy - sellcount * volsell) / (buycount * volbuy + sellcount * volsell);
                     }
-                    var date = sec.Bars[i].Date;
-                    var volOpen = sec.Bars[i].Open;
-                    var volClose = sec.Bars[i + CandleWidth - 1].Open;
-
+                    var date = sec.Bars[cw*i].Date;
+                    var priceOpen = sec.Bars[cw*i].Open;
+                    double priceClose;
+                    if (cw*i < tickcandlecount)
+                        priceClose = sec.Bars[i + cw -1].Open;
+                    else
+                        priceClose = sec.Bars[tickcandlecount].Open;
+                    
                     //                    var volHigh = Math.Max(volOpen, volClose);
                     //                    var volLow = Math.Min(volOpen, volClose);
 
@@ -86,11 +91,12 @@ namespace TickSpeed
 
                     //var volVolume = Math.Abs(volClose - volOpen);
 
-                    var bar = new DataBar(date, volOpen, volOpen, volClose, volClose, vto);
+                    var bar = new DataBar(date, priceOpen, priceOpen, priceClose, priceClose, vto);
                     volBars[i] = bar;
                 }
 
                 // клонируем с подменой баров, получаем типо инструмент, но свечи иные.
+                
                 var volSec = sec.CloneAndReplaceBars(volBars);
                 return volSec;
             }

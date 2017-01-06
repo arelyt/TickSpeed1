@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
 
@@ -16,13 +15,13 @@ namespace TickSpeed
     }
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
-    public class SWTFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
+    public class SwtFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
     {
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public Wavelets Wave { get; set; }
 
         [HandlerParameter(true, "1", Name = "Order")]
-        public int order { get; set; }
+        public int Order { get; set; }
 
         [HandlerParameter(true, "3", Name = "Level", Max = "10", Min = "1", Step = "1")]
         public double Level { get; set; }
@@ -48,7 +47,7 @@ namespace TickSpeed
                     name = "db";
                     break;
             }
-            var wName = name + order.ToString();
+            var wName = name + Order.ToString();
 
             var count = myDoubles.Count;
             var result = new double[count];
