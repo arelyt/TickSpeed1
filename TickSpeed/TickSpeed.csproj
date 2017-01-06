@@ -81,6 +81,7 @@
     <Compile Include="TickCandle.cs" />
     <Compile Include="TSpeed.cs" />
     <Compile Include="Vacc.cs" />
+    <Compile Include="VolTickOscFull.cs" />
     <Compile Include="VolTickOsc.cs" />
     <Compile Include="VSpeed.cs" />
   </ItemGroup>
