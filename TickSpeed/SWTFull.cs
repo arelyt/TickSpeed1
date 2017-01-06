@@ -13,6 +13,23 @@ namespace TickSpeed
         Symlets = 1
 
     }
+
+    public enum ThreshRule
+    {
+        Rigrsure = 0,
+        Heursure = 1,
+        Sqtwolog = 2,
+        Minimaxi = 3,
+        Modwtsqtwolog = 4
+    }
+
+    public enum Scal
+    {
+        One = 0,
+        Sln = 1,
+        Mln =2
+    }
+
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
     public class SwtFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
@@ -26,9 +43,15 @@ namespace TickSpeed
         [HandlerParameter(true, "3", Name = "Level", Max = "10", Min = "1", Step = "1")]
         public double Level { get; set; }
 
-       public interface ISwtDen
+        [HandlerParameter(Name = "ThresholdRules", NotOptimized = true)]
+        public ThreshRule Tptr { get; set; }
+
+        [HandlerParameter(Name = "Scale", NotOptimized = true)]
+        public Scal Scale { get; set; }
+
+        public interface ISwtDen
         {
-            double[] func_denoise_sw1d_1_auto(double[] in1, string in2, double in3);
+            double[] func_denoise_sw1d_1_auto(double[] in1, string in2, string in3, string in4, double in5);
         }
 
         public IList<double> Execute(IList<double> myDoubles)
@@ -47,6 +70,44 @@ namespace TickSpeed
                     name = "db";
                     break;
             }
+            string rule;
+            switch (Tptr)
+            {
+                 case ThreshRule.Rigrsure:
+                    rule = "rigrsure";
+                    break;
+                 case ThreshRule.Heursure:
+                    rule = "heursure";
+                    break;
+                 case ThreshRule.Sqtwolog:
+                    rule = "sqtwolog";
+                    break;
+                 case ThreshRule.Minimaxi:
+                    rule = "minimaxi";
+                    break;
+                 case ThreshRule.Modwtsqtwolog:
+                    rule = "modwtsqtwolog";
+                    break;
+                default:
+                    rule = "modwtsqtwolog";
+                    break;
+            }
+            string scale;
+            switch (Scale)
+            {
+                 case Scal.One:
+                    scale = "one";
+                    break;
+                 case Scal.Sln:
+                    scale = "sln";
+                    break;
+                 case Scal.Mln:
+                    scale = "mln";
+                    break;
+                default:
+                    scale = "mln";
+                    break;
+            }
             var wName = name + Order.ToString();
 
             var count = myDoubles.Count;
@@ -63,7 +124,7 @@ namespace TickSpeed
             try
             {
                 ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
-                result = sigDen.func_denoise_sw1d_1_auto(values, wName, Level);
+                result = sigDen.func_denoise_sw1d_1_auto(values, rule, scale, wName, Level);
             }
             catch (MATLABException)
             {
