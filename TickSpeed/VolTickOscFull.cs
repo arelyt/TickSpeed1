@@ -7,7 +7,7 @@ namespace TickSpeed
 {
     // Объемно-тиковый осциллятор.
     [HandlerCategory("Arelyt")]
-    [HandlerName("VTO")]
+    [HandlerName("VTOFull")]
     public class VolTickOscFull : IBar2DoubleHandler, IOneSourceHandler, ISecurityInputs, ISecurityReturns, IStreamHandler, IContextUses
     {
         public IContext Context { get; set; }

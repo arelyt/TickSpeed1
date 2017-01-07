@@ -32,7 +32,7 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
-    public class SwtFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
+    public class SWTFull : IDouble2DoubleHandler, IValuesHandlerWithNumber
     {
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public Wavelets Wave { get; set; }
