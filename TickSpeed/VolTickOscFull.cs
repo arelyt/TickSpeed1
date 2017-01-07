@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -11,87 +11,81 @@ namespace TickSpeed
     public class VolTickOscFull : IBar2DoubleHandler
     {
         public IContext Context { get; set; }
+
         [HandlerParameter(Name = "Шаг", NotOptimized = true)]
         public int Step { get; set; }
 
         public IList<double> Execute(ISecurity sec)
-        
         {
-
-            // Главный цикл по тикам с шагом Step
-            var tickcount = sec.Bars.Count;
-            var values = new double[tickcount];
-            for (var i = 0; i < tickcount; i += Step)
+            if (sec.IntervalBase.ToString() == "TICK" && sec.Interval.ToString() == "1")
             {
-                // Проверка на последнюю свечу
-                if ((i*Step) < tickcount)
+                // Главный цикл по тикам с шагом Step
+                var tickcount = sec.Bars.Count;
+                var values = new double[tickcount];
+                for (var i = 0; i < tickcount; i += Step)
                 {
-
-                    // Итерационный цикл внутри выбранного периода
-                    var candlevto = 0.0;
-                    var valueTickBuy = 0.0;
-                    var valueTickSell = 0.0;
-                    var valueVolBuy = 0.0;
-                    var valueVolSell = 0.0;
-                    for (var j = i; j < i + Step; j++)
+                    // Проверка на последнюю свечу
+                    if ((i * Step) < tickcount)
                     {
-                        var t = sec.GetTrades(j);
-                        valueTickBuy += t.First().Direction.ToString() == "Buy" ? 1 : 0;
-                        valueVolBuy += t.First().Direction.ToString() == "Buy" ? t.First().Volume : 0;
-                        valueTickSell += t.First().Direction.ToString() == "Sell" ? 1 : 0;
-                        valueVolSell += t.First().Direction.ToString() == "Sell" ? t.First().Volume : 0;
-                        // Считаем осциллятор
+                        // Итерационный цикл внутри выбранного периода
 
+                        var valueTickBuy = 0.0;
+                        var valueTickSell = 0.0;
+                        var valueVolBuy = 0.0;
+                        var valueVolSell = 0.0;
+                        for (var j = i; j < i + Step; j++)
+                        {
+                            var t = sec.GetTrades(j);
+                            valueTickBuy += t[0].Direction.ToString() == "Buy" ? 1 : 0;
+                            valueVolBuy += t[0].Direction.ToString() == "Buy" ? t[0].Quantity : 0;
+                            valueTickSell += t[0].Direction.ToString() == "Sell" ? 1 : 0;
+                            valueVolSell += t[0].Direction.ToString() == "Sell" ? t[0].Quantity : 0;
+                            // Считаем осциллятор
+                        }
+                        values[i + Step - 1] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                                                (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
+                        // Заполняем предшествующие элементы массива последним значением предыдущего шага
+                        for (int k = i; k < i + Step - 2; k++)
+                        {
+                            if (i == 0)
+                            {
+                                values[k] = 0.0;
+                            }
+                            else
+                            {
+                                values[k] = values[i + Step - 1];
+                            }
+                        }
                     }
-                    candlevto = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                                 (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
-                    values[i + Step] = candlevto;
-                    // Заполняем предшествующие элементы массива последним значением предыдущего шага
-                    for (int k = i; k < i + Step - 1; k++)
+                    else
                     {
-                        if (i == 0)
+                        // Итерационный цикл внутри последней свечи
+                        var valueTickBuy = 0.0;
+                        var valueTickSell = 0.0;
+                        var valueVolBuy = 0.0;
+                        var valueVolSell = 0.0;
+                        var left = Convert.ToInt32(tickcount / Step);
+                        for (var j = left; j <= tickcount; j++)
                         {
-                            values[k] = 0.0;
+                            var t = sec.GetTrades(j);
+                            valueTickBuy += t[0].Direction.ToString() == "Buy" ? 1 : 0;
+                            valueVolBuy += t[0].Direction.ToString() == "Buy" ? t[0].Quantity : 0;
+                            valueTickSell += t[0].Direction.ToString() == "Sell" ? 1 : 0;
+                            valueVolSell += t[0].Direction.ToString() == "Sell" ? t[0].Quantity : 0;
+                            // Считаем осциллятор
                         }
-                        else
+                        values[tickcount] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                                             (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
+                        // Заполняем предшествующие элементы массива последним значением предыдущего шага
+                        for (var k = left; k < tickcount; k++)
                         {
-                            values[k] = values[i];
+                            values[k] = values[left];
                         }
-
                     }
                 }
-                else
-                {
-                    // Итерационный цикл внутри последней свечи
-                    var candlevto = 0.0;
-                    var valueTickBuy = 0.0;
-                    var valueTickSell = 0.0;
-                    var valueVolBuy = 0.0;
-                    var valueVolSell = 0.0;
-                    for (var j = i; j <= tickcount; j++)
-                    {
-                        var t = sec.GetTrades(j);
-                        valueTickBuy += t.First().Direction.ToString() == "Buy" ? 1 : 0;
-                        valueVolBuy += t.First().Direction.ToString() == "Buy" ? t.First().Volume : 0;
-                        valueTickSell += t.First().Direction.ToString() == "Sell" ? 1 : 0;
-                        valueVolSell += t.First().Direction.ToString() == "Sell" ? t.First().Volume : 0;
-                        // Считаем осциллятор
-
-                    }
-                    candlevto = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                                 (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
-                    values[tickcount] = candlevto;
-                    // Заполняем предшествующие элементы массива последним значением предыдущего шага
-                    for (var k = i; k <= tickcount-1; k++)
-                    {
-                        values[k] = values[i];
-                    }
-                }
+                return values;
             }
-            return values;
-
+            throw new Exception("Base Interval wrong. Please set to Tick 1");
         }
-            
     }
-
 }
