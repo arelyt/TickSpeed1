@@ -25,7 +25,7 @@ namespace TickSpeed
                 for (var i = 0; i < tickcount; i += Step)
                 {
                     // Проверка на последнюю свечу
-                    if ((i * Step) < tickcount)
+                    if ((tickcount - Step*Convert.ToInt32(tickcount / Step) == 0 ))
                     {
                         // Итерационный цикл внутри выбранного периода
 
