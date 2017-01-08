@@ -15,7 +15,7 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
     [HandlerName("Tick Candles")]
-    public class TickCandle : ISecurityReturns, IContextUses
+    public class TickCandle : IOneSourceHandler, ISecurityInputs, ISecurityReturns, IStreamHandler, IContextUses
     {
         public IContext Context { set; get; }
 
