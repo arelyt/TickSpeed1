@@ -45,7 +45,7 @@ namespace TickSpeed
                         values[i + Step - 1] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
                                                 (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
                         // Заполняем предшествующие элементы массива последним значением предыдущего шага
-                        for (int k = i; k < i + Step - 2; k++)
+                        for (var k = i; k < i + Step - 2; k++)
                         {
                             if (i == 0)
                             {

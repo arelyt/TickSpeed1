@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -15,92 +15,73 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
     [HandlerName("Tick Candles")]
-    public class TickCandle : IOneSourceHandler, ISecurityInputs, ISecurityReturns, IStreamHandler, IContextUses
+    public class TickCandle : ISecurityReturns, IContextUses
     {
-        public IContext Context { set; private get; }
+        public IContext Context { set; get; }
 
         [HandlerParameter(Name = "Ширина свечи(тиков)", Default = "16", Min = "2", Max = "64", Step = "1")]
-        public int CandleWidth { get; set; }
+        public int Step { get; set; }
 
         //        [HandlerParameter(Name = "Полный расчет", Default = "false", NotOptimized = true)]
         //        public bool CalcFullCandle { get; set; }
 
         public ISecurity Execute(ISecurity sec)
         {
-            if (sec.IntervalBase.ToString() == "TICK" && sec.Interval.ToString() == "1")
-
+            if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
+                throw new Exception("Base Interval wrong. Please set to Tick 1");
+            // Главный цикл по тикам с шагом Step
+            var tickcount = sec.Bars.Count;
+            var values = new double[tickcount];
+            for (var i = 0; i < tickcount; i += Step)
             {
-                var cw = CandleWidth;
-                var tickcandlecount = Context.BarsCount;
-                var newcandlecount = Convert.ToInt32(tickcandlecount / cw) + 1;
-                //                var vto = new double[newcandlecount];
-                var volBars = new DataBar[newcandlecount];
-                // volBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Open, sec.Bars[1].High,
-                //    sec.Bars[1].Low, sec.Bars[1].Close, sec.Bars[1].Volume);
-
-                for (var i = 0; i < newcandlecount; i ++)
+                // Проверка на последнюю свечу
+                if ((tickcount - Step * Convert.ToInt32(tickcount / Step) == 0))
                 {
-                    var price = new double[cw];
-                    var buycount = 0;
-                    var sellcount = 0;
-                    double volbuy = 0;
-                    double volsell = 0;
-                    double vto = 0;
+                    // Итерационный цикл внутри выбранного периода
 
-                    for (var j = cw*i; (j < (i + 1)*cw) && (j < tickcandlecount); j++)
+                    var valueTickBuy = 0.0;
+                    var valueTickSell = 0.0;
+                    var valueVolBuy = 0.0;
+                    var valueVolSell = 0.0;
+                    for (var j = i; j < i + Step; j++)
                     {
-                        // price[j] = sec.Bars[j].Open;
-
-                        if (sec.GetTrades(j).First().Direction.ToString() == "Buy")
-                        {
-                            buycount++;
-                            volbuy = volbuy + sec.Bars[j].Volume;
-                        }
-                        else
-                        {
-                            sellcount++;
-                            volsell = volsell + sec.Bars[j].Volume;
-                        }
-
-                        vto = (buycount * volbuy - sellcount * volsell) / (buycount * volbuy + sellcount * volsell);
+                        var t = sec.GetTrades(j);
+                        valueTickBuy += t[0].Direction.ToString() == "Buy" ? 1 : 0;
+                        valueVolBuy += t[0].Direction.ToString() == "Buy" ? t[0].Quantity : 0;
+                        valueTickSell += t[0].Direction.ToString() == "Sell" ? 1 : 0;
+                        valueVolSell += t[0].Direction.ToString() == "Sell" ? t[0].Quantity : 0;
+                        // Считаем осциллятор
                     }
-                    var date = sec.Bars[cw*i].Date;
-                    var priceOpen = sec.Bars[cw*i].Open;
-                    double priceClose;
-                    if (cw*i < tickcandlecount)
-                        priceClose = sec.Bars[i + cw -1].Open;
-                    else
-                        priceClose = sec.Bars[tickcandlecount].Open;
-                    
-                    //                    var volHigh = Math.Max(volOpen, volClose);
-                    //                    var volLow = Math.Min(volOpen, volClose);
-
-                    // если нужен расчет с учетом теней и фактических сделок
-                    //if (CalcFullCandle)
+                    values[i + Step - 1] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                                            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
+                    // Заполняем предшествующие элементы массива последним значением предыдущего шага
+                    //for (var k = i; k < i + Step - 2; k++)
                     //{
-                    //    var ticks = sec.GetTrades(i);
-                    //    var tt = ticks[i].Direction;
-                    //    if (ticks.AnyNotNull())
+                    //    if (i == 0)
                     //    {
-                    //        volOpen = ticks.First().OpenInterest;
-                    //        volClose = ticks.Last().OpenInterest;
-                    //        volHigh = ticks.Max(t => t.OpenInterest);
-                    //        volLow = ticks.Min(t => t.OpenInterest);
+                    //        values[k] = 0.0;
+                    //    }
+                    //    else
+                    //    {
+                    //        values[k] = values[i + Step - 1];
                     //    }
                     //}
-
-                    //var volVolume = Math.Abs(volClose - volOpen);
-
-                    var bar = new DataBar(date, priceOpen, priceOpen, priceClose, priceClose, vto);
-                    volBars[i] = bar;
                 }
-
-                // клонируем с подменой баров, получаем типо инструмент, но свечи иные.
-                
-                var volSec = sec.CloneAndReplaceBars(volBars);
-                return volSec;
             }
-            throw new Exception("Base Interval wrong. Please set to Tick 1");
+            var comp = sec.CompressTo(Step);
+            var vtoBars = new DataBar[comp.Bars.Count];
+            for (int k = 0; k < comp.Bars.Count; k++)
+            {
+                var open = comp.Bars[k].Open;
+                var close = comp.Bars[k].Close;
+                var high = comp.Bars[k].High;
+                var low = comp.Bars[k].Low;
+                var date = comp.Bars[k].Date;
+                vtoBars[k] = new DataBar(date, open, high, low, close, values[k+Step-1]);
+                
+            }
+            var vto = comp.CloneAndReplaceBars(vtoBars);
+            return vto;
         }
     }
 }
