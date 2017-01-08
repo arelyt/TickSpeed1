@@ -77,7 +77,7 @@ namespace TickSpeed
                 var high = comp.Bars[k].High;
                 var low = comp.Bars[k].Low;
                 var date = comp.Bars[k].Date;
-                var bar = new DataBar(date, open, high, low, close, values[k+Step-1]);
+                var bar = new DataBar(date, open, high, low, close, 10000*values[(k+1) * Step - 1], values[(k + 1) * Step - 1]);
                 vtoBars[k] = bar;
             }
             var vto = comp.CloneAndReplaceBars(vtoBars);
