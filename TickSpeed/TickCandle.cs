@@ -68,7 +68,7 @@ namespace TickSpeed
                     //}
                 }
             }
-            var comp = sec.CompressTo(Step);
+            var comp = sec.CompressTo(new Interval(Step*sec.Interval, sec.IntervalBase));
             var vtoBars = new DataBar[comp.Bars.Count];
             for (int k = 0; k < comp.Bars.Count; k++)
             {
@@ -77,8 +77,8 @@ namespace TickSpeed
                 var high = comp.Bars[k].High;
                 var low = comp.Bars[k].Low;
                 var date = comp.Bars[k].Date;
-                vtoBars[k] = new DataBar(date, open, high, low, close, values[k+Step-1]);
-                
+                var bar = new DataBar(date, open, high, low, close, values[k+Step-1]);
+                vtoBars[k] = bar;
             }
             var vto = comp.CloneAndReplaceBars(vtoBars);
             return vto;
