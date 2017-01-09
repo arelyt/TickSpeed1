@@ -5,24 +5,18 @@
   <EditData VersionString="2.3" TemplateClass="Script">
     <ViewModel>
       <Model Scale="0.6">
-        <Block Key="Источник1" Category="TradableSecurity" Location="-373.33333333333326 110.00000000000006" TypeName="TradableSecuritySourceItem">
+        <Block Key="Источник1" Category="TradableSecurity" Location="-395.55555555555543 -675.55555555555566" TypeName="TradableSecuritySourceItem">
           <EditItem Guid="ebd38b3e-827a-40d2-a64a-c1de6a7df5f1" CodeName="Источник1" IsParametersVisible="false" OnlyValueHandlersCanUsed="false" />
         </Block>
-        <Block Key="Объем1" Category="TradeMath" Location="-357.11111111111109 228.88888888888886" TypeName="ConverterItem">
-          <EditItem Guid="1fba2f97-99ce-49e4-b2af-45508d0879f2" CodeName="Объем1" IsParametersVisible="false" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
-        </Block>
-        <Pane Key="Главная" Category="GraphPane" Location="-373.33333333333326 323.33333333333337" Order="0" IsVisible="true" HideLegend="false" LeftAxisPrecision="2" LeftAxisByPercents="false" LeftDownHysteresis="0" LeftUpHysteresis="0" RightAxisPrecision="-1" RightAxisByPercents="false" RightDownHysteresis="0" RightUpHysteresis="0" />
-        <Block Key="TickCandles" Category="Arelyt" Location="-18.111111111111086 -68.333333333333314" TypeName="ConverterItem">
+        <Pane Key="Главная" Category="GraphPane" Location="-391.11111111111103 -512.22222222222229" Order="0" IsVisible="true" HideLegend="false" LeftAxisPrecision="2" LeftAxisByPercents="false" LeftDownHysteresis="0" LeftUpHysteresis="0" RightAxisPrecision="-1" RightAxisByPercents="false" RightDownHysteresis="0" RightUpHysteresis="0" />
+        <Block Key="TickCandles" Category="Arelyt" SubGraphKey="T16" Location="-102.55555555555549 -348.33333333333331" TypeName="ConverterItem">
           <EditItem Guid="01a1d12c-3cf2-4c95-80bc-fb89d9f679d3" CodeName="TickCandles" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TickCandle, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Step" TypeName="Int32" Value="16" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="vto" Category="TradeMath" Location="13.222222222222229 -185" TypeName="ConverterItem">
-          <EditItem Guid="97722883-cce4-4d40-bd32-86f4bb338802" CodeName="vto" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
-        </Block>
-        <Block Key="СжатьРасшир" Category="TradeMath" Location="-30.777777777777942 -378.44444444444446" TypeName="ConverterItem">
+        <Block Key="СжатьРасшир" Category="TradeMath" SubGraphKey="T16" Location="-108.55555555555583 -559.55555555555566" TypeName="ConverterItem">
           <EditItem Guid="b497bad3-d45f-4b52-a9f1-4f4e1c455f6a" CodeName="СжатьРасшир" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CompressAdvanced, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="IntervalBase" TypeName="DataIntervals" Value="TICK" />
@@ -30,7 +24,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="SWTFull" Category="Arelyt" Location="627.22222222222251 -390.55555555555554" TypeName="ConverterItem">
+        <Block Key="SWTFull" Category="Arelyt" SubGraphKey="T16" Location="549.44444444444457 -571.66666666666674" TypeName="ConverterItem">
           <EditItem Guid="bd29c2dd-6733-48f1-b0b8-32c4ba1f7605" CodeName="SWTFull" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SWTFullClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Wave" TypeName="Wavelets" Value="Daubechies" />
@@ -41,7 +35,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Формула" Category="Formula" Location="315.2222222222224 -351.33333333333326" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+        <Block Key="Формула" Category="Formula" SubGraphKey="T16" Location="237.44444444444451 -532.44444444444446" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
           <EditItem Guid="eca88a07-9de0-4bc0-aa29-8552b4d32cdd" CodeName="Формула" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Expression" TypeName="String" Value="vto/10000" />
@@ -49,24 +43,24 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Разжать" Category="TradeMath" Location="964.55555555555588 -356.55555555555554" TypeName="TwoOrMoreInputsItem">
+        <Block Key="Разжать" Category="TradeMath" SubGraphKey="T16" Location="569.00000000000023 -339.888888888889" TypeName="TwoOrMoreInputsItem">
           <EditItem Guid="22b25879-3563-4693-a7b5-2f6d7516947d" CodeName="Разжать" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Decompres, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Method" TypeName="DecompressMethodWithDef" Value="Default" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="TickCandles1" Category="Arelyt" Location="-16.333333333333371 120.66666666666674" TypeName="ConverterItem">
+        <Block Key="TickCandles1" Category="Arelyt" SubGraphKey="T32" Location="-99.666666666666572 -290.44444444444434" TypeName="ConverterItem">
           <EditItem Guid="cc71b293-f26c-4c8f-a969-2e6f4987d45e" CodeName="TickCandles1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TickCandle, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Step" TypeName="Int32" Value="32" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="vto32" Category="TradeMath" Location="234.77777777777771 133.99999999999989" TypeName="ConverterItem">
+        <Block Key="vto32" Category="TradeMath" SubGraphKey="T32" Location="151.44444444444451 -277.1111111111112" TypeName="ConverterItem">
           <EditItem Guid="4f8184db-426f-4178-9f57-be93f04864ce" CodeName="vto32" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
         </Block>
-        <Block Key="Формула1" Category="Formula" Location="382.55555555555566 114" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+        <Block Key="Формула1" Category="Formula" SubGraphKey="T32" Location="299.22222222222246 -297.11111111111109" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
           <EditItem Guid="92a00773-b3f3-40b6-aac2-4e2cd7e92008" CodeName="Формула1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Expression" TypeName="String" Value="vto32/10000" />
@@ -74,7 +68,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="SWTFull1" Category="Arelyt" Location="687 58.4444444444444" TypeName="ConverterItem">
+        <Block Key="SWTFull1" Category="Arelyt" SubGraphKey="T32" Location="603.66666666666686 -352.66666666666669" TypeName="ConverterItem">
           <EditItem Guid="35e99b10-7eb2-4f40-b444-806e758387a0" CodeName="SWTFull1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SWTFullClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Wave" TypeName="Wavelets" Value="Daubechies" />
@@ -85,14 +79,14 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Разжать1" Category="TradeMath" Location="988.11111111111109 96.222222222222172" TypeName="TwoOrMoreInputsItem">
+        <Block Key="Разжать1" Category="TradeMath" SubGraphKey="T32" Location="904.77777777777794 -314.88888888888891" TypeName="TwoOrMoreInputsItem">
           <EditItem Guid="81372069-7e06-4219-88ab-30126474ec88" CodeName="Разжать1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Decompres, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Method" TypeName="DecompressMethodWithDef" Value="Default" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="СжатьРасшир1" Category="TradeMath" Location="-25.222222222222229 245.11111111111074" TypeName="ConverterItem">
+        <Block Key="СжатьРасшир1" Category="TradeMath" SubGraphKey="T32" Location="-108.55555555555543 -166.00000000000034" TypeName="ConverterItem">
           <EditItem Guid="f5a44985-c2bf-40f5-8f94-b770b28fe3d8" CodeName="СжатьРасшир1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CompressAdvanced, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="IntervalBase" TypeName="DataIntervals" Value="TICK" />
@@ -100,7 +94,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="СжатьРасшир2" Category="TradeMath" Location="-24.111111111111086 565.11111111111109" TypeName="ConverterItem">
+        <Block Key="СжатьРасшир2" Category="TradeMath" SubGraphKey="T64" Location="-112.99999999999994 -80.444444444444457" TypeName="ConverterItem">
           <EditItem Guid="c2132670-20a9-446f-bf0d-117799c0c2cb" CodeName="СжатьРасшир2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CompressAdvanced, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="IntervalBase" TypeName="DataIntervals" Value="TICK" />
@@ -108,14 +102,14 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Разжать2" Category="TradeMath" Location="1013.6666666666667 421.777777777778" TypeName="TwoOrMoreInputsItem">
+        <Block Key="Разжать2" Category="TradeMath" SubGraphKey="T64" Location="925.88888888888914 -142.66666666666646" TypeName="TwoOrMoreInputsItem">
           <EditItem Guid="e160be0a-f2d1-4899-9031-b8949e14aa4d" CodeName="Разжать2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Decompres, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Method" TypeName="DecompressMethodWithDef" Value="Default" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="SWTFull2" Category="Arelyt" Location="727.00000000000011 465.11111111111143" TypeName="ConverterItem">
+        <Block Key="SWTFull2" Category="Arelyt" SubGraphKey="T64" Location="638.11111111111131 -180.44444444444412" TypeName="ConverterItem">
           <EditItem Guid="1fa025a6-ed4e-45ed-af6d-746c2a167e82" CodeName="SWTFull2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SWTFullClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Wave" TypeName="Wavelets" Value="Daubechies" />
@@ -126,17 +120,17 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="vto33" Category="TradeMath" Location="235.8888888888888 454.00000000000028" TypeName="ConverterItem">
+        <Block Key="vto33" Category="TradeMath" SubGraphKey="T64" Location="146.99999999999994 -191.55555555555526" TypeName="ConverterItem">
           <EditItem Guid="7a72a254-8383-444f-9446-8ece8e47f8ce" CodeName="vto33" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
         </Block>
-        <Block Key="TickCandles2" Category="Arelyt" Location="-18.555555555555657 432.88888888888931" TypeName="ConverterItem">
+        <Block Key="TickCandles2" Category="Arelyt" SubGraphKey="T64" Location="-107.44444444444451 -212.66666666666623" TypeName="ConverterItem">
           <EditItem Guid="d1597c4f-8523-424a-83c0-5d97d8053f83" CodeName="TickCandles2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TickCandle, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Step" TypeName="Int32" Value="64" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Формула2" Category="Formula" Location="380.33333333333314 438.7777777777776" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+        <Block Key="Формула2" Category="Formula" SubGraphKey="T64" Location="291.44444444444429 -206.77777777777794" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
           <EditItem Guid="0476cd68-7d0d-4858-9715-0f7d3087b0c0" CodeName="Формула2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Expression" TypeName="String" Value="vto33/10000" />
@@ -144,7 +138,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="SWTFull3" Category="Arelyt" Location="722.55555555555543 774.33333333333348" TypeName="ConverterItem">
+        <Block Key="SWTFull3" Category="Arelyt" SubGraphKey="T128" Location="631.44444444444434 -50.111111111110745" TypeName="ConverterItem">
           <EditItem Guid="545d91ac-8c3d-4106-93c0-262a4bc01109" CodeName="SWTFull3" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SWTFullClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Wave" TypeName="Wavelets" Value="Daubechies" />
@@ -155,7 +149,7 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Формула3" Category="Formula" Location="375.88888888888852 747.99999999999966" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+        <Block Key="Формула3" Category="Formula" SubGraphKey="T128" Location="284.77777777777743 -76.444444444444571" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
           <EditItem Guid="c8eb1c53-5064-4b27-ae69-29d70b6dde27" CodeName="Формула3" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Expression" TypeName="String" Value="vto34/10000" />
@@ -163,17 +157,17 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="TickCandles3" Category="Arelyt" Location="-23.000000000000171 742.11111111111131" TypeName="ConverterItem">
+        <Block Key="TickCandles3" Category="Arelyt" SubGraphKey="T128" Location="-114.11111111111126 -82.333333333332916" TypeName="ConverterItem">
           <EditItem Guid="a32a2935-1529-4854-8517-fff07e51d6e5" CodeName="TickCandles3" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TickCandle, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Step" TypeName="Int32" Value="128" />
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="vto34" Category="TradeMath" Location="231.44444444444429 763.2222222222224" TypeName="ConverterItem">
+        <Block Key="vto34" Category="TradeMath" SubGraphKey="T128" Location="140.3333333333332 -61.222222222221831" TypeName="ConverterItem">
           <EditItem Guid="80a6206b-dd6a-4778-aeb3-da06397128e4" CodeName="vto34" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
         </Block>
-        <Block Key="СжатьРасшир3" Category="TradeMath" Location="-28.5555555555556 874.33333333333314" TypeName="ConverterItem">
+        <Block Key="СжатьРасшир3" Category="TradeMath" SubGraphKey="T128" Location="-119.66666666666669 49.888888888888914" TypeName="ConverterItem">
           <EditItem Guid="06757df0-eafc-4e3a-9c1e-783fd6ef9c51" CodeName="СжатьРасшир3" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CompressAdvanced, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="IntervalBase" TypeName="DataIntervals" Value="TICK" />
@@ -181,14 +175,72 @@
             </Parameters>
           </EditItem>
         </Block>
-        <Block Key="Разжать3" Category="TradeMath" Location="1071.4444444444446 739.00000000000011" TypeName="TwoOrMoreInputsItem">
+        <Block Key="Разжать3" Category="TradeMath" SubGraphKey="T128" Location="980.33333333333348 -85.444444444444116" TypeName="TwoOrMoreInputsItem">
           <EditItem Guid="c2b13cbf-166d-4f23-801d-b4f5375bd0bc" CodeName="Разжать3" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Decompres, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
             <Parameters>
               <Parameter Name="Method" TypeName="DecompressMethodWithDef" Value="Default" />
             </Parameters>
           </EditItem>
         </Block>
-        <Link From="Источник1" To="Объем1" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Block Key="Формула4" Category="Formula" SubGraphKey="T8" Location="240.33333333333326 -759.33333333333337" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="f65d9e5c-eea6-4e8c-8188-fc28658301f8" CodeName="Формула4" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="vto1/10000" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="Разжать4" Category="TradeMath" SubGraphKey="T8" Location="570.7777777777776 -596.77777777777783" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="47060ec0-bae4-46b6-b771-c0eca585d738" CodeName="Разжать4" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Decompres, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Method" TypeName="DecompressMethodWithDef" Value="Default" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="SWTFull4" Category="Arelyt" SubGraphKey="T8" Location="552.33333333333337 -798.55555555555566" TypeName="ConverterItem">
+          <EditItem Guid="bf008538-0b84-4af7-a4c4-1c05a9ac72be" CodeName="SWTFull4" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.SWTFullClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Wave" TypeName="Wavelets" Value="Daubechies" />
+              <Parameter Name="Order" TypeName="Int32" Value="1" />
+              <Parameter Name="Level" TypeName="Double" Value="2" />
+              <Parameter Name="Tptr" TypeName="ThreshRule" Value="Sqtwolog" />
+              <Parameter Name="Scale" TypeName="Scal" Value="One" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="СжатьРасшир4" Category="TradeMath" SubGraphKey="T8" Location="-105.66666666666708 -786.44444444444457" TypeName="ConverterItem">
+          <EditItem Guid="76df1f61-89c3-45ba-ab9f-2d041e3d7804" CodeName="СжатьРасшир4" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CompressAdvanced, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="IntervalBase" TypeName="DataIntervals" Value="TICK" />
+              <Parameter Name="Interval" TypeName="Int32" Value="8" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="vto1" Category="TradeMath" SubGraphKey="T8" Location="208.33333333333314 -575.2222222222224" TypeName="ConverterItem">
+          <EditItem Guid="42fa6241-9d85-4429-ad15-9a6da427c12c" CodeName="vto1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="TickCandles4" Category="Arelyt" SubGraphKey="T8" Location="-93.000000000000227 -585.2222222222224" TypeName="ConverterItem">
+          <EditItem Guid="076ae04f-ff5d-4692-b0aa-5371bcafd16e" CodeName="TickCandles4" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TickCandle, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Step" TypeName="Int32" Value="8" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="T32" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-113.55555555555543 -357.66666666666669" />
+        <Block Key="T64" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-117.99999999999994 -217.66666666666623" />
+        <Block Key="T128" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-124.66666666666669 -90.444444444444116" />
+        <Block Key="vto" Category="TradeMath" SubGraphKey="T16" Location="203.4444444444444 -334.77777777777783" TypeName="ConverterItem">
+          <EditItem Guid="8d40cc48-3333-45da-b6b5-da2010ae589f" CodeName="vto" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Volume, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="T8" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-110.66666666666708 -803.55555555555566" />
+        <Block Key="T16" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-113.55555555555583 -576.66666666666674" />
+        <Block Key="Бид" Category="TradeMath" SubGraphKey="Queue" Location="-209.88888888888891 -697.88888888888891" TypeName="ConverterItem">
+          <EditItem Guid="92bee04d-3cf7-42c2-b5ea-ac0e64fcabcd" CodeName="Бид" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Bid, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="Аск" Category="TradeMath" SubGraphKey="Queue" Location="-214.33333333333337 -596.77777777777783" TypeName="ConverterItem">
+          <EditItem Guid="0a4efcb3-a54a-4e4a-a750-730864183198" CodeName="Аск" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.Ask, TSLab.Script.Handlers, Version=2.0.14.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="Queue" Category="Group" IsSubGraph="true" IsSubGraphExpanded="false" Location="-219.33333333333337 -702.88888888888891" />
         <GraphLink From="Источник1" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartCandleLink">
           <Data>
             <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-14685179" AltColor="-262137" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
@@ -204,14 +256,6 @@
             </GraphData>
           </Data>
         </GraphLink>
-        <GraphLink From="Объем1" To="Главная" FromPort="Out" ToPort="VSIDE1" Category="ChartLineLink">
-          <Data>
-            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-10690221" AltColor="-7246562" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="VSIDE1" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
-              <Points />
-            </GraphData>
-          </Data>
-        </GraphLink>
-        <Link From="TickCandles" To="vto" FromPort="Out" ToPort="Src" ToPortNum="0" />
         <Link From="Источник1" To="СжатьРасшир" FromPort="Out" ToPort="Src" ToPortNum="0" />
         <GraphLink From="СжатьРасшир" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartCandleLink">
           <Data>
@@ -220,7 +264,6 @@
             </GraphData>
           </Data>
         </GraphLink>
-        <Link From="vto" To="Формула" FromPort="Out" ToPortNum="0" />
         <Link From="Формула" To="SWTFull" FromPort="Out" ToPort="Src" ToPortNum="0" />
         <Link From="СжатьРасшир" To="Разжать" FromPort="Out" ToPort="1" ToPortNum="0" />
         <Link From="SWTFull" To="Разжать" FromPort="Out" ToPort="2" ToPortNum="1" />
@@ -297,6 +340,45 @@
         <GraphLink From="TickCandles3" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartCandleLink">
           <Data>
             <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-8330624" AltColor="-10390723" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="SWTFull4" To="Разжать4" FromPort="Out" ToPort="2" ToPortNum="1" />
+        <Link From="СжатьРасшир4" To="Разжать4" FromPort="Out" ToPort="1" ToPortNum="0" />
+        <Link From="Формула4" To="SWTFull4" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="vto1" To="Формула4" FromPort="Out" ToPortNum="1" />
+        <Link From="TickCandles4" To="vto1" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="СжатьРасшир4" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="TickCandles4" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="Разжать4" To="Главная" FromPort="Out" ToPort="LEFT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-8016795" AltColor="-10862710" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="LEFT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <GraphLink From="TickCandles4" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartCandleLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-11419421" AltColor="-10186287" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="TickCandles" To="vto" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="vto" To="Формула" FromPort="Out" ToPortNum="1" />
+        <Link From="Источник1" To="Бид" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="Бид" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-8683354" AltColor="-10606915" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="Источник1" To="Аск" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="Аск" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-5188048" AltColor="-3913717" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true">
               <Points />
             </GraphData>
           </Data>
@@ -458,7 +540,7 @@
     <SessionBegin>2000-01-01T00:00:00</SessionBegin>
     <SessionEnd>2000-01-01T00:00:00</SessionEnd>
     <DecompressMethod>Method1</DecompressMethod>
-    <MaxCandels>16384</MaxCandels>
+    <MaxCandels>32768</MaxCandels>
     <RtUpdates>false</RtUpdates>
     <CalcForEachSecurity>false</CalcForEachSecurity>
     <TradeFromBar>0</TradeFromBar>
@@ -487,6 +569,9 @@
       <Parameter xsi:type="IntOptimData" ItemName="06757df0-eafc-4e3a-9c1e-783fd6ef9c51" BlockName="СжатьРасшир3" Name="Сдвиг" InvariantName="Shift" CodeName="СжатьРасшир3_Shift" UsedInOptimization="false" IsCalculable="false" Value="0" TypeName="Int32" MinValue="0" MaxValue="60" Step="5" />
       <Parameter xsi:type="IntOptimData" ItemName="06757df0-eafc-4e3a-9c1e-783fd6ef9c51" BlockName="СжатьРасшир3" Name="Выравнивание" InvariantName="Adjustment" CodeName="СжатьРасшир3_Adjustment" UsedInOptimization="false" IsCalculable="false" Value="1440" TypeName="Int32" MinValue="60" MaxValue="10080" Step="60" />
       <Parameter xsi:type="IntOptimData" ItemName="06757df0-eafc-4e3a-9c1e-783fd6ef9c51" BlockName="СжатьРасшир3" Name="Сдвиг выравнивания" InvariantName="AdjShift" CodeName="СжатьРасшир3_AdjShift" UsedInOptimization="false" IsCalculable="false" Value="600" TypeName="Int32" MinValue="0" MaxValue="1440" Step="60" />
+      <Parameter xsi:type="IntOptimData" ItemName="76df1f61-89c3-45ba-ab9f-2d041e3d7804" BlockName="СжатьРасшир4" Name="Сдвиг" InvariantName="Shift" CodeName="СжатьРасшир4_Shift" UsedInOptimization="false" IsCalculable="false" Value="0" TypeName="Int32" MinValue="0" MaxValue="60" Step="5" />
+      <Parameter xsi:type="IntOptimData" ItemName="76df1f61-89c3-45ba-ab9f-2d041e3d7804" BlockName="СжатьРасшир4" Name="Выравнивание" InvariantName="Adjustment" CodeName="СжатьРасшир4_Adjustment" UsedInOptimization="false" IsCalculable="false" Value="1440" TypeName="Int32" MinValue="60" MaxValue="10080" Step="60" />
+      <Parameter xsi:type="IntOptimData" ItemName="76df1f61-89c3-45ba-ab9f-2d041e3d7804" BlockName="СжатьРасшир4" Name="Сдвиг выравнивания" InvariantName="AdjShift" CodeName="СжатьРасшир4_AdjShift" UsedInOptimization="false" IsCalculable="false" Value="600" TypeName="Int32" MinValue="0" MaxValue="1440" Step="60" />
     </Parameters>
     <ParameterGroups />
     <AutoParameters />
@@ -554,7 +639,7 @@
 	&amp;lt;AutoHideHost /&amp;gt;
 	&amp;lt;Content xsi:type="Workspace"&amp;gt;
 		&amp;lt;Content xsi:type="TabbedMdiHost"&amp;gt;
-			&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="ffb7f5b9-cd23-4a90-842a-f073a310074f"&amp;gt;
+			&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="d7153601-a399-4418-8802-6f6b14d2f62f"&amp;gt;
 				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="ffb7f5b9-cd23-4a90-842a-f073a310074f" /&amp;gt;
 				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="d7153601-a399-4418-8802-6f6b14d2f62f" /&amp;gt;
 				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="85a5c345-b065-4b26-8a1e-0206de8de4ee" /&amp;gt;
@@ -614,7 +699,7 @@
 	&lt;LabWindows /&gt;
 &lt;/XmlLabLayout&gt;</Layout>
   <WindowBarSizes>
-    <XmlKeyValueOfStringDouble Key="" Value="0.083209249560909457" />
+    <XmlKeyValueOfStringDouble Key="" Value="0.97137639112911878" />
   </WindowBarSizes>
   <GraphPaneSizes />
 </XmlLabSettings>]]></Settings2>
