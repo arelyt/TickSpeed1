@@ -117,7 +117,7 @@ namespace TickSpeed
             var aCache = ctx.LoadObject("DataCache");
             if (aCache == null)
             {
-                var res = SWTFullContext.mps(new_mydoubles, rule);
+                var res = SWTFullContext.mps(new_mydoubles, rule, scale, wName, Level);
                 ctx.StoreObject("DataCache", res);
                 aCache = res;
             }
@@ -135,17 +135,18 @@ namespace TickSpeed
 
         }
 
-        public static double mps(new_mydoubles, rule, scale, wName, Level)
+        public static double mps(double[] new_mydoubles, string rl, string sc, string wN, double L)
         {
             // Начинаем Signal denoising process
 
             // Create client
             MWClient client = new MWHttpClient();
+            double[] res;
             try
             {
                 ISwtDen sigDen =
                     client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
-                result = sigDen.func_denoise_sw1d_1_auto(values, rule, scale, wName, Level);
+                res = sigDen.func_denoise_sw1d_1_auto(new_mydoubles, rl, sc, wN, L);
             }
             catch (MATLABException)
             {
@@ -155,7 +156,7 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
-            return result;
+            return res;
         }
     }
 }
