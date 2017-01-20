@@ -50,37 +50,43 @@ namespace TickSpeed.V2
 
     public class Ts2Class
     {
-        private double nB, nS, vB, vS;
+        //private double nB, nS, vB, vS;
         public static IList<Ts2> Execute(ISecurity sec)
         {
-            double count = sec.Bars.Count;
-            var values = new Ts2[sec.Bars.Count];
+            var count = sec.Bars.Count;
+            var values = new Ts2[count];
 
 
 
             return values;
         }
 
-        public double vto_m(ISecurity sec, int in1, int in2, int in3)
+        public double[] vto_m(ISecurity sec, int in1)
         {
-            var val = new double[in1];
-            double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
+            var values = new double[in1];
+            values[0] = 0;
 
-            for (var i = 0; i < sec.Bars.Count; i += 512)
+            for (var i = 0; i < sec.Bars.Count; i += in1)
             {
-                var t = sec.GetTrades(i);
-                valueTickBuy += t[0].Direction.ToString() == "Buy" ? 1 : 0;
-                valueVolBuy += t[0].Direction.ToString() == "Buy" ? t[0].Quantity : 0;
-                valueTickSell += t[0].Direction.ToString() == "Sell" ? 1 : 0;
-                valueVolSell += t[0].Direction.ToString() == "Sell" ? t[0].Quantity : 0;
-                
+                double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
+                for (var j = i; j < i + in1; j++)
+                {
+                    var t = sec.GetTrades(j);
+                    valueTickBuy += t[0].Direction.ToString() == "Buy" ? 1 : 0;
+                    valueVolBuy += t[0].Direction.ToString() == "Buy" ? t[0].Quantity : 0;
+                    valueTickSell += t[0].Direction.ToString() == "Sell" ? 1 : 0;
+                    valueVolSell += t[0].Direction.ToString() == "Sell" ? t[0].Quantity : 0;
+                    
+                }
+                for (int k = i*in1+1; k < i+in1-2; k++)
+                {
+                    values[k] = values[k-1];
+                }
+                values[i + in1 - 1] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                                     (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
             }
-            val[i + Step - 1] = ((valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                                            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell));
             return values;
         }
     }
     
     }
-
-}
