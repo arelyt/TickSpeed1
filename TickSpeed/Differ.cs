@@ -13,7 +13,7 @@ namespace TickSpeed
             var count = myDoubles.Count;
             var values = new double[count];
             values[0] = 0;
-            for (var i = 1; i <= count; i++)
+            for (var i = 1; i < count; i++)
             {
                 values[i] = values[i] - values[i - 1];
             }
