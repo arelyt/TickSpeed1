@@ -7,33 +7,34 @@ namespace TickSpeed
 {
     // Объемно-тиковый осциллятор.
    
-    public enum Wavelets
-    {
-        Daubechies = 0,
-        Symlets = 1
-
-    }
-
-    public enum ThreshRule
-    {
-        Rigrsure = 0,
-        Heursure = 1,
-        Sqtwolog = 2,
-        Minimaxi = 3,
-        Modwtsqtwolog = 4
-    }
-
-    public enum Scal
-    {
-        One = 0,
-        Sln = 1,
-        Mln =2
-    }
+   
 
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
     public class SWTFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
     {
+        public enum Wavelets
+        {
+            Daubechies = 0,
+            Symlets = 1
+
+        }
+
+        public enum ThreshRule
+        {
+            Rigrsure = 0,
+            Heursure = 1,
+            Sqtwolog = 2,
+            Minimaxi = 3,
+            Modwtsqtwolog = 4
+        }
+
+        public enum Scal
+        {
+            One = 0,
+            Sln = 1,
+            Mln = 2
+        }
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public Wavelets Wave { get; set; }
 

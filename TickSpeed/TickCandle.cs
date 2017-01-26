@@ -27,8 +27,15 @@ namespace TickSpeed
 
         public ISecurity Execute(ISecurity sec)
         {
-            if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
-                throw new Exception("Base Interval wrong. Please set to Tick 1");
+            if (sec.IntervalBase.ToString() != "SECONDS" || sec.Interval.ToString() != "1")
+                throw new Exception("Base Interval wrong. Please set to Seconds 1");
+
+            //var cache = ctx.LoadObject("TickCandle");
+            //if (cache==null)
+            //{
+                
+
+            //} 
             // Главный цикл по тикам с шагом Step
             var tickcount = sec.Bars.Count;
             var values = new double[tickcount];

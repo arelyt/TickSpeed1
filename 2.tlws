@@ -1,0 +1,15 @@
+﻿<Workspace xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" IsMaximized="true" Location="80,146" Size="735.333333333333,600" IsLogVisible="true" Version="1.4">
+	<SecondWindows />
+	<LogPaneHeight>130</LogPaneHeight>
+	<IsComonTranslationOn>false</IsComonTranslationOn>
+	<IsGoogleDriveTranslationOn>false</IsGoogleDriveTranslationOn>
+	<IsDropboxTranslationOn>false</IsDropboxTranslationOn>
+	<TabControl>
+		<Index>0</Index>
+		<TabItems>
+			<TabItem Title="Лист1" IsHeadersVisible="true">
+				<Docking>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TabContent Version="1.0"&gt;&lt;contents /&gt;&lt;layout&gt;&lt;DockSiteLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SerializationFormat="All" Version="2"&gt;&lt;AutoHideHost /&gt;&lt;Content xsi:type="SplitContainer" Orientation="Horizontal" DockedSize="1436,736.666666666667"&gt;&lt;UIElement xsi:type="Workspace"&gt;&lt;Content xsi:type="TabbedMdiHost"&gt;&lt;Content xsi:type="SplitContainer" Orientation="Horizontal" DockedSize="1436,868"&gt;&lt;UIElement xsi:type="TabbedMdiContainer" DockedSize="0,0"&gt;&lt;UIElement xsi:type="Track" ContainerDockedSize="1333,200" UniqueId="f627e4b7-2216-47ae-a140-30324995704c" /&gt;&lt;/UIElement&gt;&lt;UIElement xsi:type="TabbedMdiContainer" DockedSize="0,0"&gt;&lt;UIElement xsi:type="Track" ContainerDockedSize="101,868" UniqueId="a2721eab-f0f3-44da-818e-333f3cdb9e3c" /&gt;&lt;/UIElement&gt;&lt;/Content&gt;&lt;/Content&gt;&lt;/UIElement&gt;&lt;UIElement xsi:type="ToolWindowContainer" DockedSize="0,0"&gt;&lt;UIElement xsi:type="Track" UniqueId="f627e4b7-2216-47ae-a140-30324995704c" /&gt;&lt;/UIElement&gt;&lt;UIElement xsi:type="ToolWindowContainer" DockedSize="0,0"&gt;&lt;UIElement xsi:type="Track" UniqueId="a2721eab-f0f3-44da-818e-333f3cdb9e3c" /&gt;&lt;/UIElement&gt;&lt;/Content&gt;&lt;ToolWindows&gt;&lt;ToolWindow UniqueId="f627e4b7-2216-47ae-a140-30324995704c" SerializationId="Wine87426aa-a124-4517-8811-af88c2e8050c" Name="pane0" ContainerDockedSize="1333,200" IsOpen="false" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&gt;&lt;ToolWindow UniqueId="a2721eab-f0f3-44da-818e-333f3cdb9e3c" SerializationId="Wind074d830-ef14-4bd4-97e5-773abf2b9174" Name="pane1" ContainerDockedSize="101,868" IsOpen="false" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&gt;&lt;/ToolWindows&gt;&lt;/DockSiteLayout&gt;&lt;/layout&gt;&lt;/TabContent&gt;</Docking>
+			</TabItem>
+		</TabItems>
+	</TabControl>
+</Workspace>

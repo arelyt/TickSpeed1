@@ -78,7 +78,6 @@
     <Compile Include="swtden5.cs" />
     <Compile Include="swtden6.cs" />
     <Compile Include="swtden7.cs" />
-    <Compile Include="SWTFullContext.cs" />
     <Compile Include="Tacc.cs" />
     <Compile Include="TickCandle.cs" />
     <Compile Include="TSpeed.cs" />
