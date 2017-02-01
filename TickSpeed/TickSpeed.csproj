@@ -42,7 +42,7 @@
       <HintPath>..\..\..\..\..\Downloads\RusAlgo.Handlers.Public-v1.3\RusAlgo.Handlers.Public\RusAlgo.Handlers.Public_bin\RusAlgo.Handlers.Public.dll</HintPath>
     </Reference>
     <Reference Include="RusAlgo.Helper">
-      <HintPath>..\..\..\..\Downloads\RusAlgo.Handlers.Public-v1.3\RusAlgo.Handlers.Public\RusAlgo.Handlers.Public_bin\RusAlgo.Helper.dll</HintPath>
+      <HintPath>..\..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\RusAlgo.Helper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
