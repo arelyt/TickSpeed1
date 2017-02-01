@@ -6,7 +6,7 @@ namespace TickSpeed
     // Дифференциал
     [HandlerCategory("Arelyt")]
     [HandlerName("Diff")]
-    public class DifferClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
+    public class DifferClass : IDouble2DoubleHandler
     {
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -15,7 +15,7 @@ namespace TickSpeed
             values[0] = 0;
             for (var i = 1; i < count; i++)
             {
-                values[i] = values[i] - values[i - 1];
+                values[i] = myDoubles[i] - myDoubles[i - 1];
             }
             return values;
         }
