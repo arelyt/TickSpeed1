@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
-using TSLab.DataSource;
 
 namespace TickSpeed
 {
