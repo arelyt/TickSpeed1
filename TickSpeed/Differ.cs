@@ -4,10 +4,9 @@ using TSLab.Script.Handlers;
 namespace TickSpeed
 {
     // Дифференциал
-    [HandlerCategory("Arelyt", "Arelyt")]
+    [HandlerCategory("Arelyt")]
     [HandlerName("Diff")]
-    [InputsCount(1)]
-    public class DifferClass : IDouble2DoubleHandler, IStreamHandler
+    public class DifferClass : IDouble2DoubleHandler
     {
         public IList<double> Execute(IList<double> myDoubles)
         {

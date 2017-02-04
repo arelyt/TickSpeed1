@@ -9,7 +9,7 @@ namespace TickSpeed
     [HandlerName("SWTFullCtx")]
     public class SWTFullContext : IOneSourceHandler,
                 IDoubleReturns, IStreamHandler, IContextUses,
-                IDouble2DoubleHandler, IValuesHandlerWithNumber
+                IValuesHandlerWithNumber
     {
         // Объемно-тиковый осциллятор - работа с кэшем.
         public IContext Context { set; private get; }

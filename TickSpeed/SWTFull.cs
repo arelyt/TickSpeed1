@@ -6,35 +6,37 @@ using MathWorks.MATLAB.ProductionServer.Client;
 namespace TickSpeed
 {
     // Объемно-тиковый осциллятор.
-    public enum Wavelets
-    {
-        Daubechies = 0,
-        Symlets = 1
-
-    }
-
-    public enum ThreshRule
-    {
-        Rigrsure = 0,
-        Heursure = 1,
-        Sqtwolog = 2,
-        Minimaxi = 3,
-        Modwtsqtwolog = 4
-    }
-
-    public enum Scal
-    {
-        One = 0,
-        Sln = 1,
-        Mln = 2
-    }
+   
 
 
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
-    public class SwtFullClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
+    public class SwtFullClass : IContextUses, IOneSourceHandler, IDoubleInputs, IStreamHandler, IDoubleReturns
     {
-       
+        public IContext Context { set; get; }
+        public enum Wavelets
+        {
+            Daubechies = 0,
+            Symlets = 1
+
+        }
+
+        public enum ThreshRule
+        {
+            Rigrsure = 0,
+            Heursure = 1,
+            Sqtwolog = 2,
+            Minimaxi = 3,
+            Modwtsqtwolog = 4
+        }
+
+        public enum Scal
+        {
+            One = 0,
+            Sln = 1,
+            Mln = 2
+        }
+
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public Wavelets Wave { get; set; }
 
@@ -50,12 +52,14 @@ namespace TickSpeed
         [HandlerParameter(Name = "Scale", NotOptimized = true)]
         public Scal Scale { get; set; }
 
+        
+
         public interface ISwtDen
         {
             double[] func_denoise_sw1d_1_auto(double[] in1, string in2, string in3, string in4, double in5);
         }
 
-        public IList<double> Execute(IList<double> myDoubles)
+        public IList<double> Execute(IList<double> myDoubles, IContext ctx)
         {
             string name;
             switch (Wave)
@@ -111,7 +115,7 @@ namespace TickSpeed
             }
             var wName = name + Order.ToString();
 
-            var count = myDoubles.Count;
+            var count = ctx.BarsCount;
             var result = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)
@@ -137,5 +141,6 @@ namespace TickSpeed
             }
             return result;
         }
+
     }
 }
