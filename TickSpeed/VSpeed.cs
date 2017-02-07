@@ -9,11 +9,11 @@ namespace TickSpeed
 {
     // Скорость изменения объема сделок на покупку/продажу в секунду.
     [HandlerCategory("Arelyt")]
-    [HandlerName("VolumeSpeed")]
-    public class Vspeed : IBar2DoubleHandler
+    [HandlerName("VSpeed")]
+    public class VspeedClass : IBar2DoubleHandler
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
-        public TradeDirection Direction { get; set; }
+        public TradeDirection Direction { private get; set; }
 
         public IList<double> Execute(ISecurity security)
         {

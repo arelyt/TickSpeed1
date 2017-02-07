@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
+using TickSpeed.V2;
 
 namespace TickSpeed
 {
@@ -11,34 +12,34 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFull")]
-    public class SwtFullClass : IContextUses, IOneSourceHandler, IDoubleInputs, IStreamHandler, IDoubleReturns
+    public class SwtFullClass : IDouble2DoubleHandler
     {
-        public IContext Context { set; get; }
-        public enum Wavelets
-        {
-            Daubechies = 0,
-            Symlets = 1
+        //public IContext Context { set; get; }
+        //public enum Wavele
+        //{
+        //    Daubechies = 0,
+        //    Symlets = 1
 
-        }
+        //}
 
-        public enum ThreshRule
-        {
-            Rigrsure = 0,
-            Heursure = 1,
-            Sqtwolog = 2,
-            Minimaxi = 3,
-            Modwtsqtwolog = 4
-        }
+        //public enum ThreshRule
+        //{
+        //    Rigrsure = 0,
+        //    Heursure = 1,
+        //    Sqtwolog = 2,
+        //    Minimaxi = 3,
+        //    Modwtsqtwolog = 4
+        //}
 
-        public enum Scal
-        {
-            One = 0,
-            Sln = 1,
-            Mln = 2
-        }
+        //public enum Scal
+        //{
+        //    One = 0,
+        //    Sln = 1,
+        //    Mln = 2
+        //}
 
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
-        public Wavelets Wave { get; set; }
+        public V2.Wavelets Wave { get; set; }
 
         [HandlerParameter(true, "1", Name = "Order")]
         public int Order { get; set; }
@@ -59,15 +60,15 @@ namespace TickSpeed
             double[] func_denoise_sw1d_1_auto(double[] in1, string in2, string in3, string in4, double in5);
         }
 
-        public IList<double> Execute(IList<double> myDoubles, IContext ctx)
+        public IList<double> Execute(IList<double> myDoubles)
         {
             string name;
             switch (Wave)
             {
-                case Wavelets.Daubechies:
+                case V2.Wavelets.Daubechies:
                     name = "db";
                     break;
-                case Wavelets.Symlets:
+                case V2.Wavelets.Symlets:
                     name = "sym";
                     break;
                 
@@ -115,7 +116,7 @@ namespace TickSpeed
             }
             var wName = name + Order.ToString();
 
-            var count = ctx.BarsCount;
+            var count = myDoubles.Count;
             var result = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)

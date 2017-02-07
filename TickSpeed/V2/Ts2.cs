@@ -31,6 +31,28 @@ namespace TickSpeed.V2
         //}
 
     }
+    public enum Wavelets
+    {
+        Daubechies = 0,
+        Symlets = 1
+
+    }
+
+    public enum ThreshRule
+    {
+        Rigrsure = 0,
+        Heursure = 1,
+        Sqtwolog = 2,
+        Minimaxi = 3,
+        Modwtsqtwolog = 4
+    }
+
+    public enum Scal
+    {
+        One = 0,
+        Sln = 1,
+        Mln = 2
+    }
 
     public enum Step
     {
