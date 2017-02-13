@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
+using RusAlgo.Helper;
 using TickSpeed.V2;
 
 namespace TickSpeed
@@ -103,10 +104,16 @@ namespace TickSpeed
                 count--;
             // Грузим объект из кэша. Потом переделать наименование для всех случаев
             var aCache = ctx.LoadObject("SWTFullWin");
+            var bb = (IList<double>) aCache;
+            var dd = 0;
+            if (aCache != null)
+            {
+                dd = bb.Count;
+            }
             var result = new double[count];
             var res = new double[count];
             var values = myDoubles.Skip(count - Win).Take(Win).ToArray();
-            if (aCache == null)
+            if ((aCache == null) || (dd != count))
             {
                 for (var i = 0; i < count; i++)
                 {
@@ -134,9 +141,9 @@ namespace TickSpeed
                     res[i] = result[i - count + Win - 1];
                 }
                 ctx.StoreObject("SWTFullWin", res);
-                aCache = res;
-                var val = (IList<double>)aCache;
-                return val;
+               
+                
+                return res;
             }
 
             else
@@ -158,9 +165,12 @@ namespace TickSpeed
                 }
 
                 var lt = result.Last();
+                aCache = ctx.LoadObject("SWTFullWin");
                 var val = (IList<double>)aCache;
-                val.Add(lt);
+                
                 res = val.Skip(1).Take(count).ToArray();
+                Array.Resize(ref res, res.Length + 1);
+                res[res.Length] = lt;
                 ctx.StoreObject("SWTFullWin", res);
                 return res;
             }

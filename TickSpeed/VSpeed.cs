@@ -13,7 +13,7 @@ namespace TickSpeed
     public class VspeedClass : IBar2DoubleHandler
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
-        public TradeDirection Direction { private get; set; }
+        public TradeDirection Direction { get; set; }
 
         public IList<double> Execute(ISecurity security)
         {
