@@ -13,8 +13,10 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
     [HandlerName("SWTFullWin")]
-    public class SwtFullWinClass : IDouble2DoubleHandler
+    public class SwtFullWinClass : IOneSourceHandler, IDoubleReturns, IStreamHandler, IContextUses
     {
+        public IContext Context { set; private get; }
+
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
         public V2.Wavelets Wave { get; set; }
 
@@ -33,6 +35,7 @@ namespace TickSpeed
         [HandlerParameter(Name = "Window", NotOptimized = true)]
         public int Win { get; set; }
 
+        
         public interface ISwtDen
         {
             double[] func_denoise_sw1d_1_auto(double[] in1, string in2, string in3, string in4, double in5);
@@ -93,8 +96,13 @@ namespace TickSpeed
                     break;
             }
             var wName = name + Order.ToString();
-
-            var count = myDoubles.Count;
+            var ctx = Context;
+            var count = ctx.BarsCount;
+            // Проверка на последнюю свечу
+            if (!ctx.IsLastBarClosed)
+                count--;
+            // Грузим объект из кэша. Потом переделать наименование для всех случаев
+            var aCache = ctx.LoadObject("SWTFullWin");
             var result = new double[count];
             var res = new double[count];
             var values = myDoubles.Skip(count - Win).Take(Win).ToArray();
