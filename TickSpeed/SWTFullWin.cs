@@ -106,33 +106,65 @@ namespace TickSpeed
             var result = new double[count];
             var res = new double[count];
             var values = myDoubles.Skip(count - Win).Take(Win).ToArray();
+            if (aCache == null)
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    res[i] = 0.0;
+                }
+                // Начинаем Signal denoising process
 
-            for (var i = 0; i < count; i++)
-            {
-                res[i] = 0.0;
-            }
-            // Начинаем Signal denoising process
+                // Create client
+                MWClient client = new MWHttpClient();
+                try
+                {
+                    ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
+                    result = sigDen.func_denoise_sw1d_1_auto(values, rule, scale, wName, Level);
+                }
+                catch (MATLABException)
+                {
 
-            // Create client
-            MWClient client = new MWHttpClient();
-            try
-            {
-                ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
-                result = sigDen.func_denoise_sw1d_1_auto(values, rule, scale, wName, Level);
+                }
+                finally
+                {
+                    client.Dispose();
+                }
+                for (int i = count - Win + 1; i < count; i++)
+                {
+                    res[i] = result[i - count + Win - 1];
+                }
+                ctx.StoreObject("SWTFullWin", res);
+                aCache = res;
+                var val = (IList<double>)aCache;
+                return val;
             }
-            catch (MATLABException)
-            {
 
-            }
-            finally
+            else
             {
-                client.Dispose();
+                // Create client
+                MWClient client = new MWHttpClient();
+                try
+                {
+                    ISwtDen sigDen = client.CreateProxy<ISwtDen>(new Uri("http://localhost:9910/func_denoise_sw1d_1_auto_dep"));
+                    result = sigDen.func_denoise_sw1d_1_auto(values, rule, scale, wName, Level);
+                }
+                catch (MATLABException)
+                {
+
+                }
+                finally
+                {
+                    client.Dispose();
+                }
+
+                var lt = result.Last();
+                var val = (IList<double>)aCache;
+                val.Add(lt);
+                res = val.Skip(1).Take(count).ToArray();
+                ctx.StoreObject("SWTFullWin", res);
+                return res;
             }
-            for (int i = count-Win+1; i < count; i++)
-            {
-                res[i] = result[i-count+Win-1];
-            }
-            return res;
+            
         }
 
     }
