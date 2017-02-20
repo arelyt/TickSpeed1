@@ -173,11 +173,11 @@ namespace TickSpeed
 
                 res = bb.Skip(dif).Take(dd-dif).ToArray();
                 Array.Resize(ref res, res.Length + dif);
-                for (int i = 0; i < UPPER; i++)
+                for (int i = 0; i < 3; i++) // Заглушка
                 {
                     
                 }
-                res[res.Length] = lt;
+                res[res.Length] = 3; //Заглушка
                 ctx.StoreObject("SWTFullWin", res);
                 return res;
             }

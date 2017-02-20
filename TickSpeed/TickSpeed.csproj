@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CandleOI.cs" />
+    <Compile Include="AbsCumDeltaVolume.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Differ.cs" />
