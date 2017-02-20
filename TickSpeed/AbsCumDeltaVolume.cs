@@ -10,8 +10,11 @@ namespace TickSpeed
     // Индикатор абсолютной накопительной дельты объема.
     [HandlerCategory("Arelyt")]
     [HandlerName("AbsCumDeltaVolume")]
-    public class AbsCumDeltaVolume : IBar2DoubleHandler
+    public class AbsCumDeltaVolumeClass : IBar2DoubleHandler
     {
+        //[HandlerParameter(Name = "Window", NotOptimized = true)]
+        //public int win { get; set; }
+
         public IList<double> Execute(ISecurity security)
         {
             var count = security.Bars.Count;
@@ -23,7 +26,7 @@ namespace TickSpeed
                 var buyVolume = trades.Where(trd => trd.Direction == TradeDirection.Buy).Sum(trd => trd.Quantity);
                 var sellVolume = trades.Where(trd => trd.Direction == TradeDirection.Sell).Sum(trd => trd.Quantity);
                 var delta = buyVolume - sellVolume; // Просто дельта.
-                values[i] = delta + Math.Abs(values[i-1]); // Абсолютная накопительная дельта.
+                values[i] = Math.Abs(delta) + values[i-1]; // Абсолютная накопительная дельта.
             }
             return values;
 
