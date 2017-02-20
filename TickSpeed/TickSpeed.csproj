@@ -76,6 +76,7 @@
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Differ.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CwtFlow.cs" />
     <Compile Include="SWTFullWin.cs" />
     <Compile Include="SWTFull.cs" />
     <Compile Include="SimpleSWT.cs" />
