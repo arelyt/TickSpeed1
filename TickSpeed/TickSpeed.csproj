@@ -91,6 +91,8 @@
     <Compile Include="TSpeed.cs" />
     <Compile Include="V2\Ts2.cs" />
     <Compile Include="Vacc.cs" />
+    <Compile Include="VolTickOscMult - Копировать.cs" />
+    <Compile Include="VolTickOscMult.cs" />
     <Compile Include="VolTickOscCtx.cs" />
     <Compile Include="VolTickOscFull.cs" />
     <Compile Include="VolTickOsc.cs" />
