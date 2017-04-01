@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphViewData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Options xsi:type="LabOptions">
+    <BarSize>8</BarSize>
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <IntervalBase>MINUTE</IntervalBase>
+    <Interval>60</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>2008-01-01T20:52:13</DateFrom>
+    <UseDateFrom>true</UseDateFrom>
+    <DateTo>2009-09-30T20:58:48.963277+04:00</DateTo>
+    <UseDateTo>false</UseDateTo>
+    <DecompressMethod>Method1</DecompressMethod>
+    <UseQueues>false</UseQueues>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>false</RtUpdates>
+    <GraphOptions>
+      <BarSize>8</BarSize>
+      <Indent>0</Indent>
+      <HideValues>false</HideValues>
+    </GraphOptions>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <InitDeposit>0</InitDeposit>
+  </Options>
+  <Template IsSubTemplate="false">
+    <Items>
+      <Item xsi:type="SecuritySourceItem" Name="Source1" CodeName="Source1">
+        <Center>
+          <X>265</X>
+          <Y>483</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Comission1</ItemName>
+          <ItemName>Close1</ItemName>
+          <ItemName>LE</ItemName>
+        </Children>
+      </Item>
+      <Item xsi:type="CommissionItem" Name="Comission1" CodeName="Comission1" ShowInputs="true">
+        <Center>
+          <X>35</X>
+          <Y>327</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.RelativeCommission, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="Close1" CodeName="Close1" ShowInputs="true">
+        <Center>
+          <X>296</X>
+          <Y>360</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>macd</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.Close, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="macd" CodeName="macd" ShowInputs="true">
+        <Center>
+          <X>95</X>
+          <Y>126.67000000000002</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>macdSignal</ItemName>
+          <ItemName>Item1</ItemName>
+          <ItemName>Item2</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.MACDEx, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="macdSignal" CodeName="macdSignal" ShowInputs="true">
+        <Center>
+          <X>206</X>
+          <Y>23.67</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Item1</ItemName>
+          <ItemName>Item2</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.MACDSig, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="TwoInputsItem" Name="Item1" CodeName="Item1" ShowInputs="true">
+        <Center>
+          <X>377</X>
+          <Y>99.670000000000016</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>LE</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>macdSignal</InputName>
+          <InputName>macd</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="TwoInputsItem" Name="Item2" CodeName="Item2" ShowInputs="true">
+        <Center>
+          <X>347</X>
+          <Y>259.67</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>LX</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossUnder, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>macdSignal</InputName>
+          <InputName>macd</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="LE" CodeName="LE" ShowInputs="true">
+        <Center>
+          <X>596</X>
+          <Y>85.670000000000016</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>LX</ItemName>
+        </Children>
+        <Parameters />
+        <Inputs>
+          <InputName>Item1</InputName>
+          <InputName>Source1</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ClosePositionByMarketItem" Name="LX" CodeName="LX" ShowInputs="true">
+        <Center>
+          <X>631.04333333333329</X>
+          <Y>312.67</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>LE</InputName>
+          <InputName>Item2</InputName>
+        </Inputs>
+      </Item>
+    </Items>
+    <Panes>
+      <Pane SizePct="30" Name="Pane1" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="DASH" Color="-2031616" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="macdSignal" />
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-4390912" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="macd" />
+        </GraphsList>
+      </Pane>
+      <Pane SizePct="70" Name="Main" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="255" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="Source1" />
+        </GraphsList>
+      </Pane>
+    </Panes>
+  </Template>
+  <SharpSources />
+  <Mappings>
+    <Sources>
+      <Source DataSourceName="Transaq" SecurityId="GAZP:1" Name="Source1">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters>
+      <Parameter xsi:type="OptimData" Name="Период1" ItemName="macd" CodeName="macd_Period1" Visible="true" UsedInOptimization="false" Value="26" MinValue="10" MaxValue="40" Step="1" />
+      <Parameter xsi:type="OptimData" Name="Период2" ItemName="macd" CodeName="macd_Period2" Visible="true" UsedInOptimization="false" Value="12" MinValue="5" MaxValue="40" Step="1" />
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="macdSignal" CodeName="macdSignal_Period" Visible="true" UsedInOptimization="false" Value="9" MinValue="3" MaxValue="20" Step="1" />
+    </Parameters>
+  </Mappings>
+  <Iterations>100</Iterations>
+  <OptParametersRecords>
+    <OptParametersRecord>
+      <Mappings>
+        <Sources>
+          <Source DataSourceName="AlfaDirect" SecurityId="5859" Name="Source1">
+            <Records />
+          </Source>
+        </Sources>
+        <Parameters>
+          <Parameter xsi:type="OptimData" Name="Period1" ItemName="macd" Visible="true" UsedInOptimization="true" Value="12" MinValue="10" MaxValue="20" Step="1" />
+          <Parameter xsi:type="OptimData" Name="Period2" ItemName="macd" Visible="true" UsedInOptimization="true" Value="26" MinValue="21" MaxValue="40" Step="1" />
+          <Parameter xsi:type="OptimData" Name="Period" ItemName="macdSignal" Visible="true" UsedInOptimization="true" Value="9" MinValue="1" MaxValue="10" Step="1" />
+        </Parameters>
+      </Mappings>
+      <Comment>f</Comment>
+      <Created>2009-04-28T16:29:17.894+04:00</Created>
+    </OptParametersRecord>
+  </OptParametersRecords>
+</GraphViewData>

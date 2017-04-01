@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExportScriptData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Code><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<GraphDataBase xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="GraphViewData">
+  <EditData VersionString="2.3" TemplateClass="Script">
+    <ViewModel>
+      <Model Scale="0.6">
+        <Block Key="Источник1" Category="TradableSecurity" Location="-303.33333333333337 -207.77777777777774" TypeName="TradableSecuritySourceItem">
+          <EditItem Guid="13E828E4-4633-455C-B81B-730B003D8002" CodeName="Источник1" IsParametersVisible="false" OnlyValueHandlersCanUsed="false" />
+        </Block>
+        <Pane Key="Главная" Category="GraphPane" Location="-353.33333333333337 -27.777777777777743" Order="0" IsVisible="true" HideLegend="false" LeftAxisPrecision="-1" LeftAxisByPercents="false" LeftDownHysteresis="0" LeftUpHysteresis="0" RightAxisPrecision="4" RightAxisByPercents="false" RightDownHysteresis="0" RightUpHysteresis="0" />
+        <Block Key="TSpeedB" Category="Arelyt" Location="-31.666666666666742 -189.4444444444444" TypeName="ConverterItem">
+          <EditItem Guid="7ac18fce-c604-4547-b7db-5742d87e6281" CodeName="TSpeedB" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TspeedClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Direction" TypeName="TradeDirection" Value="Buy" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="TSpeedS" Category="Arelyt" Location="-30.333333333333428 -91.4444444444444" TypeName="ConverterItem">
+          <EditItem Guid="19de87bc-f854-4660-9002-5655747db317" CodeName="TSpeedS" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.TspeedClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Direction" TypeName="TradeDirection" Value="Sell" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VSpeedB" Category="Arelyt" Location="-31.666666666666856 53.888888888888886" TypeName="ConverterItem">
+          <EditItem Guid="06015aa8-86fa-435e-bf94-c126017ecae1" CodeName="VSpeedB" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.VspeedClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Direction" TypeName="TradeDirection" Value="Buy" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VSpeedS" Category="Arelyt" Location="-25.000000000000114 167.88888888888894" TypeName="ConverterItem">
+          <EditItem Guid="220a8262-98ca-4f95-936b-e5b6cf34efc4" CodeName="VSpeedS" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.VspeedClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Direction" TypeName="TradeDirection" Value="Sell" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="NB" Category="Formula" Location="150.33333333333331 -197.44444444444446" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="a5542e77-f15d-4265-93f7-ba8d054be73d" CodeName="NB" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(TSpeedB[i] + TSpeedB[i-1]*2 + TSpeedB[i-2]*2 + TSpeedB[i-3])/4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="4" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="NS" Category="Formula" Location="156.33333333333337 -99.444444444444457" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="20bf1a25-4ebc-4d85-a4c6-3c892ab6da97" CodeName="NS" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(TSpeedS[i] + TSpeedS[i-1]*2 + TSpeedS[i-2]*2 + TSpeedS[i-3])/4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="4" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VB" Category="Formula" Location="158.99999999999989 39.888888888889" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="db5de9f0-bafe-4ae3-a9be-75d3d7445191" CodeName="VB" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(VSpeedB[i] + VSpeedB[i-1]*2 + VSpeedB[i-2]*2 + VSpeedB[i-3])/4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="4" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VS" Category="Formula" Location="166.33333333333337 159.88888888888889" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="d8fb09d9-e94b-47ed-8496-038ddb144bc8" CodeName="VS" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(VSpeedS[i] + VSpeedS[i-1]*2 + VSpeedS[i-2]*2 + VSpeedS[i-3])/4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="4" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VTO" Category="Formula" Location="433 -185.4444444444444" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="0ea5f4a5-6168-440f-85c4-c0e01c706fb6" CodeName="VTO" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="0.6 * (NB -NS)/(NB +NS) + (VB - VS)/(VB + VS) * 0.4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="4" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="VTON" Category="Formula" Location="432.99999999999989 77.888888888888886" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="143" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="9f2d2667-08d8-4485-ac85-22480afa7d60" CodeName="VTON" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(TSpeedB - TSpeedS)/(TSpeedB + TSpeedS)*0.6 + (VSpeedB - VSpeedS)/(VSpeedB + VSpeedS)*0.4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="OTON" Category="Formula" Location="419.88888888888869 229.44444444444446" TypeName="DoubleCustomHandlerItem" Width="120" Height="60" ResizablePartWidth="208.99999999999994" ResizablePartHeight="80" OpenParams="true">
+          <EditItem Guid="980da8e6-9cb6-40e9-aa29-bcd3080631ca" CodeName="OTON" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.ScriptEngine.Template.DoubleCustomHandlerItem+Handler, TSLab.ScriptEngine, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Expression" TypeName="String" Value="(VTON[i] + 2*VTON[i-1] + 2*VTON[i-2] +VTON[i-3])/4" />
+              <Parameter Name="StartIndex" TypeName="Int32" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="КонтролПанель" Category="ControlPane" Location="-321.33333333333331 267">
+          <EditItem Name="6048743f-e8ff-4faa-844c-fdd3e2bdca40" IsVisible="true" />
+        </Block>
+        <Block Key="D" Category="GraphPaneHandler" Location="-380.22222222222217 415.888888888889" TypeName="ConverterItem">
+          <EditItem Guid="0588e726-4db0-4a9d-8eaa-810387b3d3fc" CodeName="D" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.InteractiveConstGen, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="PaneSide" TypeName="PaneSides" Value="RIGHT" />
+              <Parameter Name="Color" TypeName="String" Value="#ff0000" />
+              <Parameter Name="IsNeedRecalculate" TypeName="Boolean" Value="true" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="U" Category="GraphPaneHandler" Location="319.77777777777771 441.44444444444457" TypeName="ConverterItem">
+          <EditItem Guid="70a050cc-745b-4647-907f-0b5890d57426" CodeName="U" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.InteractiveConstGen, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="PaneSide" TypeName="PaneSides" Value="RIGHT" />
+              <Parameter Name="Color" TypeName="String" Value="#ff0000" />
+              <Parameter Name="IsNeedRecalculate" TypeName="Boolean" Value="true" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="Константа" Category="Const" Location="-310.22222222222223 610.33333333333337" TypeName="ConverterItem">
+          <EditItem Guid="6c3a726d-9aa1-41a3-9650-309b9f27ee94" CodeName="Константа" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.ConstGen, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Value" TypeName="Double" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="Diff" Category="Arelyt" Location="744.2222222222224 203.66666666666669" TypeName="ConverterItem">
+          <EditItem Guid="43026fe4-9955-46fb-95b6-d8ec6e9f1640" CodeName="Diff" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TickSpeed.DifferClass, TickSpeed, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="Константа1" Category="Const" Location="750.88888888888891 91.444444444444457" TypeName="ConverterItem">
+          <EditItem Guid="6b49ea6c-8d7b-47b5-af4b-f6b6934aaed3" CodeName="Константа1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.ConstGen, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+            <Parameters>
+              <Parameter Name="Value" TypeName="Double" Value="0" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ПересечСверху" Category="TradeMath" Location="745.33333333333348 -125.22222222222223" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="63d8856a-82eb-4e72-aab3-b4004c2e332d" CodeName="ПересечСверху" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="ОткрПозиПоРынк" Category="OpenPosition" Location="921 -170.77777777777774" TypeName="OpenPositionByMarketItem">
+          <EditItem Guid="7793a428-1c87-4d62-9dda-a660c3079a60" CodeName="ОткрПозиПоРынк" IsParametersVisible="true" OnlyValueHandlersCanUsed="true">
+            <Parameters>
+              <Parameter Name="Long" TypeName="Boolean" Value="false" />
+              <Parameter Name="Shares" TypeName="Double" Value="1" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ЗакрПозиПоРынк" Category="ClosePosition" Location="1161 -137.44444444444443" TypeName="ClosePositionByMarketItem">
+          <EditItem Guid="8cb04c88-9fe8-49f8-8cf4-9efe3cb3a243" CodeName="ЗакрПозиПоРынк" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" />
+        </Block>
+        <Block Key="ПересечСнизу" Category="TradeMath" Location="956.55555555555566 257.00000000000006" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="f165895c-0884-4b15-9292-a0f0a201ae51" CodeName="ПересечСнизу" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CrossUnder, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="ОткрПозиПоРынк1" Category="OpenPosition" Location="929.88888888888891 325.888888888889" TypeName="OpenPositionByMarketItem">
+          <EditItem Guid="fc0aa617-cc70-4622-b153-67af57648ee2" CodeName="ОткрПозиПоРынк1" IsParametersVisible="true" OnlyValueHandlersCanUsed="true">
+            <Parameters>
+              <Parameter Name="Long" TypeName="Boolean" Value="true" />
+              <Parameter Name="Shares" TypeName="Double" Value="1" />
+            </Parameters>
+          </EditItem>
+        </Block>
+        <Block Key="ЗакрПозиПоРынк1" Category="ClosePosition" Location="1177.6666666666667 348.11111111111109" TypeName="ClosePositionByMarketItem">
+          <EditItem Guid="c1bd859d-fad5-4c75-a97f-dddf9775280a" CodeName="ЗакрПозиПоРынк1" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" />
+        </Block>
+        <Block Key="ПересечСверху1" Category="TradeMath" Location="934.33333333333326 33.666666666666572" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="f13101f0-182b-489b-bc7d-0c77a5deece5" CodeName="ПересечСверху1" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="ПересечСверху2" Category="TradeMath" Location="703.2222222222224 411.44444444444446" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="60947139-a866-4d3e-8ee0-d41c22c49556" CodeName="ПересечСверху2" IsParametersVisible="true" OnlyValueHandlersCanUsed="false" HandlerTypeName="TSLab.Script.Handlers.CrossOver, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="ПосПозЗакИДли" Category="Position" Location="681.00000000000045 -228.55555555555551" TypeName="ConverterItem">
+          <EditItem Guid="50397eb9-388a-4529-ae64-e9102a3bde18" CodeName="ПосПозЗакИДли" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" HandlerTypeName="TSLab.Script.Handlers.LastClosedIsLong, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="И" Category="LogicalAndTemplate" Location="845.4444444444448 -236.33333333333334" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="ab12db2b-9da3-431c-9a0d-2b1783e43c7d" CodeName="И" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" HandlerTypeName="TSLab.Script.Handlers.And, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="И1" Category="LogicalAndTemplate" Location="898.77777777777783 461.888888888889" TypeName="TwoOrMoreInputsItem">
+          <EditItem Guid="332ab32e-8051-4b2c-adf9-d510fffdcb8d" CodeName="И1" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" HandlerTypeName="TSLab.Script.Handlers.And, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Block Key="ПосПозЗакИКор" Category="Position" Location="732.11111111111109 503" TypeName="ConverterItem">
+          <EditItem Guid="f3e98daf-13bf-4f5a-b090-e9ac80c0939d" CodeName="ПосПозЗакИКор" IsParametersVisible="true" OnlyValueHandlersCanUsed="true" HandlerTypeName="TSLab.Script.Handlers.LastClosedIsShort, TSLab.Script.Handlers, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null" />
+        </Block>
+        <Link From="Источник1" To="TSpeedB" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="TSpeedS" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="VSpeedB" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="VSpeedS" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="TSpeedB" To="NB" FromPort="Out" ToPortNum="0" />
+        <Link From="TSpeedS" To="NS" FromPort="Out" ToPortNum="0" />
+        <Link From="VSpeedB" To="VB" FromPort="Out" ToPortNum="0" />
+        <Link From="VSpeedS" To="VS" FromPort="Out" ToPortNum="0" />
+        <Link From="NB" To="VTO" FromPort="Out" ToPortNum="0" />
+        <Link From="NS" To="VTO" FromPort="Out" ToPortNum="1" />
+        <Link From="VB" To="VTO" FromPort="Out" ToPortNum="2" />
+        <Link From="VS" To="VTO" FromPort="Out" ToPortNum="3" />
+        <Link From="TSpeedB" To="VTON" FromPort="Out" ToPortNum="0" />
+        <Link From="TSpeedS" To="VTON" FromPort="Out" ToPortNum="1" />
+        <Link From="VSpeedB" To="VTON" FromPort="Out" ToPortNum="2" />
+        <Link From="VSpeedS" To="VTON" FromPort="Out" ToPortNum="3" />
+        <Link From="VTON" To="OTON" FromPort="Out" ToPortNum="0" />
+        <ControlLink From="D" To="КонтролПанель" FromPort="ControlOut" Category="ControlPaneLink">
+          <EditItem>
+            <Property PropertyName="Value" ControlType="3" Type="TSLab.TemplatesEditor.Descriptor.ParameterControl.UpDownControlEditData, TSLab.TemplatesEditor, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+              <UpDownControlEditData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Color="-1" ForegroundColor="-16777216">
+                <ControlDisplayName>D</ControlDisplayName>
+                <IsVisible>true</IsVisible>
+                <IsNeedRecalculate>true</IsNeedRecalculate>
+                <HasRect>true</HasRect>
+                <Left>0</Left>
+                <Top>0</Top>
+                <Width>43.333333333333329</Width>
+                <Height>NaN</Height>
+                <IsReadOnly>false</IsReadOnly>
+                <IsHelpVisible>false</IsHelpVisible>
+                <Step>0.01</Step>
+                <NumberDecimalDigits>2</NumberDecimalDigits>
+              </UpDownControlEditData>
+            </Property>
+          </EditItem>
+        </ControlLink>
+        <ControlLink From="U" To="КонтролПанель" FromPort="ControlOut" Category="ControlPaneLink">
+          <EditItem>
+            <Property PropertyName="Value" ControlType="3" Type="TSLab.TemplatesEditor.Descriptor.ParameterControl.UpDownControlEditData, TSLab.TemplatesEditor, Version=2.0.16.0, Culture=neutral, PublicKeyToken=null">
+              <UpDownControlEditData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Color="-1" ForegroundColor="-16777216">
+                <ControlDisplayName>U</ControlDisplayName>
+                <IsVisible>true</IsVisible>
+                <IsNeedRecalculate>true</IsNeedRecalculate>
+                <HasRect>true</HasRect>
+                <Left>0</Left>
+                <Top>70</Top>
+                <Width>49.333333333333357</Width>
+                <Height>NaN</Height>
+                <IsReadOnly>false</IsReadOnly>
+                <IsHelpVisible>false</IsHelpVisible>
+                <Step>0.01</Step>
+                <NumberDecimalDigits>2</NumberDecimalDigits>
+              </UpDownControlEditData>
+            </Property>
+          </EditItem>
+        </ControlLink>
+        <Link From="Главная" To="D" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Главная" To="U" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <GraphLink From="OTON" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-16750849" AltColor="-16750849" Opacity="0" HideLastValue="false" Thickness="2" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true" CandleFillStyle="Decreasing">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <GraphLink From="Источник1" To="Главная" FromPort="Out" ToPort="LEFT" Category="ChartCandleLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="CANDLE_AND_QUEUE" LineStyle="SOLID" Color="-13893760" AltColor="-65536" Opacity="50" HideLastValue="false" Thickness="1" PaneSide="LEFT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true" CandleFillStyle="All">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <GraphLink From="Константа" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-1" AltColor="-1644826" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true" CandleFillStyle="Decreasing">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="OTON" To="Diff" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="Источник1" To="ОткрПозиПоРынк" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="ОткрПозиПоРынк" To="ЗакрПозиПоРынк" FromPort="Out" ToPort="Pos" ToPortNum="0" />
+        <Link From="Источник1" To="ОткрПозиПоРынк1" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="ОткрПозиПоРынк1" To="ЗакрПозиПоРынк1" FromPort="Out" ToPort="Pos" ToPortNum="0" />
+        <Link From="OTON" To="ПересечСверху" FromPort="Out" ToPort="1" ToPortNum="0" />
+        <GraphLink From="Diff" To="Главная" FromPort="Out" ToPort="RIGHT" Category="ChartLineLink">
+          <Data>
+            <GraphData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-5978859" AltColor="-5626199" Opacity="0" HideLastValue="false" Thickness="1" PaneSide="RIGHT" Visible="true" ShowTrades="true" ShowPositionStop="true" ShowPositionText="true" ShowPositionIcon="true" ShowPositionLinks="true" CandleFillStyle="Decreasing">
+              <Points />
+            </GraphData>
+          </Data>
+        </GraphLink>
+        <Link From="Константа1" To="ПересечСверху1" FromPort="Out" ToPort="2" ToPortNum="1" />
+        <Link From="Diff" To="ПересечСверху1" FromPort="Out" ToPort="1" ToPortNum="0" />
+        <Link From="D" To="ПересечСверху" FromPort="Out" ToPort="2" ToPortNum="1" />
+        <Link From="Diff" To="ПересечСнизу" FromPort="Out" ToPort="1" ToPortNum="0" />
+        <Link From="Константа1" To="ПересечСнизу" FromPort="Out" ToPort="2" ToPortNum="1" />
+        <Link From="U" To="ПересечСверху2" FromPort="Out" ToPort="2" ToPortNum="1" />
+        <Link From="OTON" To="ПересечСверху2" FromPort="Out" ToPort="1" ToPortNum="0" />
+        <Link From="ПересечСверху1" To="ЗакрПозиПоРынк" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="ПересечСнизу" To="ЗакрПозиПоРынк1" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="ПосПозЗакИДли" To="И" FromPort="Out" ToPort="In" ToPortNum="0" />
+        <Link From="Источник1" To="ПосПозЗакИДли" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="ПересечСверху" To="И" FromPort="Out" ToPort="In" ToPortNum="0" />
+        <Link From="И" To="ОткрПозиПоРынк" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+        <Link From="Источник1" To="ПосПозЗакИКор" FromPort="Out" ToPort="Src" ToPortNum="0" />
+        <Link From="ПосПозЗакИКор" To="И1" FromPort="Out" ToPort="In" ToPortNum="0" />
+        <Link From="ПересечСверху2" To="И1" FromPort="Out" ToPort="In" ToPortNum="0" />
+        <Link From="И1" To="ОткрПозиПоРынк1" FromPort="Out" ToPort="Eq" ToPortNum="1" />
+      </Model>
+    </ViewModel>
+  </EditData>
+  <Options xsi:type="LabOptions">
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <LegendTransparency>0</LegendTransparency>
+    <TimeScale>Adaptive</TimeScale>
+    <LegendForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </LegendForegroundColor>
+    <ChartBackgroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>1</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Default>
+    </ChartBackgroundColor>
+    <ChartForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </ChartForegroundColor>
+    <ChartGridColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>49</R>
+        <G>49</G>
+        <B>49</B>
+        <ScA>1</ScA>
+        <ScR>0.0307134446</ScR>
+        <ScG>0.0307134446</ScG>
+        <ScB>0.0307134446</ScB>
+      </Default>
+    </ChartGridColor>
+    <ChartRulerBackgroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>83</R>
+        <G>83</G>
+        <B>83</B>
+        <ScA>1</ScA>
+        <ScR>0.0865004659</ScR>
+        <ScG>0.0865004659</ScG>
+        <ScB>0.0865004659</ScB>
+      </Default>
+    </ChartRulerBackgroundColor>
+    <ChartRulerForegroundColor>
+      <Value>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
+      </Value>
+      <IsChanged>false</IsChanged>
+      <Default>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
+      </Default>
+    </ChartRulerForegroundColor>
+    <IntervalBase>TICK</IntervalBase>
+    <Interval>500</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>2017-03-31T00:00:00</DateFrom>
+    <UseDateFrom>true</UseDateFrom>
+    <DateTo>2017-03-31T00:00:00+03:00</DateTo>
+    <UseDateTo>false</UseDateTo>
+    <MaxDays>0</MaxDays>
+    <SessionBegin>2000-01-01T00:00:00</SessionBegin>
+    <SessionEnd>2000-01-01T00:00:00</SessionEnd>
+    <DecompressMethod>Method1</DecompressMethod>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>true</RtUpdates>
+    <CalcForEachSecurity>false</CalcForEachSecurity>
+    <TradeFromBar>0</TradeFromBar>
+    <IsSplittedProfitByInstruments>false</IsSplittedProfitByInstruments>
+    <NotUsePositions>false</NotUsePositions>
+    <InitDeposit>0</InitDeposit>
+    <LabCalcType>Default</LabCalcType>
+    <TradeMode>All</TradeMode>
+  </Options>
+  <Mappings>
+    <Sources>
+      <Source DataSourceName="Finam_Forts" SecurityId="RIM7:4" Name="13E828E4-4633-455C-B81B-730B003D8002" VisualTypeName="Торгуемый инструмент" IsOption="false">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters>
+      <Parameter xsi:type="OptimData" ItemName="0588e726-4db0-4a9d-8eaa-810387b3d3fc" BlockName="D" Name="Значение" InvariantName="Value" CodeName="D_Value" UsedInOptimization="false" IsCalculable="false" Value="0.2" TypeName="Double" MinValue="1" MaxValue="10" Step="0.01" NumberDecimalDigits="2" />
+      <Parameter xsi:type="OptimData" ItemName="70a050cc-745b-4647-907f-0b5890d57426" BlockName="U" Name="Значение" InvariantName="Value" CodeName="U_Value" UsedInOptimization="false" IsCalculable="false" Value="-0.2" TypeName="Double" MinValue="1" MaxValue="10" Step="0.01" NumberDecimalDigits="2" />
+    </Parameters>
+    <ParameterGroups />
+    <AutoParameters />
+  </Mappings>
+  <Iterations>100</Iterations>
+  <OptParametersRecords />
+  <OptParametersRecordsFolders />
+</GraphDataBase>]]></Code>
+  <Settings2><![CDATA[<?xml version="1.0" encoding="utf-16"?>
+<XmlLabSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Options>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <AutoEntryBars>0</AutoEntryBars>
+    <AutoCloseBars>0</AutoCloseBars>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <TakeProfitNoSlippage>false</TakeProfitNoSlippage>
+    <OpenPositionNoSlippage>false</OpenPositionNoSlippage>
+    <ByMarketAsLimt>false</ByMarketAsLimt>
+    <InvalidStopsByMarket>false</InvalidStopsByMarket>
+    <RemoveInactivePositions>true</RemoveInactivePositions>
+    <WarnSkippedOpenPositions>true</WarnSkippedOpenPositions>
+    <NotOpenIfHasSkippedExit>false</NotOpenIfHasSkippedExit>
+    <NoCalcInfo>false</NoCalcInfo>
+    <MaxBarsForSignal>0</MaxBarsForSignal>
+    <WaitExecutionExitBars>0</WaitExecutionExitBars>
+    <WaitExecutionEntryBars>0</WaitExecutionEntryBars>
+    <SimulatePositionOrdering>true</SimulatePositionOrdering>
+  </Options>
+  <Mappings>
+    <Sources />
+    <Parameters />
+    <ParameterGroups />
+    <AutoParameters />
+  </Mappings>
+  <AppearanceOptions>
+    <Background>
+      <A>255</A>
+      <R>245</R>
+      <G>245</G>
+      <B>245</B>
+      <ScA>1</ScA>
+      <ScR>0.913098633</ScR>
+      <ScG>0.913098633</ScG>
+      <ScB>0.913098633</ScB>
+    </Background>
+    <Foreground>
+      <A>255</A>
+      <R>0</R>
+      <G>0</G>
+      <B>0</B>
+      <ScA>1</ScA>
+      <ScR>0</ScR>
+      <ScG>0</ScG>
+      <ScB>0</ScB>
+    </Foreground>
+    <ShowCaption>true</ShowCaption>
+  </AppearanceOptions>
+  <Layout>&lt;XmlLabLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+	&lt;MainChartWindow Id="Main"&gt;
+		&lt;Docking&gt;&amp;lt;?xml version="1.0" encoding="utf-16"?&amp;gt;&amp;lt;DockSiteLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SerializationFormat="All" Version="2"&amp;gt;&amp;lt;AutoHideHost /&amp;gt;&amp;lt;Content xsi:type="SplitContainer" Orientation="Horizontal" DockedSize="1324,663.333333333333"&amp;gt;&amp;lt;UIElement xsi:type="Workspace"&amp;gt;&amp;lt;Content xsi:type="TabbedMdiHost"&amp;gt;&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="a7ae59f3-3acc-4534-82af-88aa33e68623"&amp;gt;&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="a7ae59f3-3acc-4534-82af-88aa33e68623" /&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;/UIElement&amp;gt;&amp;lt;UIElement xsi:type="ToolWindowContainer" DockedSize="55,200" SelectedWindowUniqueId="c0a86f2d-5380-4fbd-9be6-1baa1f087883"&amp;gt;&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="c0a86f2d-5380-4fbd-9be6-1baa1f087883" /&amp;gt;&amp;lt;/UIElement&amp;gt;&amp;lt;/Content&amp;gt;&amp;lt;ToolWindows&amp;gt;&amp;lt;ToolWindow UniqueId="c0a86f2d-5380-4fbd-9be6-1baa1f087883" SerializationId="КонтролПанель" ContainerDockedSize="55,200" IsOpen="true" State="Docked" /&amp;gt;&amp;lt;ToolWindow UniqueId="a7ae59f3-3acc-4534-82af-88aa33e68623" SerializationId="Graph" IsOpen="true" State="Document" /&amp;gt;&amp;lt;/ToolWindows&amp;gt;&amp;lt;/DockSiteLayout&amp;gt;&lt;/Docking&gt;
+	&lt;/MainChartWindow&gt;
+	&lt;Docking&gt;&amp;lt;DockSiteLayout xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SerializationFormat="All" Version="2"&amp;gt;
+	&amp;lt;AutoHideHost /&amp;gt;
+	&amp;lt;Content xsi:type="Workspace"&amp;gt;
+		&amp;lt;Content xsi:type="TabbedMdiHost"&amp;gt;
+			&amp;lt;Content xsi:type="TabbedMdiContainer" SelectedWindowUniqueId="e316563a-5213-4180-bb0e-b1d92d3a12bf"&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="23fa23b8-1b61-43fc-9445-f9e676a05f22" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="e316563a-5213-4180-bb0e-b1d92d3a12bf" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="f5a810db-d88e-44ec-acbd-abd70a19b2a7" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="56b48115-bc92-4d1f-83d3-6182facf5bfb" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="556ec911-1bce-4c8d-b534-eb4ff3fb6f84" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="dd65d018-574b-43d9-8dda-5429f3247cb0" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="ee9496a8-846c-4c75-9363-25ec51b03880" /&amp;gt;
+				&amp;lt;UIElement xsi:type="ToolWindowRef" UniqueId="e6432616-7d43-42d2-b0b6-d6ef12d409a6" /&amp;gt;
+			&amp;lt;/Content&amp;gt;
+		&amp;lt;/Content&amp;gt;
+	&amp;lt;/Content&amp;gt;
+	&amp;lt;ToolWindows&amp;gt;
+		&amp;lt;ToolWindow UniqueId="23fa23b8-1b61-43fc-9445-f9e676a05f22" SerializationId="EditorViewModel" Name="Editor" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="e316563a-5213-4180-bb0e-b1d92d3a12bf" SerializationId="ChartViewModel" Name="Graph" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="f5a810db-d88e-44ec-acbd-abd70a19b2a7" SerializationId="PerformanceViewModel" Name="Performance" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="56b48115-bc92-4d1f-83d3-6182facf5bfb" SerializationId="TradesViewModel" Name="Trades" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="556ec911-1bce-4c8d-b534-eb4ff3fb6f84" SerializationId="OptimizationViewModel" Name="Optimization" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="dd65d018-574b-43d9-8dda-5429f3247cb0" SerializationId="ParametersViewModel" Name="Parameters" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="ee9496a8-846c-4c75-9363-25ec51b03880" SerializationId="LogViewModel" Name="Log" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+		&amp;lt;ToolWindow UniqueId="e6432616-7d43-42d2-b0b6-d6ef12d409a6" SerializationId="ProfitModel" Name="Profit" IsOpen="true" State="Document" Type="TSLab.Controls.ContentPane, TSLab.Controls" /&amp;gt;
+	&amp;lt;/ToolWindows&amp;gt;
+&amp;lt;/DockSiteLayout&amp;gt;&lt;/Docking&gt;
+	&lt;LabModels&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;EditorViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ChartViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;PerformanceViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;TradesViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;OptimizationViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ParametersViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;LogViewModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+		&lt;XmlLabModel&gt;
+			&lt;ContentId&gt;ProfitModel&lt;/ContentId&gt;
+			&lt;IsVisible&gt;true&lt;/IsVisible&gt;
+		&lt;/XmlLabModel&gt;
+	&lt;/LabModels&gt;
+	&lt;LabWindows /&gt;
+&lt;/XmlLabLayout&gt;</Layout>
+  <WindowBarSizes>
+    <XmlKeyValueOfStringDouble Key="" Value="21.221052631578925" />
+  </WindowBarSizes>
+  <GraphPaneSizes />
+</XmlLabSettings>]]></Settings2>
+</ExportScriptData>

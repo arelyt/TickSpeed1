@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphViewData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Options xsi:type="LabOptions">
+    <BarSize>5</BarSize>
+    <Indent>0</Indent>
+    <HideValues>false</HideValues>
+    <IntervalBase>MINUTE</IntervalBase>
+    <Interval>60</Interval>
+    <RecalcInterval>INTERVAL</RecalcInterval>
+    <DateFrom>2009-01-06T02:42:39</DateFrom>
+    <UseDateFrom>true</UseDateFrom>
+    <DateTo>2009-09-30T21:01:41.938534+04:00</DateTo>
+    <UseDateTo>false</UseDateTo>
+    <DecompressMethod>Method1</DecompressMethod>
+    <UseQueues>false</UseQueues>
+    <MaxCandels>0</MaxCandels>
+    <RtUpdates>false</RtUpdates>
+    <GraphOptions>
+      <BarSize>5</BarSize>
+      <Indent>0</Indent>
+      <HideValues>false</HideValues>
+    </GraphOptions>
+    <DefEntryApprove>false</DefEntryApprove>
+    <DefExitApprove>false</DefExitApprove>
+    <Slippage>0</Slippage>
+    <SlippagePct>0</SlippagePct>
+    <InitDeposit>0</InitDeposit>
+  </Options>
+  <Template IsSubTemplate="false">
+    <Items>
+      <Item xsi:type="SecuritySourceItem" Name="Source1" CodeName="Source1">
+        <Center>
+          <X>50</X>
+          <Y>20</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Comission1</ItemName>
+          <ItemName>Close1</ItemName>
+          <ItemName>вход</ItemName>
+        </Children>
+      </Item>
+      <Item xsi:type="CommissionItem" Name="Comission1" CodeName="Comission1" ShowInputs="true">
+        <Center>
+          <X>180</X>
+          <Y>20</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.RelativeCommission, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="Close1" CodeName="Close1" ShowInputs="true">
+        <Center>
+          <X>180</X>
+          <Y>100</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>ema1</ItemName>
+          <ItemName>ema2</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.Close, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="ema1" CodeName="ema1" ShowInputs="true">
+        <Center>
+          <X>174</X>
+          <Y>213.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Item3</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.EMA, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="ema2" CodeName="ema2" ShowInputs="true">
+        <Center>
+          <X>268</X>
+          <Y>317.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Item3</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.EMA, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="TwoInputsItem" Name="Item3" CodeName="Item3" ShowInputs="true">
+        <Center>
+          <X>464</X>
+          <Y>265.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>вход</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.CrossUnder, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+        <Inputs>
+          <InputName>ema1</InputName>
+          <InputName>ema2</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="OpenPositionByMarketItem" Name="вход" CodeName="var1" ShowInputs="true">
+        <Center>
+          <X>680</X>
+          <Y>245.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>Item5</ItemName>
+          <ItemName>выход</ItemName>
+        </Children>
+        <Parameters />
+        <Inputs>
+          <InputName>Item3</InputName>
+          <InputName>Source1</InputName>
+        </Inputs>
+      </Item>
+      <Item xsi:type="ConverterItem" Name="Item5" CodeName="Item5" ShowInputs="true">
+        <Center>
+          <X>627</X>
+          <Y>371.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children>
+          <ItemName>выход</ItemName>
+        </Children>
+        <Parameters />
+        <HandlerTypeName>TSLab.Script.Handlers.TrailStop, TSLab.Script.Handlers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</HandlerTypeName>
+      </Item>
+      <Item xsi:type="ClosePositionByStopItem" Name="выход" CodeName="var0" ShowInputs="true">
+        <Center>
+          <X>795</X>
+          <Y>528.63</Y>
+        </Center>
+        <Compacted>false</Compacted>
+        <Children />
+        <Parameters />
+        <Inputs>
+          <InputName>вход</InputName>
+          <InputName>Item5</InputName>
+        </Inputs>
+      </Item>
+    </Items>
+    <Panes>
+      <Pane SizePct="70" Name="Main" Visible="true" HideLegend="false" MaxPaneSide="LEFT">
+        <GraphsList>
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="255" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="Source1" />
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="SOLID" Color="-6815694" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="ema1" />
+          <Graph ListStyle="LINE" CandleStyle="BAR_CANDLE" LineStyle="DASH" Color="-16737219" AltColor="0" Opacity="0" PaneSide="RIGHT" Visible="true" SourceName="ema2" />
+        </GraphsList>
+      </Pane>
+    </Panes>
+  </Template>
+  <SharpSources />
+  <Mappings>
+    <Sources>
+      <Source DataSourceName="Transaq" SecurityId="GAZP:1" Name="Source1">
+        <Records />
+      </Source>
+    </Sources>
+    <Parameters>
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="ema1" CodeName="ema1_Period" Visible="true" UsedInOptimization="false" Value="20" MinValue="10" MaxValue="100" Step="5" />
+      <Parameter xsi:type="OptimData" Name="Период" ItemName="ema2" CodeName="ema2_Period" Visible="true" UsedInOptimization="false" Value="10" MinValue="10" MaxValue="100" Step="5" />
+      <Parameter xsi:type="OptimData" Name="Стоп лосс" ItemName="Item5" CodeName="Item5_StopLoss" Visible="true" UsedInOptimization="false" Value="1.5" MinValue="0.1" MaxValue="5" Step="0.1" />
+      <Parameter xsi:type="OptimData" Name="Вкл. трейл" ItemName="Item5" CodeName="Item5_TrailEnable" Visible="true" UsedInOptimization="false" Value="0.5" MinValue="0.1" MaxValue="3" Step="0.1" />
+      <Parameter xsi:type="OptimData" Name="Трейл лосс" ItemName="Item5" CodeName="Item5_TrailLoss" Visible="true" UsedInOptimization="false" Value="0.5" MinValue="0.1" MaxValue="3" Step="0.1" />
+    </Parameters>
+  </Mappings>
+  <Iterations>2000</Iterations>
+  <OptParametersRecords />
+</GraphViewData>

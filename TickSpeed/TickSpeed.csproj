@@ -87,10 +87,12 @@
     <Compile Include="swtden6.cs" />
     <Compile Include="swtden7.cs" />
     <Compile Include="Tacc.cs" />
+    <Compile Include="DeltaCandle.cs" />
     <Compile Include="TickCandle.cs" />
     <Compile Include="TSpeed.cs" />
     <Compile Include="V2\Ts2.cs" />
     <Compile Include="Vacc.cs" />
+    <Compile Include="VolTickOscMultSpeed.cs" />
     <Compile Include="VolTickOscShib.cs" />
     <Compile Include="VolTickOscMult.cs" />
     <Compile Include="VolTickOscCtx.cs" />
