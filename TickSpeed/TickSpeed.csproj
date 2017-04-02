@@ -72,6 +72,10 @@
   <ItemGroup>
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
+    <Compile Include="CumVolumeSell.cs" />
+    <Compile Include="CumVolumeBuy.cs" />
+    <Compile Include="CumTickSell.cs" />
+    <Compile Include="CumTickBuy.cs" />
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="DeltaVolume.cs" />
