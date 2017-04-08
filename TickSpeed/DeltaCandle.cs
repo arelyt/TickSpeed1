@@ -21,19 +21,21 @@ namespace TickSpeed
         //        [HandlerParameter(Name = "Полный расчет", Default = "false", NotOptimized = true)]
         //        public bool CalcFullCandle { get; set; }
 
-        public ISecurity Execute(ISecurity sec)
+        public ISecurity Execute(ISecurity sec, IContext context)
         {
             if (sec.IntervalBase.ToString() != "TICKS" || sec.Interval.ToString() != "1")
+            {
                 throw new Exception("Base Interval wrong. Please set to Ticks 1");
+            }
 
             //var cache = ctx.LoadObject("TickCandle");
             //if (cache==null)
             //{
-                
+
 
             //} 
             // Главный цикл по тикам с шагом Step
-            var tickcount = sec.Bars.Count;
+            var tickcount = context.BarsCount;
             var values = new double[tickcount];
             for (var i = 0; i < tickcount; i += Step)
             {

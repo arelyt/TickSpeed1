@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TickSpeed</RootNamespace>
     <AssemblyName>TickSpeed</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -97,6 +97,7 @@
     <Compile Include="TSpeed.cs" />
     <Compile Include="V2\Ts2.cs" />
     <Compile Include="Vacc.cs" />
+    <Compile Include="VolTickOscFilterVol.cs" />
     <Compile Include="VolTickOscMultSpeed.cs" />
     <Compile Include="VolTickOscShib.cs" />
     <Compile Include="VolTickOscMult.cs" />
