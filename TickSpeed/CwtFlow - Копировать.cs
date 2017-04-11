@@ -16,13 +16,13 @@ namespace TickSpeed
         }
 
         [HandlerParameter(true, "0.01", Name = "LowFreq", Max = "0.5", Min = "0.0001", Step = "0.0001", NotOptimized = false)]
-        public int LFreq { get; set; }
+        public double LFreq { get; set; }
 
         [HandlerParameter(true, "0.03", Name = "HighFreq", Max = "0.5", Min = "0.0001", Step = "0.0001", NotOptimized = false)]
-        public int HFreq { get; set; }
+        public double HFreq { get; set; }
 
         [HandlerParameter(true, "1", Name = "SampleFreq", Max = "100", Min = "1", Step = "1", NotOptimized = false)]
-        public int SamplingFreq { get; set; }
+        public double SamplingFreq { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
