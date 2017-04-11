@@ -33,9 +33,21 @@ namespace TickSpeed
                     {
                         valueVolBuy += t.Direction.ToString() == "Buy" ? trd.Quantity : 0;
                     }
+                    else
+                    {
+                        valueVolBuy += t.Direction.ToString() == "Buy" ? Size : 0;
+                    }
                     
                     valueTickSell += t.Direction.ToString() == "Sell" ? 1 : 0;
-                    valueVolSell += t.Direction.ToString() == "Sell" ? trd.Quantity : 0;
+                    if (t.Direction.ToString() == "Sell" && trd.Quantity < Size)
+                    {
+                        valueVolSell += t.Direction.ToString() == "Sell" ? trd.Quantity : 0;
+                    }
+                    else
+                    {
+                        valueVolSell += t.Direction.ToString() == "Sell" ? Size : 0;
+                    }
+                    
                 }
                 // Считаем осциллятор
 
