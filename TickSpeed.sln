@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TickSpeed", "TickSpeed\TickSpeed.csproj", "{AEA9E955-C2AE-4484-A7EB-B28941EFED74}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B3F2814-B844-491B-A5AF-792EF0C8F829}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\..\temp\CWTFlow.m = ..\..\..\..\..\temp\CWTFlow.m
 		..\..\..\..\PycharmProjects\TestPandas\func_denoise_sw1d_1_auto.m = ..\..\..\..\PycharmProjects\TestPandas\func_denoise_sw1d_1_auto.m
 		TestMatlab.tscript = TestMatlab.tscript
 		tickcandles.xml = tickcandles.xml
 		tickcandles1.xml = tickcandles1.xml
 		VTO_test_EMA.tscript = VTO_test_EMA.tscript
+		..\..\..\..\..\temp\WSSTFlow.m = ..\..\..\..\..\temp\WSSTFlow.m
 	EndProjectSection
 EndProject
 Global
