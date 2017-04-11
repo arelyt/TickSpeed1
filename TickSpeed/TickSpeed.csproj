@@ -78,7 +78,7 @@
     <Compile Include="CumTickBuy.cs" />
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
-    <Compile Include="CwtFlow - Копировать.cs" />
+    <Compile Include="WsstFlow.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Differ.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

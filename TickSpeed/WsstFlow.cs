@@ -12,7 +12,7 @@ namespace TickSpeed
     {
         public interface ICwtDen
         {
-            double[] WsstFlow(double[] in1, double in2, double in3, double in4);
+            double[] WSSTFlow(double[] in1, double in2, double in3, double in4);
         }
 
         [HandlerParameter(true, "0.01", Name = "LowFreq", Max = "0.5", Min = "0.0001", Step = "0.0001", NotOptimized = false)]
@@ -39,7 +39,7 @@ namespace TickSpeed
             try
             {
                 ICwtDen sigDen = client.CreateProxy<ICwtDen>(new Uri("http://localhost:9910/WSSTFlow_dep"));
-                result = sigDen.WsstFlow(values, LFreq, HFreq, SamplingFreq);
+                result = sigDen.WSSTFlow(values, LFreq, HFreq, SamplingFreq);
             }
             catch (MATLABException)
             {
