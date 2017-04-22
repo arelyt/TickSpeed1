@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Markup;
 using TSLab.Script;
 
 namespace TickSpeed.V2
@@ -77,6 +79,29 @@ namespace TickSpeed.V2
 
 
 
+            return values;
+        }
+
+        //Метод для слайсинга ОТО с шагом Step
+        public double[] vto_step(ISecurity scr, int in1)
+        {
+            var count = Convert.ToInt32(scr.Bars.Count / in1);
+            var values = new double[count];
+            for (var i = 0; i < count-1; i+=in1)
+            {
+                double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
+                var t = scr.GetTradesPerBar(i, i + in1 - 1);
+                for(var j =0; j < t.Count; i++)
+                {
+                    valueTickBuy += t[j][0].Direction.ToString() == "Buy" ? 1 : 0;
+                    valueVolBuy += t[j][0].Direction.ToString() == "Buy" ? t[j][0].Quantity : 0;
+                    valueTickSell += t[j][0].Direction.ToString() == "Sell" ? 1 : 0;
+                    valueVolSell += t[j][0].Direction.ToString() == "Sell" ? t[j][0].Quantity : 0;
+
+                }
+                values[i] = (valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell) *
+                            (valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell);
+            }
             return values;
         }
 
