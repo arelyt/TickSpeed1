@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,6 +80,8 @@
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="MovCumVTO.cs" />
+    <Compile Include="V2\LoadTickGlobal.cs" />
+    <Compile Include="V2\StoreTickGlobal.cs" />
     <Compile Include="WsstFlow.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Differ.cs" />

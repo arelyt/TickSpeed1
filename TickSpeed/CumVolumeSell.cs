@@ -8,7 +8,9 @@ namespace TickSpeed
 {
     // Индикатор накопительной суммы объема продаж.
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("CumVolumeSell")]
+#pragma warning restore 612
     public class CumVolumeSell : IBar2DoubleHandler
     {
         public IList<double> Execute(ISecurity security)
