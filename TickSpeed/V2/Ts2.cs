@@ -72,7 +72,7 @@ namespace TickSpeed.V2
     public class Ts2Class
     {
         //private double nB, nS, vB, vS;
-        public static IList<Ts2> Execute(ISecurity sec)
+        public static IList<Ts2> Execute(ISecurity sec, int in1)
         {
             var count = sec.Bars.Count;
             var values = new Ts2[count];
