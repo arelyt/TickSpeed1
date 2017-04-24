@@ -32,10 +32,12 @@ namespace TickSpeed.V2
         {
             var count = Convert.ToInt32(ctx.BarsCount / in1);
             var values = new double[count];
-            for (var i = 0; i < count - 1; i += in1)
+            var j = 0;
+            for (var i = 0; i < (count)*Step ; i += in1)
             {
                 double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
                 var t = scr.GetTradesPerBar(i, i + in1 - 1);
+                
                 foreach (var trades in t)
                 {
                     valueTickBuy += trades[0].Direction.ToString() == "Buy" ? 1 : 0;
@@ -44,8 +46,17 @@ namespace TickSpeed.V2
                     valueVolSell += trades[0].Direction.ToString() == "Sell" ? trades[0].Quantity : 0;
 
                 }
-                values[i] = (valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell) *
-                            (valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell);
+
+                //values[j] = (valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell) *
+                //            (valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell);
+
+                values[j] = (valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell);
+
+                //values[j] = ((valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell)) *
+                //           Math.Abs((valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell));
+            
+                j++;
             }
             return values;
         }

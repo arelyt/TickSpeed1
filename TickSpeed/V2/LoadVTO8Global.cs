@@ -19,19 +19,24 @@ namespace TickSpeed.V2
             var cache = ctx.LoadGlobalObject("VTO8");
 
             var vtoGlobal = (double[])cache;
+            Interval interval = new Interval(Step, DataIntervals.TICK);
+            var comp = sec.CompressTo(interval);
             //var comp = sec.CompressTo(new Interval(Step * sec.Interval, sec.IntervalBase));
-            var vto8 = sec.Decompress(vtoGlobal);
+            var vto8 = comp.Decompress(vtoGlobal);
 
 
             // вывод тиков инструмента на первую панель
             IGraphPane mainPane = ctx.CreateGraphPane("Главная", null);
             mainPane.Visible = true;
             mainPane.HideLegend = false;
+            
 
             var color = new Color(System.Drawing.Color.Blue.ToArgb());
-            var lst = mainPane.AddList("VTO", "vto8", vto8, ListStyles.LINE_WO_ZERO ,  color, LineStyles.SOLID, PaneSides.RIGHT);
+            var lst = mainPane.AddList("VTO", "vto8", vto8, ListStyles.LINE,  color, LineStyles.SOLID, PaneSides.LEFT);
+            var color1 = new Color(System.Drawing.Color.Green.ToArgb());
+            mainPane.AddList("Tick", "tt", sec, CandleStyles.CANDLE_AND_QUEUE, color1, PaneSides.RIGHT);
+            mainPane.UpdatePrecision(PaneSides.LEFT, 2);
 
-                
 
         }
     }
