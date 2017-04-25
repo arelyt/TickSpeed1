@@ -1,55 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
-namespace TickSpeed.V2
+namespace TickSpeed
 {
-    public class StoreMoveVtoGlobal : IExternalScript
+    // Объемно-тиковый осциллятор.
+    [HandlerCategory("Arelyt")]
+#pragma warning disable 612
+    [HandlerName("MoveVTO")]
+#pragma warning restore 612
+    public class MoveVtoGlobal : IBar2DoubleHandler
     {
-        public int Step = 128;
-        public int Win = 1024;
-        public void Execute(IContext ctx, ISecurity sec)
+        public IContext Context { set; private get; }
+
+        [HandlerParameter(Name = "Period", Default = "128", NotOptimized = true)]
+        public int Step { get; set; }
+        [HandlerParameter(Name = "Window", Default = "1024", NotOptimized = true)]
+        public int Win { get; set; }
+
+        public IList<double> Execute(ISecurity sec)
         {
 
             if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
                 throw new Exception("Base Interval wrong. Please set to Tick 1");
 
-
-            double[] vto16 = vto_step(sec, ctx, Step);
-
-
-            //var cache = ctx.LoadGlobalObject("TickPrice");
-            //var price = new double[ctx.BarsCount];
-            //for (var i = 0; i < ctx.BarsCount; i++)
-            //{
-            //   //var t = sec.GetTrades(i);
-            //    price[i] = sec.GetTrades(i)[0].Price;
-            //}
-            
-            ctx.StoreGlobalObject("VTO16", vto16);
-
-            // вывод тиков инструмента на первую панель
-            IGraphPane mainPane = ctx.CreateGraphPane("Главная", null);
-            mainPane.Visible = true;
-            mainPane.HideLegend = false;
-
-
-            var color = new Color(System.Drawing.Color.Blue.ToArgb());
-            var lst = mainPane.AddList("VTO", "vto16", vto16, ListStyles.LINE, color, LineStyles.SOLID, PaneSides.LEFT);
-            var color1 = new Color(System.Drawing.Color.Green.ToArgb());
-            mainPane.AddList("Tick", "tt", sec, CandleStyles.CANDLE_AND_QUEUE, color1, PaneSides.RIGHT);
-            mainPane.UpdatePrecision(PaneSides.LEFT, 2);
-
-        }
-        public double[] vto_step(ISecurity scr, IContext ctx, int in1)
-        {
-            var count = ctx.BarsCount;
+         
+            var count = Context.BarsCount;
             var values = new double[count];
             var j = count-Win;
             for (var i = count-Win; i < count -1 ; i++)
             {
                 double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
-                var t = scr.GetTradesPerBar(i-Step, i-1);
+                var t = sec.GetTradesPerBar(i-Step, i-1);
                 
                 foreach (var trades in t)
                 {

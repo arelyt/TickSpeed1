@@ -80,6 +80,7 @@
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="MovCumVTO.cs" />
+    <Compile Include="MoveVtoGlobal.cs" />
     <Compile Include="V2\LoadVTO8Global.cs" />
     <Compile Include="V2\LoadTickGlobal.cs" />
     <Compile Include="V2\StoreMoveVtoGlobal.cs" />
