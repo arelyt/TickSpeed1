@@ -18,8 +18,10 @@ namespace TickSpeed
         public int Step { get; set; }
         [HandlerParameter(Name = "Window", Default = "1024", NotOptimized = true)]
         public int Win { get; set; }
-        [HandlerParameter(Name = "FilterVol", Default = "0", NotOptimized = true)]
-        public int Filter { get; set; }
+        [HandlerParameter(Name = "FilterTop", Default = "0", NotOptimized = true)]
+        public int FilterTop { get; set; }
+        [HandlerParameter(Name = "FilterBott", Default = "0", NotOptimized = true)]
+        public int FilterBott { get; set; }
 
         public IList<double> Execute(ISecurity sec)
         {
@@ -38,10 +40,10 @@ namespace TickSpeed
                 
                 foreach (var trades in t)
                 {
-                    valueTickBuy += trades[0].Direction.ToString() == "Buy" ? 1 : 0;
-                    valueVolBuy += trades[0].Direction.ToString() == "Buy" && trades[0].Quantity > Filter ? trades[0].Quantity : 0;
-                    valueTickSell += trades[0].Direction.ToString() == "Sell" ? 1 : 0;
-                    valueVolSell += trades[0].Direction.ToString() == "Sell" && trades[0].Quantity > Filter ? trades[0].Quantity : 0;
+                    valueTickBuy += trades[0].Direction.ToString() == "Buy" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? 1 : 0;
+                    valueVolBuy += trades[0].Direction.ToString() == "Buy" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? trades[0].Quantity : 0;
+                    valueTickSell += trades[0].Direction.ToString() == "Sell" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? 1 : 0;
+                    valueVolSell += trades[0].Direction.ToString() == "Sell" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? trades[0].Quantity : 0;
 
                 }
 
