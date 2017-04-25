@@ -10,9 +10,9 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("MoveVTO")]
 #pragma warning restore 612
-    public class MoveVtoGlobal : IBar2DoubleHandler
+    public class MoveVtoGlobal : IOneSourceHandler, ISecurityInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
-        public IContext Context { set; private get; }
+        public IContext Context { set; get ; }
 
         [HandlerParameter(Name = "Period", Default = "128", NotOptimized = true)]
         public int Step { get; set; }
@@ -23,12 +23,12 @@ namespace TickSpeed
 
         public IList<double> Execute(ISecurity sec)
         {
-
+            var ctx = Context;
             if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
                 throw new Exception("Base Interval wrong. Please set to Tick 1");
 
          
-            var count = Context.BarsCount;
+            var count = ctx.BarsCount;
             var values = new double[count];
             var j = count-Win;
             for (var i = count-Win; i < count -1 ; i++)
@@ -48,11 +48,11 @@ namespace TickSpeed
                 //values[j] = (valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell) *
                 //            (valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell);
 
-                values[j] = (valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell);
+                //values[j] = (valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
+                //            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell);
 
-                //values[j] = ((valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell)) *
-                //           Math.Abs((valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell));
+                values[j] = ((valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell)) *
+                            Math.Abs((valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell));
             
                 j++;
             }
