@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\</OutputPath>
+    <OutputPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -79,11 +79,13 @@
     <Compile Include="CumTickBuy.cs" />
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
+    <Compile Include="StoreGlobalBoolSec.cs" />
     <Compile Include="MovCumVTO.cs" />
     <Compile Include="MoveVtoGlobal.cs" />
     <Compile Include="V2\LoadVTO8Global.cs" />
     <Compile Include="V2\LoadTickGlobal.cs" />
     <Compile Include="V2\StoreMoveVtoGlobal.cs" />
+    <Compile Include="V2\FirstTickGlobal.cs" />
     <Compile Include="V2\StoreVtoGlobal.cs" />
     <Compile Include="V2\StoreTickGlobal.cs" />
     <Compile Include="WsstFlow.cs" />
