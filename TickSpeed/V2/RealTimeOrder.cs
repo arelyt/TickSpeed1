@@ -18,7 +18,11 @@ namespace TickSpeed.V2
             }
             var buyFlag = (bool) ctx.LoadGlobalObject("SiM7_Buy");
             var sellFlag = (bool)ctx.LoadGlobalObject("SiM7_Sell");
-
+            if (buyFlag)
+            {
+                var fixsignal = true;
+                var fixbarnumber = rtSec.Bars.Count;
+            }
             // Скрипт торговли
             // 
             var currPos = 0D;
@@ -36,17 +40,22 @@ namespace TickSpeed.V2
                     {
                         currPos += (order.Quantity - order.RestQuantity);
                         ctx.Log("Позиция ==");
-                        rtSec.NewOrder(OrderType.Limit, false, (double)rtSec.FinInfo.Ask + 3, 1, "LX");
+                        rtSec.NewOrder(OrderType.Limit, false, (double)rtSec.FinInfo.Ask + 1, 1, "LX");
                     }
                 }
             if (buyFlag && !rtSec.HasActiveOrders)
             {
                 // Выставим новый ордер на покупку.
-                rtSec.NewOrder(OrderType.Limit, true, (double)rtSec.FinInfo.Bid - 3, 1, "LE");
+                rtSec.NewOrder(OrderType.Limit, true, (double)rtSec.FinInfo.Bid - 1, 1, "LE");
             }
 
-                
-            
+            // вывод тиков инструмента на первую панель
+            IGraphPane mainPane = ctx.CreateGraphPane("Главная", null);
+            mainPane.Visible = true;
+            mainPane.HideLegend = false;
+            var color1 = new Color(System.Drawing.Color.Green.ToArgb());
+            mainPane.AddList("Tick", "tt", sec, CandleStyles.CANDLE_AND_QUEUE, color1, PaneSides.RIGHT);
+
         }
     }
 }
