@@ -87,6 +87,7 @@
     <Compile Include="V2\LoadVTO8Global.cs" />
     <Compile Include="V2\LoadTickGlobal.cs" />
     <Compile Include="V2\StoreMoveVtoGlobal.cs" />
+    <Compile Include="V2\RealTimeOrder.cs" />
     <Compile Include="V2\StoreVtoGlobal.cs" />
     <Compile Include="V2\StoreTickGlobal.cs" />
     <Compile Include="WsstFlow.cs" />
