@@ -79,7 +79,8 @@
     <Compile Include="CumTickBuy.cs" />
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
-    <Compile Include="LoadGlobalBoolSec.cs" />
+    <Compile Include="LoadGlobalBoolSell.cs" />
+    <Compile Include="LoadGlobalBoolBuy.cs" />
     <Compile Include="StoreGlobalBoolSec.cs" />
     <Compile Include="MovCumVTO.cs" />
     <Compile Include="MoveVtoGlobal.cs" />
