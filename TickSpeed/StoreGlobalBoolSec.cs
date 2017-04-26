@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TSLab.Script.Handlers;
 
 namespace TickSpeed
@@ -17,11 +18,12 @@ namespace TickSpeed
     public class StoreGlobalBoolSec : IContextUses, IDoubleInputs, IBooleanReturns
     {
         public IContext Context { get; set; }
-        public bool Execute(IList<double> myD)
+        public IList<bool> Execute(IList<double> myD)
         {
             var count = myD.Count;
-            var values = myD[count] > myD[count - 1] && myD[count - 1] < myD[count - 2];
-            Context.StoreGlobalObject("SiM7_Buy", values);
+            var values = new bool[count];
+            values[count] = myD[count] > myD[count - 1] && myD[count - 1] < myD[count - 2];
+            Context.StoreGlobalObject("SiM7_Buy", values[count]);
             return values;
         }
 
