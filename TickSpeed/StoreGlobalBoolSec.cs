@@ -22,6 +22,10 @@ namespace TickSpeed
             var ctx = Context;
             var count = myD.Count;
             var values = new double[count];
+            if (count == 0)
+            {
+                return values;
+            }
             var signalBuy = myD[count-1] > myD[count - 2] && myD[count - 2] < myD[count - 3];
             var signalSell = myD[count - 1] < myD[count - 2] && myD[count - 2] > myD[count - 3];
             ctx.StoreGlobalObject("SiM7_Buy", signalBuy);
