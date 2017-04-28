@@ -11,7 +11,9 @@ namespace TickSpeed
 
 
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("SWTFull")]
+#pragma warning restore 612
     public class SwtFullClass : IDouble2DoubleHandler
     {
         //public IContext Context { set; get; }
@@ -119,6 +121,11 @@ namespace TickSpeed
             var count = myDoubles.Count;
             var result = new double[count];
             var values = new double[count];
+            if (count == 0)
+            {
+                return result;
+            }
+
             for (var i = 0; i < count; i++)
             {
                 values[i] = myDoubles[i];
