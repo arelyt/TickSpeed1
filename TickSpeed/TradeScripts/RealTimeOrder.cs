@@ -3,7 +3,7 @@ using TSLab.Script;
 using TSLab.Script.Handlers;
 using TSLab.Script.Realtime;
 
-namespace TickSpeed.V2
+namespace TickSpeed.TradeScripts
 {
     // Скрипт демонстрирует использование интерфейса ISecurityRt для работы с ордерами.
     public class RealtimeOrder : IExternalScript
