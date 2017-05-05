@@ -16,7 +16,7 @@ namespace TickSpeed
     [HandlerName("StoreBool")]
 #pragma warning restore 612
 
-    public class StoreGlobalBoolSec : IContextUses, IOneSourceHandler
+    public class StoreGlobalBoolSec : IContextUses, IOneSourceHandler, IDoubleInputs
     {
         public IContext Context { get; set; }
         public IList<double> Execute(ISecurity sec, IList<double> myD, IList<double> myD1)
