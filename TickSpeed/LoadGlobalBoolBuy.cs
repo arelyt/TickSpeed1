@@ -11,7 +11,7 @@ namespace TickSpeed
 
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("LoadBoolBuy")]
+    [HandlerName("LoadBoolBuyTSpeed")]
 #pragma warning restore 612
 
     public class LoadGlobalBoolBuy : IBar2BoolHandler, IContextUses
@@ -20,7 +20,7 @@ namespace TickSpeed
         public bool Execute(ISecurity sec, int barNum)
         {
             var ctx = Context;
-            var values = (bool)ctx.LoadGlobalObject("SiM7_Buy");
+            var values = (bool)ctx.LoadGlobalObject("SiM7TICK16TSpeed_Buy");
             return values;
         }
 

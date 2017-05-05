@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -16,7 +15,10 @@ namespace TickSpeed
     [HandlerName("StoreBool")]
 #pragma warning restore 612
 
-    public class StoreGlobalBoolSec : IContextUses, IOneSourceHandler, IDoubleInputs
+    public class StoreGlobalBoolSec : IThreeSourcesHandler,
+                                      ISecurityInput0, IDoubleInput1,
+                                      IDoubleInput2, IDoubleReturns,
+                                      IStreamHandler, IContextUses
     {
         public IContext Context { get; set; }
         public IList<double> Execute(ISecurity sec, IList<double> myD, IList<double> myD1)
@@ -32,8 +34,8 @@ namespace TickSpeed
             }
             var signalBuySWT = myD[count-1] > myD[count - 2] && myD[count - 2] < myD[count - 3];
             var signalSellSWT = myD[count - 1] < myD[count - 2] && myD[count - 2] > myD[count - 3];
-            var signalBuyTSpeed = myD1[count1] < 0 && myD1[count1 - 1] > 0;
-            var signalSellTSpeed = myD1[count1] > 0 && myD1[count1 - 1] < 0;
+            var signalBuyTSpeed = myD1[count1 -1 ] > 0 && myD1[count1 - 2] < 0;
+            var signalSellTSpeed = myD1[count1 -1] < 0 && myD1[count1 - 2] > 0;
             ctx.StoreGlobalObject(header + "SWT_Buy", signalBuySWT);
             ctx.StoreGlobalObject(header + "SWT_Sell", signalSellSWT);
             ctx.StoreGlobalObject(header + "TSpeed_Buy", signalBuyTSpeed);
