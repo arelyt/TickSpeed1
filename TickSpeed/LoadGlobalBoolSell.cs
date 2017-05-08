@@ -1,4 +1,5 @@
-﻿using TSLab.Script;
+﻿using System.Collections.Generic;
+using TSLab.Script;
 using TSLab.Script.Handlers;
 
 namespace TickSpeed
@@ -14,13 +15,15 @@ namespace TickSpeed
     [HandlerName("LoadBoolSellTSpeed")]
 #pragma warning restore 612
 
-    public class LoadGlobalBoolSell : IBar2BoolHandler, IContextUses
+    public class LoadGlobalBoolSell : IOneSourceHandler, IContextUses,
+                                        IStreamHandler, IBooleanReturns
     {
         public IContext Context { get; set; }
-        public bool Execute(ISecurity sec, int barNum)
+        public IList<bool> Execute(ISecurity sec)
         {
             var ctx = Context;
-            var values = (bool)ctx.LoadGlobalObject("SiM7TICK16TSpeed_Sell");
+            var values = new bool[ctx.BarsCount];
+            values[ctx.BarsCount-1] = (bool)ctx.LoadGlobalObject("SiM7TICK16TSpeed_Sell");
             return values;
         }
 
