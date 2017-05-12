@@ -83,6 +83,7 @@
     <Compile Include="LoadGlobalBoolSell.cs" />
     <Compile Include="LoadGlobalBoolSellSWT.cs" />
     <Compile Include="LoadGlobalBoolBuy.cs" />
+    <Compile Include="QueueLevels.cs" />
     <Compile Include="StoreGlobalBoolSec.cs" />
     <Compile Include="MovCumVTO.cs" />
     <Compile Include="MoveVtoGlobal.cs" />
