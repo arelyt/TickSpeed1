@@ -94,6 +94,7 @@
     <Compile Include="TradeScripts\RealTimeOrder.cs" />
     <Compile Include="V2\StoreVtoGlobal.cs" />
     <Compile Include="V2\StoreTickGlobal.cs" />
+    <Compile Include="VolTickOscCumul.cs" />
     <Compile Include="WsstFlow.cs" />
     <Compile Include="DeltaVolume.cs" />
     <Compile Include="Differ.cs" />
