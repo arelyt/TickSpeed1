@@ -124,6 +124,10 @@
     <Compile Include="VolTickOscFull.cs" />
     <Compile Include="VolTickOsc.cs" />
     <Compile Include="VSpeed.cs" />
+    <Compile Include="Аск_стакан.cs" />
+    <Compile Include="Аск_стакан_Qty.cs" />
+    <Compile Include="Бид_стакан.cs" />
+    <Compile Include="Бид_стакан_Qty.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
