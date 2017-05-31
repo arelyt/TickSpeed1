@@ -30,7 +30,6 @@ namespace TickSpeed
                 datme[i] = TimeSpan.FromTicks(security.Bars[i].Date.Ticks - security.Bars[i - 1].Date.Ticks).TotalSeconds;
                 foreach (var t in trades)
                 {
-                    var trd = t;
                     valueTickBuy += t.Direction.ToString() == "Buy" ? 1 : 0;
                     valueTickSell += t.Direction.ToString() == "Sell" ? 1 : 0;
                     
