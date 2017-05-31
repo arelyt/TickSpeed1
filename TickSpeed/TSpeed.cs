@@ -19,11 +19,9 @@ namespace TickSpeed
         {
             var count = security.Bars.Count;
             var values = new double[count];
-            if (count == 0)
-            {
-                return values;
-            }
-            
+            if (count < 2)
+                return null;
+
             var datme = new double[count];
             values[0] = 1;
             for (var i = 1; i < count; i++)

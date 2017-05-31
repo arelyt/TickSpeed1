@@ -14,10 +14,10 @@ namespace TickSpeed
         {
             var count = security.Bars.Count;
             var values = new double[count];
-            if (count == 0)
-                return values;
-            
-            
+            if (count < 2)
+                return null;
+
+
             for (var i = 0; i < count; i++)
             {
                 var trades = security.GetTrades(i);
