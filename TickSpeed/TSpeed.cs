@@ -9,7 +9,9 @@ namespace TickSpeed
 {
     // Скорость сделок на покупку/продажу в секунду.
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("TSpeed")]
+#pragma warning restore 612
     public class TspeedClass : IBar2DoubleHandler
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]

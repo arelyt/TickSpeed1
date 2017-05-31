@@ -21,8 +21,8 @@ namespace TickSpeed
             if (count < 2)
                 return null;
 
-
-            for (var i = 0; i < count; i++)
+            values[0] = 1;
+            for (var i = 1; i < count; i++)
             {
                 var trades = security.GetTrades(i);
                 var valueTickBuy  = 0.0;
