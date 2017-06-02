@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\</OutputPath>
+    <OutputPath>..\..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -84,6 +84,7 @@
     <Compile Include="LoadGlobalBoolSellSWT.cs" />
     <Compile Include="LoadGlobalBoolBuy.cs" />
     <Compile Include="QueueLevels.cs" />
+    <Compile Include="Fit.cs" />
     <Compile Include="StoreGlobalBoolSec.cs" />
     <Compile Include="MovCumVTO.cs" />
     <Compile Include="MoveVtoGlobal.cs" />
