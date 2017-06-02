@@ -6,7 +6,9 @@ namespace TickSpeed
 {
     // Объемно-тиковый осциллятор.
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("VTOCumul")]
+#pragma warning restore 612
     public class VolTickOscCumul : IBar2DoubleHandler
     {
         
@@ -15,10 +17,10 @@ namespace TickSpeed
             var count = security.Bars.Count;
             var values = new double[count];
             values[0] = 0.0;
-            if (count == 0)
-                return values;
-            
-            
+            if (count < 2)
+                return null;
+
+
             for (var i = 1; i < count; i++)
             {
                 var trades = security.GetTrades(i);
