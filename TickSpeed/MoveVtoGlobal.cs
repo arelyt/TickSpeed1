@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MoreLinq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -14,8 +15,8 @@ namespace TickSpeed
     {
         public IContext Context { set; get ; }
 
-        [HandlerParameter(Name = "Period", Default = "128", NotOptimized = true)]
-        public int Step { get; set; }
+        //[HandlerParameter(Name = "Period", Default = "16", NotOptimized = true)]
+        //public int Step { get; set; }
         [HandlerParameter(Name = "Window", Default = "1024", NotOptimized = true)]
         public int Win { get; set; }
         [HandlerParameter(Name = "FilterTop", Default = "0", NotOptimized = true)]
@@ -26,37 +27,65 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity sec)
         {
             var ctx = Context;
-            if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
-                throw new Exception("Base Interval wrong. Please set to Tick 1");
+            //if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
+            //    throw new Exception("Base Interval wrong. Please set to Tick 1");
 
          
             var count = ctx.BarsCount;
+            if (count < 2)
+                return null;
+            //var valuesvto = new double[count];
             var values = new double[count];
-            var j = count-Win;
-            for (var i = count-Win; i < count -1 ; i++)
+            var tBuy = new double[count];
+            var tSell = new double[count];
+            var vBuy = new double[count];
+            var vSell = new double[count];
+
+            for (int i = 0; i < Win-1; i++)
             {
-                double valueTickBuy = 0, valueTickSell = 0, valueVolBuy = 0, valueVolSell = 0;
-                var t = sec.GetTradesPerBar(i-Step, i-1);
-                
-                foreach (var trades in t)
-                {
-                    valueTickBuy += trades[0].Direction.ToString() == "Buy" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? 1 : 0;
-                    valueVolBuy += trades[0].Direction.ToString() == "Buy" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? trades[0].Quantity : 0;
-                    valueTickSell += trades[0].Direction.ToString() == "Sell" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? 1 : 0;
-                    valueVolSell += trades[0].Direction.ToString() == "Sell" && trades[0].Quantity >= FilterBott && trades[0].Quantity < FilterTop ? trades[0].Quantity : 0;
+                values[i] = 0;
+            }
+            for (var i = 0; i < count ; i++)
+            {
+                double valueTickBuy  = 0,
+                       valueTickSell = 0,
+                       valueVolBuy   = 0,
+                       valueVolSell  = 0;
+               
+                    var t = sec.GetTrades(i);
 
-                }
+                    foreach (var trades in t)
+                    {
+                        valueTickBuy += trades.Direction.ToString() == "Buy" &&
+                            trades.Quantity >= FilterBott &&
+                            trades.Quantity < FilterTop ? 1 : 0;
+                        valueVolBuy += trades.Direction.ToString() == "Buy" &&
+                            trades.Quantity >= FilterBott &&
+                            trades.Quantity < FilterTop ? trades.Quantity : 0;
+                        valueTickSell += trades.Direction.ToString() == "Sell" &&
+                            trades.Quantity >= FilterBott &&
+                            trades.Quantity < FilterTop ? 1 : 0;
+                        valueVolSell += trades.Direction.ToString() == "Sell" &&
+                            trades.Quantity >= FilterBott &&
+                            trades.Quantity < FilterTop ? trades.Quantity : 0;
 
-                //values[j] = (valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell) *
-                //            (valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell);
+                    }
 
-                //values[j] = (valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                //            (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell);
 
-                values[j] = ((valueTickBuy - valueTickSell) / (valueTickBuy + valueTickSell)) *
-                            Math.Abs((valueVolBuy - valueVolSell) / (valueVolBuy + valueVolSell));
-            
-                j++;
+                tBuy[i] = valueTickBuy;
+                tSell[i] = valueTickSell;
+                vBuy[i] = valueVolBuy;
+                vSell[i] = valueVolSell;
+
+            }
+            var tB = tBuy.Windowed(Win).Select(list => list.Sum()).ToList();
+            var tS = tSell.Windowed(Win).Select(list => list.Sum()).ToList();
+            var vB = vBuy.Windowed(Win).Select(list => list.Sum()).ToList();
+            var vS = vSell.Windowed(Win).Select(list => list.Sum()).ToList();
+            for (int k = Win-1; k < count; k++)
+            {
+               values[k] = (tB[k] * vB[k] - tS[k] * vS[k]) /
+                           (tB[k] * vB[k] + tS[k] * vS[k]); 
             }
             return values;
         }
