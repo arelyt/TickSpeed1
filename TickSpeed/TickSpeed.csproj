@@ -79,6 +79,7 @@
     <Compile Include="CumTickBuy.cs" />
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
+    <Compile Include="Envelope.cs" />
     <Compile Include="LoadGlobalBoolBuySWT.cs" />
     <Compile Include="LoadGlobalBoolSell.cs" />
     <Compile Include="LoadGlobalBoolSellSWT.cs" />

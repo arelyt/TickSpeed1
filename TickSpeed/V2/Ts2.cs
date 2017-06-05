@@ -49,6 +49,13 @@ namespace TickSpeed.V2
         Modwtsqtwolog = 4
     }
 
+    public enum Method
+    {
+        Rms = 0,
+        Analytic = 1,
+        Peak = 2
+    }
+
     public enum Scal
     {
         One = 0,
