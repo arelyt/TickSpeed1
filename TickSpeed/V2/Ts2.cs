@@ -56,6 +56,12 @@ namespace TickSpeed.V2
         Peak = 2
     }
 
+    public enum Boundary
+    {
+        Upper = 0,
+        Lower = 1
+    }
+
     public enum Scal
     {
         One = 0,

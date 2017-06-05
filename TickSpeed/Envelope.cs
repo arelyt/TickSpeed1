@@ -14,7 +14,7 @@ namespace TickSpeed
     {
         public interface IEnvelope
         {
-            double[] envel_auto(double[] in1, double in2, string in3);
+            double[] envel_auto(double[] in1, double in2, string in3, string in4);
         }
 
         [HandlerParameter(Name = "Method", NotOptimized = true)]
@@ -22,6 +22,9 @@ namespace TickSpeed
 
         [HandlerParameter(Name = "Window", Default = "128")]
         public double Win { get; set; }
+
+        [HandlerParameter(Name = "Boundary", NotOptimized = true)]
+        public V2.Boundary Boundary { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -41,6 +44,21 @@ namespace TickSpeed
                     name = "peak";
                     break;
             }
+            string bound;
+            switch (Boundary)
+            {
+                case V2.Boundary.Upper:
+                    bound = "up";
+                    break;
+
+                case V2.Boundary.Lower:
+                    bound = "down";
+                    break;
+                default:
+                    bound = "up";
+                    break;
+                    
+            }
             var count = myDoubles.Count;
             var result = new double[count];
             var values = new double[count];
@@ -55,7 +73,7 @@ namespace TickSpeed
             try
             {
                 IEnvelope sigDen = client.CreateProxy<IEnvelope>(new Uri("http://localhost:9910/envel_auto_dep"));
-                result = sigDen.envel_auto(values, Win, name);
+                result = sigDen.envel_auto(values, Win, name, bound);
             }
             catch (MATLABException)
             {
