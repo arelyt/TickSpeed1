@@ -62,6 +62,13 @@ namespace TickSpeed.V2
         Lower = 1
     }
 
+    public enum Predin
+    {
+        Upper = 0,
+        Values = 1,
+        Lower = 2
+    }
+
     public enum Scal
     {
         One = 0,
