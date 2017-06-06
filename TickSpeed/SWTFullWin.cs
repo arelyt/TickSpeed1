@@ -100,6 +100,8 @@ namespace TickSpeed
             var wName = name + Order.ToString();
             var ctx = Context;
             var count = ctx.BarsCount;
+            if (count < 2)
+                return null;
             // Проверка на последнюю свечу
             if (!ctx.IsLastBarClosed)
                 count--;

@@ -41,7 +41,7 @@ namespace TickSpeed
         //}
 
         [HandlerParameter(Name = "Вейвлет", NotOptimized = true)]
-        public V2.Wavelets Wave { get; set; }
+        public Wavelets Wave { get; set; }
 
         [HandlerParameter(true, "1", Name = "Order")]
         public int Order { get; set; }
@@ -67,10 +67,10 @@ namespace TickSpeed
             string name;
             switch (Wave)
             {
-                case V2.Wavelets.Daubechies:
+                case Wavelets.Daubechies:
                     name = "db";
                     break;
-                case V2.Wavelets.Symlets:
+                case Wavelets.Symlets:
                     name = "sym";
                     break;
                 
@@ -119,6 +119,8 @@ namespace TickSpeed
             var wName = name + Order.ToString();
 
             var count = myDoubles.Count;
+            if (count < 2)
+                return null;
             var result = new double[count];
             var values = new double[count];
             if (count == 0)

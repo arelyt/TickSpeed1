@@ -16,6 +16,8 @@ namespace TickSpeed
             var ctx = Context;
             var aCache = ctx.LoadObject("VTOCtx");
             var count = security.Bars.Count;
+            if (count < 2)
+                return null;
             var values = new double[count];
             var res = new double[count];
             if (aCache == null)

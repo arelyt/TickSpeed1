@@ -16,6 +16,8 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity security)
         {
             var count = security.Bars.Count;
+            if (count < 2)
+                return null;
             var values = new double[count];
             var datme = new double[count];
             if (count < 2)

@@ -36,6 +36,8 @@ namespace TickSpeed
             //} 
             // Главный цикл по тикам с шагом Step
             var tickcount = context.BarsCount;
+            if (tickcount < 2)
+                return null;
             var values = new double[tickcount];
             for (var i = 0; i < tickcount; i += Step)
             {

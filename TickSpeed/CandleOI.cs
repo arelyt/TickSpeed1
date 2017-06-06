@@ -9,7 +9,9 @@ namespace TickSpeed
 {
     // Индюкатор выдает ОИ инструмента как сам инструмент. В итоге видим свечки на графике по ОИ и объемы
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("OI Candles")]
+#pragma warning restore 612
     public class CandleOi : IOneSourceHandler, ISecurityInputs, ISecurityReturns, IStreamHandler, IContextUses
     {
         public IContext Context { set; private get; }
@@ -19,6 +21,9 @@ namespace TickSpeed
 
         public ISecurity Execute(ISecurity sec)
         {
+            var count = sec.Bars.Count;
+            if (count < 2)
+                return null;
             var oiBars = new DataBar[Context.BarsCount];
             oiBars[0] = new DataBar(sec.Bars[0].Date, sec.Bars[1].Interest, sec.Bars[1].Interest, sec.Bars[1].Interest, sec.Bars[1].Interest);
             for (int i = 1; i < Context.BarsCount; i++)

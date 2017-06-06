@@ -60,6 +60,8 @@ namespace TickSpeed
                     
             }
             var count = myDoubles.Count;
+            if (count < 2)
+                return null;
             var result = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)

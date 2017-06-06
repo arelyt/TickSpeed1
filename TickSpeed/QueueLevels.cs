@@ -29,6 +29,8 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity source)
         {
             var cnt = source.Bars.Count;
+            if (cnt < 2)
+                return null;
 
             // Стаканы на покупку и на продажу. Они раздельные.
             var buyQueue = source.GetBuyQueue(cnt - 1);
