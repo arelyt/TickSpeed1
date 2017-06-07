@@ -17,10 +17,10 @@ namespace TickSpeed
             var count = security.Bars.Count;
 
             var values = new double[count];
-            values[0] = 0.0;
+            
             if (count < 2)
                 return null;
-
+            values[0] = 0.0;
 
             for (var i = 1; i < count; i++)
             {
