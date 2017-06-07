@@ -14,7 +14,7 @@ namespace TickSpeed
     {
         public interface ISplineFit
         {
-            double[] Fit1(double[] in1, double in2, double in3);
+            double[] splinefit_auto(double[] in1, double in2, double in3);
         }
         [HandlerParameter(Name = "Breaks", NotOptimized = false)]
         public double Breaks { get; set; }
@@ -38,7 +38,7 @@ namespace TickSpeed
             try
             {
                 ISplineFit sigDen = client.CreateProxy<ISplineFit>(new Uri("http://localhost:9910/splinefit_auto_dep"));
-                result = sigDen.Fit1(values, Breaks, Order);
+                result = sigDen.splinefit_auto(values, Breaks, Order);
             }
             catch (MATLABException)
             {
