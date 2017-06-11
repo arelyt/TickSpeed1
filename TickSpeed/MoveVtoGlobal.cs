@@ -17,11 +17,11 @@ namespace TickSpeed
 
         //[HandlerParameter(Name = "Period", Default = "16", NotOptimized = true)]
         //public int Step { get; set; }
-        [HandlerParameter(Name = "Window", Default = "1024", NotOptimized = true)]
+        [HandlerParameter(Name = "Window", Default = "1024")]
         public int Win { get; set; }
-        [HandlerParameter(Name = "FilterTop", Default = "0", NotOptimized = true)]
+        [HandlerParameter(Name = "FilterTop", Default = "0")]
         public int FilterTop { get; set; }
-        [HandlerParameter(Name = "FilterBott", Default = "0", NotOptimized = true)]
+        [HandlerParameter(Name = "FilterBott", Default = "0")]
         public int FilterBott { get; set; }
 
         public IList<double> Execute(ISecurity sec)
