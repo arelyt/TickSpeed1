@@ -80,6 +80,7 @@
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="Envelope.cs" />
+    <Compile Include="VtoInterpWin.cs" />
     <Compile Include="Sgolay.cs" />
     <Compile Include="SplineFit.cs" />
     <Compile Include="LoadGlobalBoolBuySWT.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="V2\LoadTickGlobal.cs" />
     <Compile Include="V2\StoreMoveVtoGlobal.cs" />
     <Compile Include="TradeScripts\RealTimeOrder.cs" />
+    <Compile Include="V2\TestCounterTicks.cs" />
     <Compile Include="V2\StoreVtoGlobal.cs" />
     <Compile Include="V2\StoreTickGlobal.cs" />
     <Compile Include="TickSpeedOsc.cs" />
