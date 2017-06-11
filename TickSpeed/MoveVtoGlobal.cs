@@ -84,8 +84,8 @@ namespace TickSpeed
             var vS = vSell.Windowed(Win).Select(list => list.Sum()).ToList();
             for (int k = Win-1; k < count; k++)
             {
-               values[k] = (tB[k-Win+1] * vB[k-Win+1] - tS[k-Win+1] * vS[k-Win+1]) /
-                           (tB[k-Win+1] * vB[k-Win+1] + tS[k-Win+1] * vS[k-Win+1]); 
+               values[k] = (vB[k-Win+1]/tB[k - Win + 1] - vS[k-Win+1]/tS[k - Win + 1]) /
+                           (vB[k-Win+1]/tB[k - Win + 1] + vS[k-Win+1]/tS[k - Win + 1]); 
             }
             return values;
         }
