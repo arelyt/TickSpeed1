@@ -19,7 +19,7 @@ namespace TickSpeed
         //public int Step { get; set; }
         [HandlerParameter(Name = "Window", Default = "1024")]
         public int Win { get; set; }
-        [HandlerParameter(Name = "FilterTop", Default = "0")]
+        [HandlerParameter(Name = "FilterTop", Default = "1000")]
         public int FilterTop { get; set; }
         [HandlerParameter(Name = "FilterBott", Default = "0")]
         public int FilterBott { get; set; }
