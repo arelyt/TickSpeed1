@@ -47,10 +47,10 @@ namespace TickSpeed
                     values[i] = 0;
                 else
                 {
-                    values[i] = ((cumTickBuy[i]-cumTickBuy[i-Step])*(cumVolBuy[i] - cumTickBuy[i-Step]) -
-                                 (cumTickSell[i]-cumTickSell[Step])*(cumVolSell[i]-cumVolSell[i-Step])) /
-                                 ((cumTickBuy[i] - cumTickBuy[i - Step]) * (cumVolBuy[i] - cumTickBuy[i - Step]) +
-                                 (cumTickSell[i] - cumTickSell[Step]) * (cumVolSell[i] - cumVolSell[i - Step]));
+                    values[i] = ((cumVolBuy[i] - cumTickBuy[i-Step])/(cumTickBuy[i] - cumTickBuy[i - Step]) -
+                                 (cumVolSell[i]-cumVolSell[i-Step])/(cumTickSell[i] - cumTickSell[Step])) /
+                                 ((cumVolBuy[i] - cumTickBuy[i - Step])/(cumTickBuy[i] - cumTickBuy[i - Step]) +
+                                 (cumVolSell[i] - cumVolSell[i - Step])/(cumTickSell[i] - cumTickSell[Step]));
                 }
             }
             return values;
