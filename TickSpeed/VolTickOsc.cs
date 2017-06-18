@@ -36,8 +36,8 @@ namespace TickSpeed
                 }
                 // Считаем осциллятор
 
-                values[i] = (valueTickBuy * valueVolBuy - valueTickSell * valueVolSell) /
-                                 (valueTickBuy * valueVolBuy + valueTickSell * valueVolSell);
+                values[i] = (valueVolBuy / valueTickBuy - valueVolSell / valueTickSell) /
+                                 (valueVolBuy / valueTickBuy + valueVolSell / valueTickSell);
             }
             return values;
         }
