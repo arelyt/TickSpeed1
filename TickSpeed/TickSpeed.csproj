@@ -80,6 +80,7 @@
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="Envelope.cs" />
+    <Compile Include="VtoInterpWinSeconds.cs" />
     <Compile Include="VtoInterpWin.cs" />
     <Compile Include="Sgolay.cs" />
     <Compile Include="SplineFit.cs" />
