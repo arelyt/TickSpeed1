@@ -26,8 +26,8 @@ namespace TickSpeed
 
         public IList<double> Execute(ISecurity security)
         {
-            if (security.IntervalBase.ToString() != "TICK" || security.Interval.ToString() != "1")
-                throw new Exception("Base Interval wrong. Please set to Tick 1");
+            if (security.IntervalBase.ToString() != "SECONDS" || security.Interval.ToString() != "1")
+                throw new Exception("Base Interval wrong. Please set to Seconds 1");
             var count = security.Bars.Count;
             if (count < 2)
                 return null;
