@@ -15,6 +15,8 @@ namespace TickSpeed
 #pragma warning restore 612
     public class CumDtCwtFlowClass : IBar2DoubleHandler
     {
+        public static double[] Cacheflow;
+
         public interface ICumDtCwtDen
         {
             // ReSharper disable once InconsistentNaming
@@ -30,11 +32,36 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity security)
         {
             var count = security.Bars.Count;
-            if (count < 2)
+            if (count < 5)
                 return null;
-            var result = new double[count];
-            var values = new double[count];
-            for (var i = 0; i < count; i++)
+            //var result = new double[count];
+            
+            if (Cacheflow.Length == 0)
+            {
+
+                var result = Tratata(security, Lborder, Rborder);
+                return result;
+
+            }
+            else
+            {
+                var t = new double[count];
+                for (int i = 0; i < count - 2; i++)
+                {
+                    t[i] = Cacheflow[i + 1];
+                }
+                t[count-1] = Tratata(security, Lborder, Rborder).Last();
+                Cacheflow = t;
+                var result = Cacheflow;
+                return result;
+            }
+            
+        }
+
+        public static double[] Tratata(ISecurity security, int lborder, int rborder)
+        {
+            var values = new double[security.Bars.Count];
+            for (var i = 0; i < security.Bars.Count; i++)
             {
                 var trades = security.GetTrades(i);
                 var valueTickBuy = trades.Count(trd => trd.Direction == TradeDirection.Buy);
@@ -42,14 +69,15 @@ namespace TickSpeed
                 var cumtick = valueTickBuy - valueTickSell;
                 values[i] = values[i - 1] + cumtick;
             }
-            // Начинаем Signal denoising process
+            // Начинаем CWT_ICWT denoising process
 
-            // Wavelet DB3 Level 5
+
             MWClient client = new MWHttpClient();
             try
             {
-                ICumDtCwtDen sigDen = client.CreateProxy<ICumDtCwtDen>(new Uri("http://localhost:9910/CWTFlow_dep"));
-                result = sigDen.CWTFlow(values, Lborder, Rborder);
+                ICumDtCwtDen sigDen =
+                    client.CreateProxy<ICumDtCwtDen>(new Uri("http://localhost:9910/CWTFlow_dep"));
+                values = sigDen.CWTFlow(values, lborder, rborder);
             }
             catch (MATLABException)
             {
@@ -59,7 +87,8 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
-            return result;
+            
+            return values;
         }
     }
 }
