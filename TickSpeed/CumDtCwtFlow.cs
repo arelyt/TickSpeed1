@@ -40,6 +40,7 @@ namespace TickSpeed
             {
 
                 var result = Tratata(security, Lborder, Rborder);
+                Cacheflow = result;
                 return result;
 
             }
