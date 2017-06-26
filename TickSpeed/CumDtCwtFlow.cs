@@ -15,7 +15,7 @@ namespace TickSpeed
 #pragma warning restore 612
     public class CumDtCwtFlowClass : IBar2DoubleHandler
     {
-        public static double[] Cacheflow;
+        public static IList<double> Cacheflow { get; set; }
 
         public interface ICumDtCwtDen
         {
@@ -36,7 +36,7 @@ namespace TickSpeed
                 return null;
             //var result = new double[count];
             
-            if (Cacheflow.Length == 0)
+            if (Cacheflow.Count == 0)
             {
 
                 var result = Tratata(security, Lborder, Rborder);
