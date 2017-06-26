@@ -36,7 +36,7 @@ namespace TickSpeed
                 return null;
             //var result = new double[count];
             
-            if (Cacheflow.Count == 0)
+            if (Cacheflow == null)
             {
 
                 var result = Tratata(security, Lborder, Rborder);
@@ -61,7 +61,8 @@ namespace TickSpeed
         public static double[] Tratata(ISecurity security, int lborder, int rborder)
         {
             var values = new double[security.Bars.Count];
-            for (var i = 0; i < security.Bars.Count; i++)
+            values[0] = 0.0;
+            for (var i = 1; i < security.Bars.Count; i++)
             {
                 var trades = security.GetTrades(i);
                 var valueTickBuy = trades.Count(trd => trd.Direction == TradeDirection.Buy);
