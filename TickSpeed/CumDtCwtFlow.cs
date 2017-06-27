@@ -36,7 +36,7 @@ namespace TickSpeed
                 return null;
             //var result = new double[count];
             
-            if (Cacheflow == null)
+            if (Cacheflow == null || count-Cacheflow.Count > 10)
             {
 
                 var result = Tratata(security, Lborder, Rborder);
