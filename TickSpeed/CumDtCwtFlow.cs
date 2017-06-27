@@ -41,20 +41,28 @@ namespace TickSpeed
 
                 var result = Tratata(security, Lborder, Rborder);
                 Cacheflow = result;
-                return result;
+                return Cacheflow;
 
             }
             else
+
             {
+                var cdiff = count - Cacheflow.Count;
                 var t = new double[count];
-                for (int i = 0; i < count - 2; i++)
+                
+                var result = Tratata(security, Lborder, Rborder);
+                
+                for (int i = 0; i < count - cdiff; i++)
                 {
-                    t[i] = Cacheflow[i + 1];
+                    t[i] = Cacheflow[i + cdiff];
                 }
-                t[count-1] = Tratata(security, Lborder, Rborder).Last();
+                for (int i = count-cdiff; i < count; i++)
+                {
+                    t[i] = result[i];
+                }
+                
                 Cacheflow = t;
-                var result = Cacheflow;
-                return result;
+                return Cacheflow;
             }
             
         }
