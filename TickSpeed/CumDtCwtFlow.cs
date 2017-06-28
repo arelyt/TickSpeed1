@@ -52,9 +52,9 @@ namespace TickSpeed
                 
                 var result = Tratata(security, Lborder, Rborder);
                 
-                for (int i = 0; i < count - 1; i++)
+                for (int i = 0; i < count - 2; i++)
                 {
-                    t[i] = Cacheflow[i];
+                    t[i] = Cacheflow[i+1];
                 }
                 //for (int i = count-cdiff; i < count; i++)
                 //{
