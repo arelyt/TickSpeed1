@@ -65,7 +65,8 @@ namespace TickSpeed
                     
                 //}
                 t[count-1] = result[count-1];
-                Cacheflow = t;
+                Array.Copy(t.ToArray(), Cacheflow.ToArray(), count);
+                Cacheflow = Cacheflow.ToList();
                 return Cacheflow;
             }
             
