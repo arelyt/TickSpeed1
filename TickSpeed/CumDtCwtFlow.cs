@@ -64,7 +64,7 @@ namespace TickSpeed
                 //{
                     
                 //}
-                t[count] = result[count];
+                t[count-1] = result[count-1];
                 Cacheflow = t;
                 return Cacheflow;
             }
