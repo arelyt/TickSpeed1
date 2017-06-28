@@ -54,7 +54,7 @@ namespace TickSpeed
                 
                 for (int i = 0; i < count - 1; i++)
                 {
-                    t[i] = Cacheflow[i + 1];
+                    t[i] = Cacheflow[i];
                 }
                 //for (int i = count-cdiff; i < count; i++)
                 //{
