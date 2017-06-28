@@ -36,7 +36,7 @@ namespace TickSpeed
                 return null;
             //var result = new double[count];
             
-            if (Cacheflow == null || count-Cacheflow.Count > 10)
+            if (Cacheflow == null || count != Cacheflow.Count)
             {
 
                 var result = Tratata(security, Lborder, Rborder);
@@ -47,20 +47,24 @@ namespace TickSpeed
             else
 
             {
-                var cdiff = count - Cacheflow.Count;
+                //var cdiff = count - Cacheflow.Count;
                 var t = new double[count];
                 
                 var result = Tratata(security, Lborder, Rborder);
                 
-                for (int i = 0; i < count - cdiff; i++)
+                for (int i = 0; i < count - 1; i++)
                 {
-                    t[i] = Cacheflow[i + cdiff];
+                    t[i] = Cacheflow[i + 1];
                 }
-                for (int i = count-cdiff; i < count; i++)
-                {
-                    t[i] = result[i];
-                }
-                
+                //for (int i = count-cdiff; i < count; i++)
+                //{
+                //    t[i] = result[i];
+                //}
+                //for (int i = 0; i < UPPER; i++)
+                //{
+                    
+                //}
+                t[count] = result[count];
                 Cacheflow = t;
                 return Cacheflow;
             }
