@@ -15,6 +15,7 @@ namespace TickSpeed
 #pragma warning restore 612
     public class CumDtCwtFlowClass : IBar2DoubleHandler
     {
+
         public static IList<double> Cacheflow { get; set; }
 
         public interface ICumDtCwtDen
@@ -75,6 +76,7 @@ namespace TickSpeed
         public static double[] Tratata(ISecurity security, int lborder, int rborder)
         {
             var values = new double[security.Bars.Count];
+            var ticks = new double[security.Bars.Count];
             values[0] = 0.0;
             for (var i = 1; i < security.Bars.Count; i++)
             {
@@ -83,7 +85,9 @@ namespace TickSpeed
                 var valueTickSell = trades.Count(trd => trd.Direction == TradeDirection.Sell);
                 var cumtick = valueTickBuy - valueTickSell;
                 values[i] = values[i - 1] + cumtick;
+                ticks[i] = security.Bars[i].Date.Ticks;
             }
+
             // Начинаем CWT_ICWT denoising process
 
 
@@ -105,5 +109,7 @@ namespace TickSpeed
             
             return values;
         }
+
+        
     }
 }
