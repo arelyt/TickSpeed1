@@ -10,9 +10,9 @@ namespace TickSpeed
     // Объемно-тиковый осциллятор.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("CumDTCWTFlow")]
+    [HandlerName("CumDTCWTFlow1")]
 #pragma warning restore 612
-    public class CumDtCwtFlow1Class :  IDoubleInputs, IValuesHandlerWithNumber, IContextUses
+    public class CumDtCwtFlow1Class : ITwoSourcesHandler, IDoubleInputs, IDoubleReturns, IValuesHandlerWithNumber, IContextUses
     {
         private double[] _data;
         public static IList<double> Cacheflow { get; set; }
