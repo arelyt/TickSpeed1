@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script.Handlers;
-using MoreLinq;
 using MathWorks.MATLAB.ProductionServer.Client;
 
 namespace TickSpeed
@@ -12,7 +11,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("CumDTCWTFlow1")]
 #pragma warning restore 612
-    public class CumDtCwtFlow1Class : ITwoSourcesHandler, IDoubleInputs, IDoubleReturns, IValuesHandlerWithNumber, IContextUses
+    public class CumDtCwtFlow1Class : IDoubleInputs, IDoubleReturns, IValuesHandlerWithNumber, IContextUses
     {
         private double[] _data;
         public static IList<double> Cacheflow { get; set; }
@@ -28,19 +27,19 @@ namespace TickSpeed
         public int Rborder { get; set; }
         [HandlerParameter(true, "1024", Name = "Win", Max = "4096", Min = "256", Step = "1", NotOptimized = false)]
         public int Win { get; set; }
-        public IContext Context { set => throw new NotImplementedException(); }
+        public IContext Context { get; set; }
 
-        public double Execute(double ctd, int barNum, IContext ctx)
+        public double Execute(double ctd, int barNum)
         {
-            var count = ctx.BarsCount;
             if (_data == null)
-                _data = new double[ctx.BarsCount];
+                _data = new double[Context.BarsCount];
 
             _data[barNum] = ctd;
-            if (count < Win)
+            if (barNum < Win-1)
                 return 0;
-            var dt = _data.TakeLast(Win).ToArray();
-
+            //var dt = _data.TakeLast(Win).ToArray();
+            var start = Math.Max(barNum - Win + 1, 0);
+            var dt = _data.Skip(start).Take(Win).ToArray();
             return Execute(dt);
         }
 
