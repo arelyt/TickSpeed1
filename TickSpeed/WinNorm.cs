@@ -7,6 +7,7 @@ namespace TickSpeed
 {
     // Скользящее нормализованное окно накопительной дельты
 #pragma warning disable 612
+    [HandlerCategory("Arelyt")]
     [HandlerName("WinNorm")]
 #pragma warning restore 612
     public class WinNormClass : IDouble2DoubleHandler
@@ -15,7 +16,7 @@ namespace TickSpeed
         public int Win { get; set; }
 
         [HandlerParameter(true, "0.5", Name = "K")]
-        public int K { get; set; }
+        public double K { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -25,17 +26,17 @@ namespace TickSpeed
             var values = new double[count]; // values result
             for (int i = 0; i < Win - 1; i++)
             {
-                values[i] = myDoubles[i];
+                values[i] = 0.0;//myDoubles[i];
             }
             for (int i = Win - 1; i < count; i++)
             {
-                //var start = Math.Max(i - Win + 1, 0);
-                var w = myDoubles.Take(Win).ToArray();
-                var bs = (w.Max() + w.Min()) / 2;
+                var start = Math.Max(i - Win + 1, 0);
+                var w = myDoubles.Skip(start).Take(Win).ToArray();
+                //var bs = (w.Max() + w.Min()) / 2;
 
-                values[i] = (Math.Exp(-K * (myDoubles[i] - bs)) - 1) /
-                            (Math.Exp(-K * (myDoubles[i] - bs)) + 1);
-
+                //values[i] = (Math.Exp(K * (myDoubles[i] - bs)) - 1) /
+                //            (Math.Exp(K * (myDoubles[i] - bs)) + 1);
+                values[i] = 2.0*(myDoubles[i] - w.Min())/(w.Max() - w.Min()) - 1.0;
 
             }
             return values;
