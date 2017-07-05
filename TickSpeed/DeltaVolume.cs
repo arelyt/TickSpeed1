@@ -6,9 +6,11 @@ using TSLab.Script.Handlers;
 
 namespace TickSpeed
 {
-    // Индикатор дельты объема по Шибаеву :-).
+    // Индикатор дельты объема:-).
     [HandlerCategory("Arelyt")]
+#pragma warning disable 612
     [HandlerName("DeltaVolume")]
+#pragma warning restore 612
     public class DeltaVolume : IBar2DoubleHandler
     {
         public IList<double> Execute(ISecurity security)

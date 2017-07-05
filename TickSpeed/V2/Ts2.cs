@@ -89,6 +89,19 @@ namespace TickSpeed.V2
 
     }
 
+    public enum Extmode
+    {
+        Zpd = 0,
+        Sp0 = 1,
+        Sp1 = 2,
+        Sym = 3,
+        Symw = 4,
+        Asym = 5,
+        Asymw = 6,
+        Ppd = 7,
+        Per = 8
+    }
+
     public class Ts2Class
     {
         //private double nB, nS, vB, vS;
