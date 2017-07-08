@@ -81,6 +81,7 @@
     <Compile Include="CumDeltaTick.cs" />
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="CumDtCwtFlow.cs" />
+    <Compile Include="SsaCompare.cs" />
     <Compile Include="Ssa.cs" />
     <Compile Include="CwtFtFlow.cs" />
     <Compile Include="WinNorm.cs" />
