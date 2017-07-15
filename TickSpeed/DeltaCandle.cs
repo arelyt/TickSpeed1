@@ -15,7 +15,7 @@ namespace TickSpeed
     {
         public IContext Context { set; get; }
 
-        [HandlerParameter(Name = "Ширина свечи(шагов дельты)", Default = "500", Min = "50", Max = "2000", Step = "10")]
+        [HandlerParameter(Name = "Ширина свечи(шагов дельты)", Default = "50", Min = "50", Max = "2000", Step = "10")]
         public int Step { get; set; }
 
         //        [HandlerParameter(Name = "Полный расчет", Default = "false", NotOptimized = true)]
@@ -23,9 +23,9 @@ namespace TickSpeed
 
         public ISecurity Execute(ISecurity sec, IContext context)
         {
-            if (sec.IntervalBase.ToString() != "TICKS" || sec.Interval.ToString() != "1")
+            if (sec.IntervalBase.ToString() != "TICK" || sec.Interval.ToString() != "1")
             {
-                throw new Exception("Base Interval wrong. Please set to Ticks 1");
+                throw new Exception("Base Interval wrong. Please set to Tick 1");
             }
 
             //var cache = ctx.LoadObject("TickCandle");
