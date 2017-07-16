@@ -14,8 +14,8 @@ namespace TickSpeed
 #pragma warning restore 612
     public class DeltaLineClass : IBar2DoubleHandler
     {
-        [HandlerParameter(Name = "Направление", NotOptimized = true)]
-        public TradeDirection Direction { get; set; }
+        [HandlerParameter(Name = "Объем_тики", Default = "true", NotOptimized = true)]
+        public bool Method { get; set; }
         [HandlerParameter(Name = "Шаг дельты", Default = "50", Min = "2", Max = "2000", Step = "1")]
         public int Step { get; set; }
 
@@ -32,24 +32,27 @@ namespace TickSpeed
             for (var i = 0; i < count; i++)
             {
                 var trades = security.GetTrades(i);
-                var nBuy = trades.Sum(t => t.Direction == TradeDirection.Buy ? 1 : 0); ;
-                var nSell = trades.Sum(t => t.Direction == TradeDirection.Sell ? 1 : 0); ;
-                _cumdelta += nBuy - nSell; 
+                if (Method)
+                {
+                    var vBuy = trades.Sum(t => t.Direction == TradeDirection.Buy ? t.Quantity : 0); ;
+                    var vSell = trades.Sum(t => t.Direction == TradeDirection.Sell ? t.Quantity : 0); ;
+                    _cumdelta += (int)vBuy - (int)vSell;
+                }
+                else
+                {
+                    var nBuy = trades.Sum(t => t.Direction == TradeDirection.Buy ? 1 : 0); ;
+                    var nSell = trades.Sum(t => t.Direction == TradeDirection.Sell ? 1 : 0); ;
+                    _cumdelta += nBuy - nSell;
+                }
+                
 
 
                 if (_cumdelta >= _indi + Step || _cumdelta <= _indi - Step)
                 {
                     values[i] = _cumdelta;
-                    _indi += Step;
+                    _indi = _cumdelta;
                 }
 
-                //var value = trades.Sum(t => t.Direction == Direction ? 1 : 0);
-
-                //  Проверка на ненулевое время (м.б. ошибка в тиковых данных или их отсутствие. Принудительно делим на 0.1)
-                //if (datme[i] > 0.0001)
-                //    values[i] = value / datme[i];
-                //else
-                //    values[i] = value / 0.1;
                 
                 
             }
