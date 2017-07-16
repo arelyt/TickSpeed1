@@ -84,6 +84,7 @@
     <Compile Include="SsaCompare.cs" />
     <Compile Include="Ssa.cs" />
     <Compile Include="CwtFtFlow.cs" />
+    <Compile Include="DeltaLine.cs" />
     <Compile Include="TLine.cs" />
     <Compile Include="WinNorm.cs" />
     <Compile Include="Envelope.cs" />
