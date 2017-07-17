@@ -46,7 +46,7 @@ namespace TickSpeed
                 }
                 
 
-
+                
                 if (_cumdelta >= _indi + Step || _cumdelta <= _indi - Step)
                 {
                     values[i] = _cumdelta;
