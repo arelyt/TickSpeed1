@@ -38,7 +38,7 @@ namespace TickSpeed
                 }
                 //var cumtickspeed = (valueTickBuy - valueTickSell)/datme[i];
                 //values[i] = values[i - 1] + cumtickspeed;
-                values[i] = (values[i-1] + (nBuy-nSell)/datme[i];
+                values[i] = (values[i-1] + (nBuy-nSell)/datme[i]);
             }
             
             return values;
