@@ -44,17 +44,11 @@ namespace TickSpeed
                     var nSell = trades.Sum(t => t.Direction == TradeDirection.Sell ? 1 : 0); ;
                     _cumdelta += nBuy - nSell;
                 }
-                
 
-                
-                if (_cumdelta >= _indi + Step || _cumdelta <= _indi - Step)
-                {
-                    values[i] = _cumdelta;
-                    _indi = _cumdelta;
-                }
 
-                
-                
+                if (_cumdelta < _indi + Step && _cumdelta > _indi - Step) continue;
+                values[i] = _cumdelta;
+                _indi = _cumdelta;
             }
             values[count - 1] = _cumdelta;
             return values;

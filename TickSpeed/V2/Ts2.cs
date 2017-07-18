@@ -102,6 +102,15 @@ namespace TickSpeed.V2
         Per = 8
     }
 
+    public enum RbfFunction
+    {
+        Gaussian = 0,
+        Thinplate = 1,
+        Cubic = 2,
+        Multicuadrics = 3,
+        Linear = 4
+    }
+
     public class Ts2Class
     {
         //private double nB, nS, vB, vS;
