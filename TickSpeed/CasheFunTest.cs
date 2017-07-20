@@ -33,7 +33,7 @@ namespace TickSpeed
             {
                 price[i] = sec.Bars[i].Close;
                 tradeno[i] = sec.Bars[i].FirstTradeId.Number;
-                time[i] = TimeSpan.FromTicks(sec.Bars[i].Date.Ticks - sec.Bars[0].Date.Ticks).TotalMilliseconds;
+                time[i] = sec.Bars[i].Date.TimeOfDay.Milliseconds - 36000;
             }
             // Начинаем Signal denoising process
             //string line;

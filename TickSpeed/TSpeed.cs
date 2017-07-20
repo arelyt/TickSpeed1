@@ -30,8 +30,8 @@ namespace TickSpeed
             {
                 var trades = security.GetTrades(i);
 
-                datme[i] = TimeSpan.FromTicks(security.Bars[i].Date.Ticks - security.Bars[i-1].Date.Ticks).TotalSeconds;
-
+                //datme[i] = TimeSpan.FromTicks(security.Bars[i].Date.Ticks - security.Bars[i-1].Date.Ticks).TotalSeconds;
+                datme[i] = security.Bars[i].Date.TimeOfDay.TotalMilliseconds;
                 var value = trades.Sum(t => t.Direction == Direction ? 1 : 0);
 
                 //  Проверка на ненулевое время (м.б. ошибка в тиковых данных или их отсутствие. Принудительно делим на 0.1)
