@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
+using TSLab.Script;
 
 namespace TickSpeed
 {
@@ -10,25 +11,29 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("CasheFunTest")]
 #pragma warning restore 612
-    public class CasheFunTestClass : IDouble2DoubleHandler, IValuesHandlerWithNumber
+    public class CasheFunTestClass : IBar2DoubleHandler
     {
         public interface ICasheFun
         {
-            double[] cashefun(double[] in1);
+            double[] cashefun(double[] in1, double[] in2, double[] in3);
         }
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
         //public V2.Predin Line { get; set; }
 
-        public IList<double> Execute(IList<double> myDoubles)
+        public IList<double> Execute(ISecurity sec)
         {
-            var count = myDoubles.Count;
-            if (count < 2)
+            var count = sec.Bars.Count;
+            if (count < 100)
                 return null;
             var result = new double[count];
-            var values = new double[count];
+            var price = new double[count];
+            var tradeno = new double[count];
+            var time = new double[count];
             for (var i = 0; i < count; i++)
             {
-                values[i] = myDoubles[i];
+                price[i] = sec.Bars[i].Close;
+                tradeno[i] = sec.Bars[i].FirstTradeId.Number;
+                time[i] = TimeSpan.FromTicks(sec.Bars[i].Date.Ticks - sec.Bars[0].Date.Ticks).TotalMilliseconds;
             }
             // Начинаем Signal denoising process
             //string line;
@@ -54,7 +59,7 @@ namespace TickSpeed
             try
             {
                 ICasheFun sigDen = client.CreateProxy<ICasheFun>(new Uri("http://localhost:9910/cashefun_dep"));
-                result = sigDen.cashefun(values);
+                result = sigDen.cashefun(time, tradeno, price);
             }
             catch (MATLABException)
             {
@@ -66,5 +71,7 @@ namespace TickSpeed
             }
             return result;
         }
+
+        
     }
 }
