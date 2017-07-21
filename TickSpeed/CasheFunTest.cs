@@ -15,6 +15,7 @@ namespace TickSpeed
     {
         public interface ICasheFun
         {
+            // ReSharper disable once InconsistentNaming
             double[] cashefun(double[] in1, double[] in2, double[] in3);
         }
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
