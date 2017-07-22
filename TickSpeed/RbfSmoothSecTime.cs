@@ -9,7 +9,7 @@ namespace TickSpeed
     // Объемно-тиковый осциллятор.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("RBFSmooth")]
+    [HandlerName("RBFSmoothSecTime")]
 #pragma warning restore 612
     public class RbfSmoothSecTimeClass : IBar2DoubleHandler
     {
