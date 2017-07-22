@@ -36,7 +36,7 @@ namespace TickSpeed
             for (var i = 0; i < count; i++)
             {
                 values[i] = security.Bars[i].Close;
-                time[i] = security.Bars[i].Date.TimeOfDay.TotalMilliseconds;
+                time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds - security.Bars[0].Date.TimeOfDay.TotalSeconds;
             }
             // Начинаем Signal denoising process
             string rfunc;
