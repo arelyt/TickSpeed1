@@ -111,6 +111,14 @@ namespace TickSpeed.V2
         Linear = 4
     }
 
+    public enum RbfAlgLibMethodOfInput
+    {
+        Close = 0,
+        Bid = 1,
+        Ask = 2,
+        HalfBidAsk =3
+    }
+
     public class Ts2Class
     {
         //private double nB, nS, vB, vS;

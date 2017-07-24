@@ -47,7 +47,8 @@ namespace TickSpeed
             rbfsetpoints(_model, xy);
             // v = alglib.rbfcalc2(model, 0.0, 0.0);
             rbfreport rep;
-            rbfsetalgomultilayer(_model, Rbfconst, Nlayer, Smooth);
+            rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
+            //rbf.rbfset(_model, Rbfconst, Nlayer, Smooth);
             rbfbuildmodel(_model, out rep);
             for (var i = 0; i < count; i++)
             {
