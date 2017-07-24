@@ -51,7 +51,7 @@ namespace TickSpeed
                 case V2.RbfAlgLibMethodOfInput.Close:
                     for (int i = 0; i < count; i++)
                     {
-                        xy[i, 0] = i;
+                        
                         xy[i, 2] = security.Bars[i].Close;
                         if (Timeinput)
                         {
@@ -62,13 +62,14 @@ namespace TickSpeed
                         {
                             time[i] = i;
                         }
-                        
+                        xy[i, 0] = time[i];
+
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.Ask:
                     for (int i = 0; i < count; i++)
                     {
-                        xy[i, 0] = i;
+                        
                         xy[i, 2] = ask[i];
                         if (Timeinput)
                         {
@@ -79,13 +80,14 @@ namespace TickSpeed
                         {
                             time[i] = i;
                         }
+                        xy[i, 0] = time[i];
 
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.Bid:
                     for (int i = 0; i < count; i++)
                     {
-                        xy[i, 0] = i;
+                        
                         xy[i, 2] = bid[i];
                         if (Timeinput)
                         {
@@ -96,6 +98,7 @@ namespace TickSpeed
                         {
                             time[i] = i;
                         }
+                        xy[i, 0] = time[i];
 
                     }
                     break;
@@ -103,7 +106,7 @@ namespace TickSpeed
                     
                     for (int i = 0; i < count; i++)
                     {
-                        xy[i, 0] = i;
+                        
                         xy[i, 2] = (ask[i] + bid[i])/2;
                         if (Timeinput)
                         {
@@ -114,13 +117,14 @@ namespace TickSpeed
                         {
                             time[i] = i;
                         }
+                        xy[i, 0] = time[i];
 
                     }
                     break;
                 default:
                     for (int i = 0; i < count; i++)
                     {
-                        xy[i, 0] = i;
+                        
                         xy[i, 2] = security.Bars[i].Close;
                         if (Timeinput)
                         {
@@ -131,6 +135,7 @@ namespace TickSpeed
                         {
                             time[i] = i;
                         }
+                        xy[i, 0] = time[i];
                     }
                     break;
 
