@@ -22,6 +22,8 @@ namespace TickSpeed
         public double Rbfconst { get; set; }
         [HandlerParameter(Name = "MethodInput", Default = "0", NotOptimized = true)]
         public RbfAlgLibMethodOfInput Method { get; set; }
+        [HandlerParameter(Name = "TimeInput", Default = "false", NotOptimized = true)]
+        public bool Timeinput { get; set; }
 
         private rbfmodel _model;
 
@@ -51,7 +53,16 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = security.Bars[i].Close;
-                        time[i] = i;
+                        if (Timeinput)
+                        {
+                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                        }
+                        else
+                        {
+                            time[i] = i;
+                        }
+                        
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.Ask:
@@ -59,7 +70,15 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = ask[i];
-                        time[i] = i;
+                        if (Timeinput)
+                        {
+                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                        }
+                        else
+                        {
+                            time[i] = i;
+                        }
 
                     }
                     break;
@@ -68,7 +87,15 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = bid[i];
-                        time[i] = i;
+                        if (Timeinput)
+                        {
+                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                        }
+                        else
+                        {
+                            time[i] = i;
+                        }
 
                     }
                     break;
@@ -78,7 +105,15 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = (ask[i] + bid[i])/2;
-                        time[i] = i;
+                        if (Timeinput)
+                        {
+                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                        }
+                        else
+                        {
+                            time[i] = i;
+                        }
 
                     }
                     break;
@@ -87,7 +122,15 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = security.Bars[i].Close;
-                        time[i] = i;
+                        if (Timeinput)
+                        {
+                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                        }
+                        else
+                        {
+                            time[i] = i;
+                        }
                     }
                     break;
 
