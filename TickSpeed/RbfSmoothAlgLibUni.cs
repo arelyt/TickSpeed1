@@ -2,7 +2,6 @@
 using TickSpeed.V2;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.DataSource;
 using static alglib;
 
 namespace TickSpeed
@@ -38,18 +37,16 @@ namespace TickSpeed
             if (count < 10)
                 return null;
             rbfcreate(2, 1, out _model);
-            // var v = alglib.rbfcalc2(model, 0.0, 0.0);
             var result = new double[count];
-            //var values = new double[count];
             var time = new double[count];
             var bid = _bidh.Execute(security);
             var ask = _askh.Execute(security);
             var xy = new double[count, 3];
-            // string rfunc;
+            
             switch (Method)
             {
-                case V2.RbfAlgLibMethodOfInput.Close:
-                    for (int i = 0; i < count; i++)
+                case RbfAlgLibMethodOfInput.Close:
+                    for (var i = 0; i < count; i++)
                     {
                         
                         xy[i, 2] = security.Bars[i].Close;
@@ -66,8 +63,8 @@ namespace TickSpeed
 
                     }
                     break;
-                case V2.RbfAlgLibMethodOfInput.Ask:
-                    for (int i = 0; i < count; i++)
+                case RbfAlgLibMethodOfInput.Ask:
+                    for (var i = 0; i < count; i++)
                     {
                         
                         xy[i, 2] = ask[i];
@@ -84,8 +81,8 @@ namespace TickSpeed
 
                     }
                     break;
-                case V2.RbfAlgLibMethodOfInput.Bid:
-                    for (int i = 0; i < count; i++)
+                case RbfAlgLibMethodOfInput.Bid:
+                    for (var i = 0; i < count; i++)
                     {
                         
                         xy[i, 2] = bid[i];
@@ -102,9 +99,9 @@ namespace TickSpeed
 
                     }
                     break;
-                case V2.RbfAlgLibMethodOfInput.HalfBidAsk:
+                case RbfAlgLibMethodOfInput.HalfBidAsk:
                     
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         
                         xy[i, 2] = (ask[i] + bid[i])/2;
@@ -122,7 +119,7 @@ namespace TickSpeed
                     }
                     break;
                 default:
-                    for (int i = 0; i < count; i++)
+                    for (var i = 0; i < count; i++)
                     {
                         
                         xy[i, 2] = security.Bars[i].Close;
@@ -140,22 +137,10 @@ namespace TickSpeed
                     break;
 
             }
-            //for (var i = 0; i < count; i++)
-            //{
-            //    values[i] = security.Bars[i].Close;
-            //    time[i] = i;
-            //}
             
-            //for (var i = 0; i < count; i++)
-            //{
-            //    xy[i, 0] = time[i];
-            //    xy[i, 2] = values[i];
-            //}
             rbfsetpoints(_model, xy);
-            // v = alglib.rbfcalc2(model, 0.0, 0.0);
             rbfreport rep;
             rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
-            //rbf.rbfset(_model, Rbfconst, Nlayer, Smooth);
             rbfbuildmodel(_model, out rep);
             for (var i = 0; i < count; i++)
             {
