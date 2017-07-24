@@ -25,10 +25,10 @@ namespace TickSpeed
 
         private rbfmodel _model;
 
-        public IContext Context { set; get; }
-        private TSLab.Script.Handlers.Bid Bid_h = new TSLab.Script.Handlers.Bid();
+        public static IContext Ctx { set; get; }
+        private readonly TSLab.Script.Handlers.Bid _bidh = new TSLab.Script.Handlers.Bid {Context = Ctx};
 
-        private TSLab.Script.Handlers.Ask Ask_h = new TSLab.Script.Handlers.Ask();
+        private readonly TSLab.Script.Handlers.Ask _askh = new TSLab.Script.Handlers.Ask {Context = Ctx};
 
         public IList<double> Execute(ISecurity security)
         {
@@ -40,6 +40,8 @@ namespace TickSpeed
             var result = new double[count];
             //var values = new double[count];
             var time = new double[count];
+            var bid = _bidh.Execute(security);
+            var ask = _askh.Execute(security);
             var xy = new double[count, 3];
             // string rfunc;
             switch (Method)
@@ -49,29 +51,34 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = security.Bars[i].Close;
+                        time[i] = i;
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.Ask:
                     for (int i = 0; i < count; i++)
                     {
                         xy[i, 0] = i;
-                        xy[i, 2] = Ask_h.Execute(security)[i];
-                      
+                        xy[i, 2] = ask[i];
+                        time[i] = i;
+
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.Bid:
                     for (int i = 0; i < count; i++)
                     {
                         xy[i, 0] = i;
-                        xy[i, 2] = Bid_h.Execute(security)[i];
+                        xy[i, 2] = bid[i];
+                        time[i] = i;
 
                     }
                     break;
                 case V2.RbfAlgLibMethodOfInput.HalfBidAsk:
+                    
                     for (int i = 0; i < count; i++)
                     {
                         xy[i, 0] = i;
-                        xy[i, 2] = (Ask_h.Execute(security)[i] + Bid_h.Execute(security)[i])/2;
+                        xy[i, 2] = (ask[i] + bid[i])/2;
+                        time[i] = i;
 
                     }
                     break;
@@ -80,6 +87,7 @@ namespace TickSpeed
                     {
                         xy[i, 0] = i;
                         xy[i, 2] = security.Bars[i].Close;
+                        time[i] = i;
                     }
                     break;
 
