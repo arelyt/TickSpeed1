@@ -83,6 +83,7 @@
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="CumDtCwtFlow.cs" />
     <Compile Include="CasheFunTest.cs" />
+    <Compile Include="RbfSmoothAlgLib.cs" />
     <Compile Include="RbfSmoothSecTime.cs" />
     <Compile Include="RbfSmooth.cs" />
     <Compile Include="SplineFitSecTime.cs" />
