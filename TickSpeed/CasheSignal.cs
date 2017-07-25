@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MoreLinq;
+using RusAlgo.Helper;
 using TSLab.Script.Handlers;
 using TSLab.Script;
+using TSLab.Utils;
 
 namespace TickSpeed
 {
@@ -16,15 +19,16 @@ namespace TickSpeed
         
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
         //public V2.Predin Line { get; set; }
-        public static double[] Tcashe;
-        public static double[] Pcashe;
-        public static double[] Ncashe;
+        public static IList<double> Tcashe { get; set; }
+        public static IList<double> Pcashe { get; set; }
+        public static IList<double> Ncashe { get; set; }
+
         public IList<double> Execute(ISecurity sec)
         {
             var count = sec.Bars.Count;
             if (count < 100)
                 return null;
-            var result = new double[count];
+            //var result = new double[count];
             var price = new double[count];
             var tradeno = new double[count];
             var time = new double[count];
@@ -33,40 +37,34 @@ namespace TickSpeed
             {
                 tradeno[i] = sec.Bars[i].FirstTradeId.Number;
                 price[i] = sec.Bars[i].Close;
-                time[i] = sec.Bars[i].Date.TimeOfDay.TotalSeconds - 3600;
-                //price[i] = sec.Bars[i].Close;
-                //tradeno[i] = sec.Bars[i].FirstTradeId.Number;
-                //time[i] = sec.Bars[i].Date.TimeOfDay.TotalSeconds - 36000;
+                time[i] = sec.Bars[i].Date.TimeOfDay.TotalSeconds;
+                
             }
-            if (Ncashe.Length == 0 || Tcashe.Length == 0 || Pcashe.Length == 0)
+            if (Ncashe.IsNull() || Tcashe.IsNull() || Pcashe.IsNull())
             {
-                Array.Copy(tradeno, 0, Ncashe, 0, tradeno.Length);
-                Array.Copy(price, 0, Pcashe, 0, price.Length);
-                Array.Copy(time, 0, Tcashe, 0, count);
+                
+                Ncashe = tradeno.ToList();
+                Pcashe = price.ToList();
+                Tcashe = time.ToList();
             }
             else
             {
                 var s = Ncashe.Last();
                 var delta =count - Array.FindIndex(tradeno, 0, w => w.Equals(s)) - 1;
+
                 
-                Array.Copy(Ncashe.Skip(delta).Take(count-delta).ToArray(), Ncashe, count-delta);
-                Array.Copy(Tcashe.Skip(delta).Take(count - delta).ToArray(), Tcashe, count - delta);
-                Array.Copy(Pcashe.Skip(delta).Take(count - delta).ToArray(), Pcashe, count - delta);
-                Array.Resize(ref Ncashe, Ncashe.Length + delta);
-                Array.Resize(ref Tcashe, Tcashe.Length + delta);
-                Array.Resize(ref Pcashe, Pcashe.Length + delta);
-                for (int i = count - delta; i < count - 1; i++)
-                {
-                    Ncashe[i] = tradeno[i];
-                    Tcashe[i] = time[i];
-                    Pcashe[i] = price[i];
-                }
+                var pr = price.Skip(count - delta).Take(delta).ToList();
+                Pcashe.AddRange(pr);
+                var tr = tradeno.Skip(count - delta).Take(delta).ToList();
+                Ncashe.AddRange(tr);
+                var ti = time.Skip(count - delta).Take(delta).ToList();
+                Tcashe.AddRange(ti);
+                
             }
 
-            result = Pcashe;          
-            return result;
-        }
+            return Pcashe.TakeLast(count).ToArray();          
 
+        }
         
     }
 }
