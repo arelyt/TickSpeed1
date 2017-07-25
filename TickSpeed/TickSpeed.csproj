@@ -85,6 +85,7 @@
     <Compile Include="CumDeltaVolume.cs" />
     <Compile Include="CumDtCwtFlow.cs" />
     <Compile Include="CasheFunTest.cs" />
+    <Compile Include="RbfSmoothAlgLibUniCashe.cs" />
     <Compile Include="RbfSmoothAlgLibUni.cs" />
     <Compile Include="RbfSmoothAlgLib.cs" />
     <Compile Include="RbfSmoothSecTime.cs" />
