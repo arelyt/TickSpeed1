@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MoreLinq;
+using RusAlgo.Helper;
 using TickSpeed.V2;
 using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Utils;
 using static alglib;
 
 namespace TickSpeed
@@ -45,6 +50,7 @@ namespace TickSpeed
             var result = new double[count];
             var tradeno = new double[count];
             var time = new double[count];
+            var price = new double[count];
             var bid = _bidh.Execute(security);
             var ask = _askh.Execute(security);
             var xy = new double[WinCalc, 3];
@@ -52,99 +58,109 @@ namespace TickSpeed
             for (var i = 0; i < count; i++)
             {
                 tradeno[i] = security.Bars[i].FirstTradeId.Number;
-                //time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds;
+                time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds;
+                price[i] = security.Bars[i].Close;
+
             }
+
+            if (Ncashe.IsNull() || Tcashe.IsNull() || IndiCashe.IsNull())
+            {
+
+                Ncashe = tradeno.ToList();
+                IndiCashe = price.ToList();
+                Tcashe = time.ToList();
+            }
+            else
+            {
+                var s = Ncashe.Last();
+                var delta = count - Array.FindIndex(tradeno, 0, w => w.Equals(s)) - 1;
+
+
+                var pr = price.Skip(count - delta).Take(delta).ToList();
+                IndiCashe.AddRange(pr);
+                var tr = tradeno.Skip(count - delta).Take(delta).ToList();
+                Ncashe.AddRange(tr);
+                var ti = time.Skip(count - delta).Take(delta).ToList();
+                Tcashe.AddRange(ti);
+            }
+            var tr = tradeno.TakeLast(WinCalc).ToList();
+            var ti = time.TakeLast(WinCalc).ToList();
+            var pr = price.TakeLast(WinCalc).ToList();
             
             switch (Method)
             {
                 case RbfAlgLibMethodOfInput.Close:
                     for (var i = 0; i < WinCalc; i++)
                     {
-                        
-                        xy[i, 2] = security.Bars[count - WinCalc + 1 + i].Close;
-                        //tradeno[i] = security.Bars[i].FirstTradeId.Number;
+                        xy[i, 2] = pr[i];
                         if (Timeinput)
                         {
-                            time[i] = security.Bars[count - WinCalc + 1 + i].Date.TimeOfDay.TotalSeconds;
+                            xy[i, 0] = ti[i];
                         }
                         else
                         {
-                            time[i] = i;
+                            xy[i, 0] = i;
                         }
-                        xy[i, 0] = time[i];
-
+                        
                     }
                     break;
                 case RbfAlgLibMethodOfInput.Ask:
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < WinCalc; i++)
                     {
-                        
                         xy[i, 2] = ask[i];
                         if (Timeinput)
                         {
-                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
-                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                            xy[i, 0] = ti[i];
                         }
                         else
                         {
-                            time[i] = i;
+                            xy[i, 0] = i;
                         }
-                        xy[i, 0] = time[i];
-
+                        
                     }
                     break;
                 case RbfAlgLibMethodOfInput.Bid:
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < WinCalc; i++)
                     {
-                        
                         xy[i, 2] = bid[i];
                         if (Timeinput)
                         {
-                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
-                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                            xy[i, 0] = ti[i];
                         }
                         else
                         {
-                            time[i] = i;
+                            xy[i, 0] = i;
                         }
-                        xy[i, 0] = time[i];
 
                     }
                     break;
                 case RbfAlgLibMethodOfInput.HalfBidAsk:
                     
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < WinCalc; i++)
                     {
-                        
                         xy[i, 2] = (ask[i] + bid[i])/2;
                         if (Timeinput)
                         {
-                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
-                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                            xy[i, 0] = ti[i];
                         }
                         else
                         {
-                            time[i] = i;
+                            xy[i, 0] = i;
                         }
-                        xy[i, 0] = time[i];
-
                     }
                     break;
                 default:
-                    for (var i = 0; i < count; i++)
+                    for (var i = 0; i < WinCalc; i++)
                     {
-                        
-                        xy[i, 2] = security.Bars[i].Close;
+                        xy[i, 2] = pr[i];
                         if (Timeinput)
                         {
-                            time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
-                                      security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                            xy[i, 0] = ti[i];
                         }
                         else
                         {
-                            time[i] = i;
+                            xy[i, 0] = i;
                         }
-                        xy[i, 0] = time[i];
                     }
                     break;
 
@@ -154,9 +170,17 @@ namespace TickSpeed
             rbfreport rep;
             rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
             rbfbuildmodel(_model, out rep);
-            for (var i = 0; i < count; i++)
+            for (var i = 0; i < WinCalc; i++)
             {
-                result[i] = rbfcalc2(_model, time[i], 0.0);
+                if (Timeinput)
+                {
+                    result[i] = rbfcalc2(_model, ti[i], 0.0);
+                }
+                else
+                {
+                    result[i] = rbfcalc2(_model, i, 0.0);
+                }
+                
             }
             return result;
         }
