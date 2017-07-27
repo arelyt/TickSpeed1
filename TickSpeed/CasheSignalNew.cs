@@ -9,12 +9,12 @@ using TSLab.Utils;
 
 namespace TickSpeed
 {
-    // Cashe
+    // Cashe bool signal
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
     [HandlerName("CasheSignalNew")]
 #pragma warning restore 612
-    public class CasheSignalNewClass : ITwoSourcesHandler, ISecurityInput0, IDoubleInput1, IStreamHandler, IBooleanReturns
+    public class CasheSignalNewClass : ITwoSourcesHandler, ISecurityInput0, IBooleanInput1, IStreamHandler, IBooleanReturns
     {
         
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
