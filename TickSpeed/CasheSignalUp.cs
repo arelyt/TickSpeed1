@@ -12,15 +12,15 @@ namespace TickSpeed
     // Cashe bool signal
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("CasheSignalNew")]
+    [HandlerName("CasheSignalUp")]
 #pragma warning restore 612
-    public class CasheSignalNewClass : ITwoSourcesHandler, ISecurityInput0, IBooleanInput1, IStreamHandler, IBooleanReturns
+    public class CasheSignalUpClass : ITwoSourcesHandler, ISecurityInput0, IBooleanInput1, IStreamHandler, IBooleanReturns
     {
         
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
         //public V2.Predin Line { get; set; }
         public static IList<double> Tradecashe { get; set; }
-        public static IList<bool> Boolcashe { get; set; }
+        public static IList<bool> Boolcasheup { get; set; }
         //public static IList<double> Ncashe { get; set; }
 
         public IList<bool> Execute(ISecurity sec, IList<bool> bools)
@@ -40,11 +40,11 @@ namespace TickSpeed
                 //time[i] = sec.Bars[i].Date.TimeOfDay.TotalSeconds;
                 
             }
-            if (Tradecashe.IsNull() || Boolcashe.IsNull())
+            if (Tradecashe.IsNull() || Boolcasheup.IsNull())
             {
                 
                 Tradecashe = tradeno.ToList();
-                Boolcashe = bools.ToList();
+                Boolcasheup = bools.ToList();
                 //Tcashe = time.ToList();
             }
             else
@@ -54,7 +54,7 @@ namespace TickSpeed
 
                 
                 var bl = bools.Skip(count - delta).Take(delta).ToList();
-                Boolcashe.AddRange(bl);
+                Boolcasheup.AddRange(bl);
                 var tr = tradeno.Skip(count - delta).Take(delta).ToList();
                 Tradecashe.AddRange(tr);
                 //var ti = time.Skip(count - delta).Take(delta).ToList();
@@ -62,7 +62,7 @@ namespace TickSpeed
                 
             }
 
-            return Boolcashe.TakeLast(count).ToArray();          
+            return Boolcasheup.TakeLast(count).ToArray();          
 
         }
         
