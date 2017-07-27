@@ -70,10 +70,15 @@
     <Reference Include="TSLab.Utility">
       <HintPath>C:\Program Files (x86)\TSLab 2.0\TSLab.Utility.dll</HintPath>
     </Reference>
+    <Reference Include="vvTSLtools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\vvTSLtools.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
+    <Compile Include="CasheSignalNew.cs" />
     <Compile Include="CasheSignal.cs" />
     <Compile Include="CumDeltaTickSpeed.cs" />
     <Compile Include="CumDtCwtFlow1.cs" />

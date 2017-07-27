@@ -11,7 +11,7 @@ using static alglib;
 
 namespace TickSpeed
 {
-    // RBF model from AlgoLib.
+    // RBF model from AlgoLib. _______________________notworkfornow
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
     [HandlerName("RBFSCashe")]
@@ -83,19 +83,19 @@ namespace TickSpeed
                 var ti = time.Skip(count - delta).Take(delta).ToList();
                 Tcashe.AddRange(ti);
             }
-            var tr = tradeno.TakeLast(WinCalc).ToList();
-            var ti = time.TakeLast(WinCalc).ToList();
-            var pr = price.TakeLast(WinCalc).ToList();
+            //var tr = tradeno.TakeLast(WinCalc).ToList();
+            //var ti = time.TakeLast(WinCalc).ToList();
+            //var pr = price.TakeLast(WinCalc).ToList();
             
             switch (Method)
             {
                 case RbfAlgLibMethodOfInput.Close:
                     for (var i = 0; i < WinCalc; i++)
                     {
-                        xy[i, 2] = pr[i];
+                        //xy[i, 2] = pr[i];
                         if (Timeinput)
                         {
-                            xy[i, 0] = ti[i];
+                          //  xy[i, 0] = ti[i];
                         }
                         else
                         {
@@ -110,7 +110,7 @@ namespace TickSpeed
                         xy[i, 2] = ask[i];
                         if (Timeinput)
                         {
-                            xy[i, 0] = ti[i];
+                          //  xy[i, 0] = ti[i];
                         }
                         else
                         {
@@ -125,7 +125,7 @@ namespace TickSpeed
                         xy[i, 2] = bid[i];
                         if (Timeinput)
                         {
-                            xy[i, 0] = ti[i];
+                           // xy[i, 0] = ti[i];
                         }
                         else
                         {
@@ -141,7 +141,7 @@ namespace TickSpeed
                         xy[i, 2] = (ask[i] + bid[i])/2;
                         if (Timeinput)
                         {
-                            xy[i, 0] = ti[i];
+                          //  xy[i, 0] = ti[i];
                         }
                         else
                         {
@@ -152,10 +152,10 @@ namespace TickSpeed
                 default:
                     for (var i = 0; i < WinCalc; i++)
                     {
-                        xy[i, 2] = pr[i];
+                       // xy[i, 2] = pr[i];
                         if (Timeinput)
                         {
-                            xy[i, 0] = ti[i];
+                       //     xy[i, 0] = ti[i];
                         }
                         else
                         {
@@ -174,7 +174,7 @@ namespace TickSpeed
             {
                 if (Timeinput)
                 {
-                    result[i] = rbfcalc2(_model, ti[i], 0.0);
+                  //  result[i] = rbfcalc2(_model, ti[i], 0.0);
                 }
                 else
                 {
