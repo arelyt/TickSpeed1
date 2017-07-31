@@ -122,7 +122,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                values = sigDen.CumDeltaUni(values, temp);
+                values = sigDen.CumDeltaUni(detrend, temp);
             }
             catch (MATLABException)
             {
