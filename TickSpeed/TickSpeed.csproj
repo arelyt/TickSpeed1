@@ -82,6 +82,7 @@
     <Compile Include="CasheSignalDown.cs" />
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
+    <Compile Include="CumDeltaUni.cs" />
     <Compile Include="CumDeltaTickSpeed.cs" />
     <Compile Include="CumDtCwtFlow1.cs" />
     <Compile Include="CumVolumeSell.cs" />

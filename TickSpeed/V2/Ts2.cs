@@ -119,6 +119,12 @@ namespace TickSpeed.V2
         HalfBidAsk =3
     }
 
+    public enum CumDeltaType
+    {
+        Tick = 0,
+        Volume = 1
+    }
+
     public class Ts2Class
     {
         //private double nB, nS, vB, vS;
