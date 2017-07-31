@@ -57,7 +57,7 @@ namespace TickSpeed
                     var sellVolume = trades.Where(trd => trd.Direction == TradeDirection.Sell).Sum(trd => trd.Quantity);
                     var cumvolume = buyVolume - sellVolume;
                     values[i] = values[i - 1] + cumvolume;
-                    time[i] =security.Bars[i].Date.TimeOfDay.TotalSeconds;
+                    time[i] =security.Bars[i].Date.TimeOfDay.TotalSeconds - security.Bars[0].Date.TimeOfDay.TotalSeconds;
 
                 }
             }
@@ -70,7 +70,7 @@ namespace TickSpeed
                     var valueTickSell = trades.Count(trd => trd.Direction == TradeDirection.Sell);
                     var cumtick = valueTickBuy - valueTickSell;
                     values[i] = values[i - 1] + cumtick;
-                    time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds;
+                    time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds - security.Bars[0].Date.TimeOfDay.TotalSeconds;
 
                 }
             }
