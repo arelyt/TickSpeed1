@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MathWorks.MATLAB.ProductionServer.Client;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -12,14 +13,14 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("CumDeltaUni")]
 #pragma warning restore 612
-    public class CumDeltaUni : IBar2DoubleHandler
+    public class CumDeltaUniClass : IBar2DoubleHandler
     {
         public static IList<double> Cacheflow { get; set; }
 
         public interface ICumDeltaUni
         {
             // ReSharper disable once InconsistentNaming
-            double[] CumDeltaUni(double[] in1, int in2, int in3);
+            double[] CumDeltaUni(double[] in1, double[] in2);
         }
 
         [HandlerParameter(Name = "CumDeltaUni", Default = "Volume", NotOptimized = true)]
@@ -106,9 +107,40 @@ namespace TickSpeed
             {
                 temp[count - 1] = temp[count - 1] + 1e-4;
             }
-            // Теперь вызов процедуры ресемплинга и сглаживания в матлаб
+            // Теперь детрендинг
+            var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
+            var a2 = values[0];
+            var detrend = new double[count];
+            for (int i = 0; i < count; i++)
+            {
+                detrend[i] = values[i] - a1 * temp[i] - a2;
+            }
 
-            return values;
+            // Теперь вызов процедуры ресемплинга и сглаживания в матлаб
+            MWClient client = new MWHttpClient();
+            try
+            {
+                CumDeltaUniClass.ICumDeltaUni sigDen =
+                    client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
+                values = sigDen.CumDeltaUni(values, temp);
+            }
+            catch (MATLABException)
+            {
+
+            }
+            finally
+            {
+                client.Dispose();
+            }
+
+            //Теперь возвращаем тренд
+            var retrend = new double[count];
+            for (int i = 0; i < count; i++)
+            {
+                retrend[i] = values[i] + a1 * temp[i] + a2;
+            }
+
+            return retrend;
             
 
         }
