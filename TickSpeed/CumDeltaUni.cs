@@ -45,6 +45,7 @@ namespace TickSpeed
                 return null;
 
             var values = new double[count];
+            var doubles = new double[count];
             var time = new double[count];
             var temp = new double[count];
             values[0] = 0;
@@ -122,7 +123,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                values = sigDen.CumDeltaUni(detrend, temp);
+                doubles = sigDen.CumDeltaUni(detrend, temp);
             }
             catch (MATLABException)
             {
@@ -137,7 +138,7 @@ namespace TickSpeed
             var retrend = new double[count];
             for (int i = 0; i < count; i++)
             {
-                retrend[i] = values[i] + a1 * temp[i] + a2;
+                retrend[i] = doubles[i] + a1 * temp[i] + a2;
             }
 
             return retrend;
