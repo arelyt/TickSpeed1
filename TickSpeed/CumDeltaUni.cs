@@ -116,14 +116,14 @@ namespace TickSpeed
             {
                 temp[count-1] = temp[count-1] + 1e-4;
             }
-            // Теперь детрендинг
-            var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
-            var a2 = values[0];
-            var detrend = new double[count];
-            for (int i = 0; i < count; i++)
-            {
-                detrend[i] = values[i] - a1 * temp[i] - a2;
-            }
+            //// Теперь детрендинг
+            //var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
+            //var a2 = values[0];
+            //var detrend = new double[count];
+            //for (int i = 0; i < count; i++)
+            //{
+            //    detrend[i] = values[i] - a1 * temp[i] - a2;
+            //}
 
             // Теперь вызов процедуры ресемплинга и сглаживания в матлаб
             MWClient client = new MWHttpClient();
@@ -131,7 +131,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                doubles = sigDen.CumDeltaUni(detrend, temp, DesiredFreq, P, Q, CutOff);
+                doubles = sigDen.CumDeltaUni(values, temp, DesiredFreq, P, Q, CutOff);
             }
             catch (MATLABException)
             {
@@ -142,14 +142,14 @@ namespace TickSpeed
                 client.Dispose();
             }
 
-            //Теперь возвращаем тренд
-            var retrend = new double[count];
-            for (int i = 0; i < count; i++)
-            {
-                retrend[i] = doubles[i] + a1 * temp[i] + a2;
-            }
+            ////Теперь возвращаем тренд
+            //var retrend = new double[count];
+            //for (int i = 0; i < count; i++)
+            //{
+            //    retrend[i] = doubles[i] + a1 * temp[i] + a2;
+            //}
 
-            return retrend;
+            return doubles;
             
 
         }
