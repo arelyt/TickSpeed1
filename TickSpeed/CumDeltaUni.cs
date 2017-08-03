@@ -117,7 +117,7 @@ namespace TickSpeed
                 temp[count-1] = temp[count-1] + 1e-4;
             }
             // Теперь детрендинг
-            var a1 = (values[count] - values[0])/(temp[count] - temp[0]);
+            var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
             var a2 = values[0];
             var detrend = new double[count];
             for (int i = 0; i < count; i++)
