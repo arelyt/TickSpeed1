@@ -20,11 +20,13 @@ namespace TickSpeed
         public interface ICumDeltaUni
         {
             // ReSharper disable once InconsistentNaming
-            double[] CumDeltaUni(double[] in1, double[] in2, double in3, double in4, double in5);
+            double[] CumDeltaUni(double[] in1, double[] in2, double in3, double in4, double in5, double in6);
         }
 
         [HandlerParameter(Name = "Delta", Default = "Volume", NotOptimized = true)]
         public V2.CumDeltaType Type { get; set; }
+        [HandlerParameter(Name = "DesFreq", Default = "10", NotOptimized = false)]
+        public double DesiredFreq { get; set; }
         [HandlerParameter(Name = "P", Default = "1", NotOptimized = false)]
         public double P { get; set; }
         [HandlerParameter(Name = "Q", Default = "10", NotOptimized = false)]
@@ -129,7 +131,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                doubles = sigDen.CumDeltaUni(detrend, temp, P, Q, CutOff);
+                doubles = sigDen.CumDeltaUni(detrend, temp, DesiredFreq, P, Q, CutOff);
             }
             catch (MATLABException)
             {
