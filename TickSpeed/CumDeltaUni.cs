@@ -20,11 +20,17 @@ namespace TickSpeed
         public interface ICumDeltaUni
         {
             // ReSharper disable once InconsistentNaming
-            double[] CumDeltaUni(double[] in1, double[] in2);
+            double[] CumDeltaUni(double[] in1, double[] in2, double in3, double in4, double in5);
         }
 
-        [HandlerParameter(Name = "CumDeltaUni", Default = "Volume", NotOptimized = true)]
+        [HandlerParameter(Name = "Delta", Default = "Volume", NotOptimized = true)]
         public V2.CumDeltaType Type { get; set; }
+        [HandlerParameter(Name = "P", Default = "1", NotOptimized = false)]
+        public double P { get; set; }
+        [HandlerParameter(Name = "Q", Default = "10", NotOptimized = false)]
+        public double Q { get; set; }
+        [HandlerParameter(Name = "CutFreq", Default = "0.25", NotOptimized = false)]
+        public double CutOff { get; set; }
         public IList<double> Execute(ISecurity security)
         {
             bool type;
@@ -106,10 +112,10 @@ namespace TickSpeed
             }
             if (Equals(time[count-1], time[count-2]))
             {
-                temp[count - 1] = temp[count - 1] + 1e-4;
+                temp[count-1] = temp[count-1] + 1e-4;
             }
             // Теперь детрендинг
-            var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
+            var a1 = (values[count] - values[0])/(temp[count] - temp[0]);
             var a2 = values[0];
             var detrend = new double[count];
             for (int i = 0; i < count; i++)
@@ -123,7 +129,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                doubles = sigDen.CumDeltaUni(detrend, temp);
+                doubles = sigDen.CumDeltaUni(detrend, temp, P, Q, CutOff);
             }
             catch (MATLABException)
             {
