@@ -122,7 +122,8 @@ namespace TickSpeed.V2
     public enum CumDeltaType
     {
         Tick = 0,
-        Volume = 1
+        Volume = 1,
+        Price = 2
     }
 
     public class Ts2Class

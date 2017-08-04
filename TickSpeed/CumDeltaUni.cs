@@ -35,17 +35,20 @@ namespace TickSpeed
         public double CutOff { get; set; }
         public IList<double> Execute(ISecurity security)
         {
-            bool type;
+            int type;
             switch (Type)
             {
                 case V2.CumDeltaType.Volume:
-                    type = true;
+                    type = 1;
                     break;
                 case V2.CumDeltaType.Tick:
-                    type = false;
+                    type = 2;
+                    break;
+                case V2.CumDeltaType.Price:
+                    type = 3;
                     break;
                 default:
-                    type = true;
+                    type = 3;
                break;
             }
             var count = security.Bars.Count;
@@ -57,7 +60,7 @@ namespace TickSpeed
             var time = new double[count];
             var temp = new double[count];
             values[0] = 0;
-            if (type)
+            if (type == 1)
             {
                 for (var i = 1; i < count; i++)
                 {
@@ -70,7 +73,7 @@ namespace TickSpeed
 
                 }
             }
-            else
+            if (type == 2)
             {
                 for (var i = 1; i < count; i++)
                 {
@@ -82,6 +85,14 @@ namespace TickSpeed
                     time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds - security.Bars[0].Date.TimeOfDay.TotalSeconds;
 
                 }
+            }
+            if (type == 3)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    values[i] = security.Bars[i].Close;
+                }
+                
             }
             // Искусственное добавление микросекунд для одинаковых тиков
             Array.Copy(time, temp, count);
