@@ -91,6 +91,7 @@ namespace TickSpeed
                 for (int i = 0; i < count; i++)
                 {
                     values[i] = security.Bars[i].Close;
+                    time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds - security.Bars[0].Date.TimeOfDay.TotalSeconds;
                 }
                 
             }
