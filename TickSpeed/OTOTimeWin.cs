@@ -8,7 +8,7 @@ using TSLab.Script.Handlers;
 
 namespace TickSpeed
 {
-    // Индикатор накопительной дельты по честному ресемплингу.
+    // Индикатор бегущего временного окна тикового осциллятора по честному ресемплингу.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
     [HandlerName("OTOTimeWin")]
@@ -23,7 +23,7 @@ namespace TickSpeed
             double[] CumDeltaUni(double[] in1, double[] in2, double in3, double in4, double in5, double in6);
         }
 
-        [HandlerParameter(Name = "TimeWin", Default = "Volume", NotOptimized = true)]
+        [HandlerParameter(Name = "TimeWin", Default = "10", NotOptimized = false)]
         public double Timewin { get; set; }
         [HandlerParameter(Name = "DesFreq", Default = "10", NotOptimized = false)]
         public double DesiredFreq { get; set; }
@@ -40,6 +40,7 @@ namespace TickSpeed
                 return null;
 
             var values = new double[count];
+            var values1 = new double[count];
             var doubles = new double[count];
             var time = new double[count];
             var temp = new double[count];
@@ -89,6 +90,21 @@ namespace TickSpeed
             {
                 temp[count-1] = temp[count-1] + 1e-4;
             }
+
+            // Теперь считаем бегущее окно кумулятивной дельты за время
+            // и отнимаем все предыдущее
+
+            // start point
+            var startpoint = Array.FindIndex(temp, 0, w => w > Timewin);
+
+            for (int i = startpoint; i < count; i++)
+            {
+                var dIndex = Array.FindIndex(temp, 0, w => w >= temp[i] - Timewin);
+                values1[i] = (values[i] - values[dIndex])/(i-dIndex);
+
+            }
+            
+
             //// Теперь детрендинг
             //var a1 = (values[count-1] - values[0])/(temp[count-1] - temp[0]);
             //var a2 = values[0];
@@ -104,7 +120,7 @@ namespace TickSpeed
             {
                 CumDeltaUniClass.ICumDeltaUni sigDen =
                     client.CreateProxy<CumDeltaUniClass.ICumDeltaUni>(new Uri("http://localhost:9910/CumDeltaUni_dep"));
-                doubles = sigDen.CumDeltaUni(values, temp, DesiredFreq, P, Q, CutOff);
+                doubles = sigDen.CumDeltaUni(values1, temp, DesiredFreq, P, Q, CutOff);
             }
             catch (MATLABException)
             {
