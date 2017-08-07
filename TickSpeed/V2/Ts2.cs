@@ -123,7 +123,9 @@ namespace TickSpeed.V2
     {
         Tick = 0,
         Volume = 1,
-        Price = 2
+        Price = 2,
+        PriceBuy = 3,
+        PriceSell = 4
     }
 
     public class Ts2Class
