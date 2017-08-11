@@ -14,7 +14,7 @@ namespace TickSpeed
     {
         public interface ISsaFor
         {
-            double[] Ssa_For(double[] in1, int in2, int in3, int in4);
+            double[] ssarec(double[] in1, int in2, int in3);
         }
 
         [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
@@ -23,8 +23,8 @@ namespace TickSpeed
         [HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numrec { get; set; }
 
-        [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numfor { get; set; }
+        //[HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        //public int Numfor { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -43,8 +43,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/Ssa_For_dep"));
-                result = sigDen.Ssa_For(values, Numdec, Numrec, Numfor);
+                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/ssarec_dep"));
+                result = sigDen.ssarec(values, Numdec, Numrec);
             }
             catch (MATLABException)
             {

@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,9 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\alglibnet2.dll</HintPath>
+    <Reference Include="MathNet.Filtering, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Filtering.0.4.0\lib\net40\MathNet.Filtering.dll</HintPath>
+    </Reference>
+    <Reference Include="MathNet.Numerics, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.3.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
     <Reference Include="MathWorks.MATLAB.ProductionServer.Client, Version=2.0.0.0, Culture=neutral, PublicKeyToken=3a81824b9f82ecc8, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -52,6 +56,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -76,14 +81,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="alglib_hpc.cs" />
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
     <Compile Include="CasheSignalDouble.cs" />
     <Compile Include="CasheSignalDown.cs" />
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
-    <Compile Include="OTOTimeWin.cs" />
     <Compile Include="CumDeltaUni.cs" />
+    <Compile Include="OTOTimeWin.cs" />
+    <Compile Include="CumDeltaUni1.cs" />
     <Compile Include="CumDeltaTickSpeed.cs" />
     <Compile Include="CumDtCwtFlow1.cs" />
     <Compile Include="CumVolumeSell.cs" />
