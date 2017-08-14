@@ -90,7 +90,6 @@
     <Compile Include="CasheSignal.cs" />
     <Compile Include="CumDeltaUni.cs" />
     <Compile Include="OTOTimeWin.cs" />
-    <Compile Include="CumDeltaUni1.cs" />
     <Compile Include="CumDeltaTickSpeed.cs" />
     <Compile Include="CumDtCwtFlow1.cs" />
     <Compile Include="CumVolumeSell.cs" />
