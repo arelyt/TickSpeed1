@@ -14,7 +14,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("CasheSignalUp")]
 #pragma warning restore 612
-    public class CasheSignalUpClass : ITwoSourcesHandler, ISecurityInput0, IBooleanInput1, IStreamHandler, IBooleanReturns
+    public class CasheSignalUpClass : IThreeSourcesHandler, ISecurityInput0, IBooleanInput1, IBooleanInput2, IStreamHandler, IBooleanReturns
     {
         
         //[HandlerParameter(Name = "Values", NotOptimized = true)]
@@ -23,7 +23,7 @@ namespace TickSpeed
         public static IList<bool> Boolcasheup { get; set; }
         //public static IList<double> Ncashe { get; set; }
 
-        public IList<bool> Execute(ISecurity sec, IList<bool> bools)
+        public IList<bool> Execute(ISecurity sec, IList<bool> bools, bool reset)
         {
             var count = sec.Bars.Count;
             if (count < 100)
@@ -40,7 +40,7 @@ namespace TickSpeed
                 //time[i] = sec.Bars[i].Date.TimeOfDay.TotalSeconds;
                 
             }
-            if (Tradecashe.IsNull() || Boolcasheup.IsNull())
+            if (Tradecashe.IsNull() || Boolcasheup.IsNull() || reset)
             {
                 
                 Tradecashe = tradeno.ToList();
