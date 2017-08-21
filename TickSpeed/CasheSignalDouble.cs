@@ -19,8 +19,8 @@ namespace TickSpeed
         
         [HandlerParameter(Name = "Values", Default = "true", NotOptimized = false)]
         public bool Reset { get; set; }
-        public static IList<double> Tradecashe1 { get; set; }
-        public static IList<double> Doublecashe { get; set; }
+        private static IList<double> Tradecashe1 { get; set; }
+        private static IList<double> Doublecashe { get; set; }
         //public static IList<double> Ncashe { get; set; }
 
         public IList<double> Execute(ISecurity sec, IList<double> bools)
