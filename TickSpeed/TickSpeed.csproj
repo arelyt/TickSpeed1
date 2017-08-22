@@ -108,7 +108,7 @@
     <Compile Include="RbfSmoothSecTime.cs" />
     <Compile Include="RbfSmooth.cs" />
     <Compile Include="SplineFitSecTime.cs" />
-    <Compile Include="IBYSsaSg.cs" />
+    <Compile Include="IbyYSsaSg.cs" />
     <Compile Include="SsaCompare.cs" />
     <Compile Include="Ssa.cs" />
     <Compile Include="CwtFtFlow.cs" />

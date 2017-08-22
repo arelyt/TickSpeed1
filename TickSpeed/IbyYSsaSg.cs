@@ -15,7 +15,7 @@ namespace TickSpeed
         public interface IIby
         {
             // ReSharper disable once InconsistentNaming
-            double[] IBY(double[] in1, int in2, int in3, int in4, int in5, int in6, double in7);
+            double[] IBY(double[] in1, int in2, int in3, double in4, double in5, double in6, double in7);
         }
 
         [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
@@ -25,16 +25,16 @@ namespace TickSpeed
         public int Numrec { get; set; }
 
         [HandlerParameter(true, "5", Name = "order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Order { get; set; }
+        public double Order { get; set; }
 
         [HandlerParameter(true, "61", Name = "window", Max = "120", Min = "1", Step = "1", NotOptimized = false)]
-        public int Win { get; set; }
+        public double Win { get; set; }
 
         [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = false)]
-        public int Deriv { get; set; }
+        public double Deriv { get; set; }
 
         [HandlerParameter(true, "1", Name = "sampleT", Max = "10", Min = "0", Step = "1", NotOptimized = false)]
-        public int Dtime { get; set; }
+        public double Dtime { get; set; }
 
         //[HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         //public int Numfor { get; set; }
