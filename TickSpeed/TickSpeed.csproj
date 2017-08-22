@@ -85,7 +85,9 @@
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
     <Compile Include="CasheSignalDouble.cs" />
+    <Compile Include="CasheSignalDownClose.cs" />
     <Compile Include="CasheSignalDown.cs" />
+    <Compile Include="CasheSignalUpClose.cs" />
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
     <Compile Include="CumDeltaUni.cs" />
