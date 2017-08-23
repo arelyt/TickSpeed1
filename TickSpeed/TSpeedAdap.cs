@@ -13,7 +13,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("TSpeedAdaptive")]
 #pragma warning restore 612
-    public class TspeedAdapClass : ITwoSourcesHandler, IDoubleInput0, IDoubleInput1, IDoubleReturns, IStreamHandler, IValuesHandlerWithNumber, IContextUses
+    public class TspeedAdapClass : ITwoSourcesHandler, ISecurityInput0, IDoubleInput1, IDoubleReturns, IStreamHandler, IContextUses
     {
         public IContext Context { set; get; }
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
@@ -21,9 +21,9 @@ namespace TickSpeed
         //[HandlerParameter(Name = "Win", NotOptimized = false)]
         //public int Win { get; set; }
         //private double[] _dataCache;
-        public IList<double> Execute(ISecurity security, double win)
+        public IList<double> Execute(ISecurity security, IList<double> win)
         {
-            var wind = (int)Math.Floor(win);
+            var wind = (int)Math.Floor(win.Last());
             var count = security.Bars.Count;
             if (count < wind)
                 return null;
