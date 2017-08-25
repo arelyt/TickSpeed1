@@ -84,6 +84,9 @@
     <Compile Include="alglib_hpc.cs" />
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
+    <Compile Include="CasheSignalDouble2.cs" />
+    <Compile Include="CasheSignalDouble3.cs" />
+    <Compile Include="CasheSignalDouble1.cs" />
     <Compile Include="CasheSignalDouble.cs" />
     <Compile Include="CasheSignalDownClose.cs" />
     <Compile Include="CasheSignalDown.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="RbfSmooth.cs" />
     <Compile Include="SplineFitSecTime.cs" />
     <Compile Include="IbyYSsaSg.cs" />
+    <Compile Include="SsaAdap.cs" />
     <Compile Include="SsaCompare.cs" />
     <Compile Include="Ssa.cs" />
     <Compile Include="CwtFtFlow.cs" />
