@@ -26,8 +26,13 @@ namespace TickSpeed
         [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numfor { get; set; }
 
+        [HandlerParameter(true, "localhost", Name = "Uri", NotOptimized = true)]
+        public string Uria { get; set; }
+
         public IList<double> Execute(IList<double> myDoubles)
         {
+
+            var uriafull = "http://" + Uria + ":9910/"; 
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
@@ -43,7 +48,7 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/Ssa_For_dep"));
+                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri(uriafull + "Ssa_For_dep"));
                 result = sigDen.Ssa_For(values, Numdec, Numrec, Numfor);
             }
             catch (MATLABException)
