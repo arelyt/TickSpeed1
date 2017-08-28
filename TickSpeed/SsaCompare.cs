@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
 
@@ -10,8 +11,9 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("SSACompare")]
 #pragma warning restore 612
-    public class SsaCompareClass : IDouble2DoubleHandler
+    public class SsaCompareClass : IDouble2DoubleHandler, IContextUses
     {
+        public IContext Context { get; set; }
         public interface ISsaFor
         {
             double[] Ssa_For(double[] in1, int in2, int in3, int in4);
@@ -45,6 +47,7 @@ namespace TickSpeed
             // Начинаем Signal denoising process
 
             // Wavelet DB3 Level 5
+            var t = DateTime.Now;
             MWClient client = new MWHttpClient();
             try
             {
@@ -59,6 +62,8 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("ssaCompare exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }
