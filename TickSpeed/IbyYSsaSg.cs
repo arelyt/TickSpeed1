@@ -18,22 +18,22 @@ namespace TickSpeed
             double[] IBY(double[] in1, int in2, int in3, double in4, double in5, double in6, double in7);
         }
 
-        [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "60", Name = "Numdec", Max = "1000", Min = "10", Step = "1", NotOptimized = false)]
         public int Numdec { get; set; }
 
-        [HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "5", Name = "NumRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numrec { get; set; }
 
-        [HandlerParameter(true, "5", Name = "order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "5", Name = "Order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public double Order { get; set; }
 
-        [HandlerParameter(true, "61", Name = "window", Max = "120", Min = "1", Step = "1", NotOptimized = false)]
-        public double Win { get; set; }
+        [HandlerParameter(true, "61", Name = "winSG", Max = "120", Min = "1", Step = "1", NotOptimized = false)]
+        public double WinSg { get; set; }
 
-        [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = true)]
         public double Deriv { get; set; }
 
-        [HandlerParameter(true, "1", Name = "sampleT", Max = "10", Min = "0", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "1", Name = "sampleT", Max = "10", Min = "0", Step = "1", NotOptimized = true)]
         public double Dtime { get; set; }
 
         //[HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
@@ -57,7 +57,7 @@ namespace TickSpeed
             try
             {
                 IIby sigDen = client.CreateProxy<IIby>(new Uri("http://localhost:9910/IBY_dep"));
-                result = sigDen.IBY(values, Numdec, Numrec, Order, Win, Deriv, Dtime);
+                result = sigDen.IBY(values, Numdec, Numrec, Order, WinSg, Deriv, Dtime);
             }
             catch (MATLABException)
             {
