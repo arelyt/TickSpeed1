@@ -18,7 +18,7 @@ namespace TickSpeed
         public interface ISsaFor
         {
             
-            double[] ssarec(double[] in1, int in2, int in3);
+            double[] ssa1(double[] in1, int in2, int in3);
 
         }
 
@@ -49,8 +49,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/ssarec_dep"));
-                result = sigDen.ssarec(values, Numdec, Numrec);
+                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/ssa1_dep"));
+                result = sigDen.ssa1(values, Numdec, Numrec);
             }
             catch (MATLABException)
             {

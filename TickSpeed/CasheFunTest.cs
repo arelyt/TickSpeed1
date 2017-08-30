@@ -13,6 +13,7 @@ namespace TickSpeed
 #pragma warning restore 612
     public class CasheFunTestClass : IBar2DoubleHandler
     {
+        
         public interface ICasheFun
         {
             // ReSharper disable once InconsistentNaming
@@ -29,10 +30,15 @@ namespace TickSpeed
             var result = new double[count];
             var price = new double[count];
             var tradeno = new double[count];
+            //var askq = new double[count];
+            //var bidq = new double[count];
+            //var askp = new double[count];
+            //var bidp = new double[count];
             var time = new double[count];
             for (var i = 0; i < count; i++)
             {
                 price[i] = sec.Bars[i].Close;
+                
                 tradeno[i] = sec.Bars[i].FirstTradeId.Number;
                 time[i] = sec.Bars[i].Date.TimeOfDay.TotalMilliseconds - 36000;
             }
