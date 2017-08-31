@@ -15,14 +15,14 @@ namespace TickSpeed
         public interface IIby
         {
             // ReSharper disable once InconsistentNaming
-            double[] IBY(double[] in1, int in2, int in3, double in4, double in5, double in6, double in7);
+            double[] IBY1(double[] in1, double in2, double in3, double in4, double in5, double in6, double in7);
         }
 
         [HandlerParameter(true, "60", Name = "Numdec", Max = "1000", Min = "10", Step = "1", NotOptimized = false)]
-        public int Numdec { get; set; }
+        public double Numdec { get; set; }
 
         [HandlerParameter(true, "5", Name = "NumRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numrec { get; set; }
+        public double Numrec { get; set; }
 
         [HandlerParameter(true, "5", Name = "Order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public double Order { get; set; }
@@ -56,8 +56,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                IIby sigDen = client.CreateProxy<IIby>(new Uri("http://localhost:9910/IBY_dep"));
-                result = sigDen.IBY(values, Numdec, Numrec, Order, WinSg, Deriv, Dtime);
+                IIby sigDen = client.CreateProxy<IIby>(new Uri("http://localhost:9910/IBY1_dep"));
+                result = sigDen.IBY1(values, Numdec, Numrec, Order, WinSg, Deriv, Dtime);
             }
             catch (MATLABException)
             {

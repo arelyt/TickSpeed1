@@ -18,15 +18,15 @@ namespace TickSpeed
         public interface ISsaFor
         {
             
-            double[] ssa1(double[] in1, int in2, int in3);
+            double[] ssa1(double[] in1, double in2, double in3);
 
         }
 
         [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numdec { get; set; }
+        public double Numdec { get; set; }
 
         [HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numrec { get; set; }
+        public double Numrec { get; set; }
 
         //[HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         //public int Numfor { get; set; }
