@@ -34,7 +34,7 @@ namespace TickSpeed
         public IList<double> Execute(IList<double> myDoubles)
         {
             var count = myDoubles.Count;
-            if (count < 2)
+            if (count < 2||myDoubles.Count<Numdec+2)
                 return null;
             var result = new double[count];
             var values = new double[count];
