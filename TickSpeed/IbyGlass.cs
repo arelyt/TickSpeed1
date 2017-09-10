@@ -24,7 +24,7 @@ namespace TickSpeed
             var count = source.Bars.Count;
             var maxlev = source.GetSellQueue(0).Count;
             var numArray = new double[source.Bars.Count];
-            if (count < 10)
+            if (count < 10 || maxlev == 0)
                 return null;
             //if (TradeHelper.IsNull(Glass) || Reset)
             //{
