@@ -26,7 +26,7 @@ namespace TickSpeed
         public IList<bool> Execute(ISecurity sec, IList<bool> bools)
         {
             var count = sec.Bars.Count;
-            if (count < 100)
+            if (count < 100 || bools.IsNull())
                 return null;
             //var result = new double[count];
             //var price = new double[count];
