@@ -7,9 +7,9 @@ namespace TickSpeed
 {
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("Рост значения N-баров подряд")]
+    [HandlerName("Снижение значения N-баров подряд")]
 #pragma warning restore 612
-    public class NBarsUp : IDoubleCompaper1Handler
+    public class NBarsDown : IDoubleCompaper1Handler
     {
         [HandlerParameter(true, "3", Max = "10", Min = "3", Step = "1")]
         public int NBars { get; set; }
@@ -28,7 +28,7 @@ namespace TickSpeed
                 flagArray[index] = false;
                 if (index < NBars)
                     num = 0;
-                else if (price[index] > price[index - 1])
+                else if (price[index] < price[index - 1])
                     ++num;
                 else
                     num = 0;
