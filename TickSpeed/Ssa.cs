@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
+using RusAlgo.Helper;
+
 // ReSharper disable InconsistentNaming
 
 namespace TickSpeed
@@ -33,8 +35,10 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
+            if (myDoubles.IsNull())
+                return null;
             var count = myDoubles.Count;
-            if (count < 2||myDoubles.Count<Numdec+2)
+            if (count < 2 || myDoubles.Count<Numdec+2 || myDoubles[0].IsNaN())
                 return null;
             var result = new double[count];
             var values = new double[count];
