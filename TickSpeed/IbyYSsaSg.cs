@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
+using RusAlgo.Helper;
 
 namespace TickSpeed
 {
@@ -10,8 +12,9 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("IBY")]
 #pragma warning restore 612
-    public class IbySsaSgClass : IDouble2DoubleHandler
+    public class IbySsaSgClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
+        public IContext Context { get; set; }
         public interface IIby
         {
             // ReSharper disable once InconsistentNaming
@@ -41,9 +44,11 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
+            if (myDoubles.IsNull())
+                return myDoubles;
             var count = myDoubles.Count;
-            if (count < 2)
-                return null;
+            if (count < Numdec + 2)
+                return myDoubles;
             var result = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)
@@ -53,6 +58,7 @@ namespace TickSpeed
             // Начинаем Signal denoising process
 
             // Wavelet DB3 Level 5
+            var t = DateTime.Now;
             MWClient client = new MWHttpClient();
             try
             {
@@ -67,6 +73,8 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("ssa exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }

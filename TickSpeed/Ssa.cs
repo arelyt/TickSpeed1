@@ -36,10 +36,10 @@ namespace TickSpeed
         public IList<double> Execute(IList<double> myDoubles)
         {
             if (myDoubles.IsNull())
-                return null;
+                return myDoubles;
             var count = myDoubles.Count;
-            if (count < 2 || myDoubles.Count<Numdec+2 || myDoubles[0].IsNaN())
-                return null;
+            if (count < Numdec + 2)
+                return myDoubles;
             var result = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)
