@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script;
 //using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -23,11 +25,12 @@ namespace TickSpeed
         public bool Timeinput { get; set; }
 
         private rbfmodel _model;
-        
+        public IContext Context { get; set; }
 
-        
+
         public IList<double> Execute(ISecurity security, IList<double> md)
         {
+            var t = DateTime.Now;
             var count = md.Count;
             if (count < 10)
                 return null;
@@ -68,6 +71,8 @@ namespace TickSpeed
             {
                 result[i] = rbfcalc2(_model, time[i], 0.0);
             }
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("rbf exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }

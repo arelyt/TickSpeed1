@@ -15,6 +15,7 @@ namespace TickSpeed
 #pragma warning restore 612
     public class RbfSmoothAlgLibUniClass : IBar2DoubleHandler
     {
+        public static IContext Ctx { set; get; }
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
         [HandlerParameter(Name = "Smooth", Default = "0.01", NotOptimized = false)]
@@ -27,11 +28,10 @@ namespace TickSpeed
         public bool Timeinput { get; set; }
 
         private rbfmodel _model;
+        
+        public static TSLab.Script.Handlers.Bid _bidh = new TSLab.Script.Handlers.Bid {Context = Ctx};
 
-        public static IContext Ctx { set; get; }
-        private readonly TSLab.Script.Handlers.Bid _bidh = new TSLab.Script.Handlers.Bid {Context = Ctx};
-
-        private readonly TSLab.Script.Handlers.Ask _askh = new TSLab.Script.Handlers.Ask {Context = Ctx};
+        public static TSLab.Script.Handlers.Ask _askh = new TSLab.Script.Handlers.Ask {Context = Ctx};
 
         public IList<double> Execute(ISecurity security)
         {
