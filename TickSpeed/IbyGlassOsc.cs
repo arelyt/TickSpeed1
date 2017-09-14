@@ -68,7 +68,7 @@ namespace TickSpeed
                     nSell += sellQueue[j].Quantity;
                     nBuy += buyQueue[j].Quantity;
                 }
-                numArray[i] = (nBuy - nSell) / (nBuy + nSell);
+                numArray[i] = (nSell - nBuy) / (nBuy + nSell);
             }
             return numArray;
         }
