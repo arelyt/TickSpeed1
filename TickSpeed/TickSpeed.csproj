@@ -96,6 +96,7 @@
     <Compile Include="CasheSignalUpClose.cs" />
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
+    <Compile Include="IbyGlassOsc.cs" />
     <Compile Include="NBarsDown.cs" />
     <Compile Include="NBarsUp.cs" />
     <Compile Include="IbyFirDoubleMl.cs" />
