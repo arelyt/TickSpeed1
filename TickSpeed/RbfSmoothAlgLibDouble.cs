@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TSLab.Script;
 //using TSLab.Script;
 using TSLab.Script.Handlers;
 using static alglib;
@@ -10,7 +11,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("RBFSmoothAlgLibDouble")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibDoubleClass : IDouble2DoubleHandler
+    public class RbfSmoothAlgLibDoubleClass : ITwoSourcesHandler, ISecurityInput0, IDoubleInput1, IStreamHandler, IDoubleReturns
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -18,12 +19,14 @@ namespace TickSpeed
         public double Smooth { get; set; }
         [HandlerParameter(Name = "RbfConst", Default = "2.0", NotOptimized = false)]
         public double Rbfconst { get; set; }
+        [HandlerParameter(Name = "TimeInput", Default = "false", NotOptimized = true)]
+        public bool Timeinput { get; set; }
 
         private rbfmodel _model;
         
 
         
-        public IList<double> Execute(IList<double> md)
+        public IList<double> Execute(ISecurity security, IList<double> md)
         {
             var count = md.Count;
             if (count < 10)
@@ -36,13 +39,23 @@ namespace TickSpeed
             for (var i = 0; i < count; i++)
             {
                 values[i] = md[i];
-                time[i] = i;
+                //time[i] = i;
             }
             var xy = new double[count, 3];
             for (var i = 0; i < count; i++)
             {
-                xy[i, 0] = time[i];
+                //xy[i, 0] = time[i];
                 xy[i, 2] = values[i];
+                if (Timeinput)
+                {
+                    time[i] = security.Bars[i].Date.TimeOfDay.TotalSeconds -
+                              security.Bars[0].Date.TimeOfDay.TotalSeconds;
+                }
+                else
+                {
+                    time[i] = i;
+                }
+                xy[i, 0] = time[i];
             }
             rbfsetpoints(_model, xy);
             // v = alglib.rbfcalc2(model, 0.0, 0.0);
