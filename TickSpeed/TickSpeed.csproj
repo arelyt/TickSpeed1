@@ -121,6 +121,7 @@
     <Compile Include="SavitzkyGolay.cs" />
     <Compile Include="SplineFitSecTime.cs" />
     <Compile Include="IbyYSsaSg.cs" />
+    <Compile Include="Pe.cs" />
     <Compile Include="Ssa.cs" />
     <Compile Include="SsaAdap.cs" />
     <Compile Include="SsaCompare.cs" />

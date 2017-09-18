@@ -13,7 +13,8 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("RBFSmoothAlgLibDouble")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibDoubleClass : ITwoSourcesHandler, ISecurityInput0, IDoubleInput1, IStreamHandler, IDoubleReturns
+    public class RbfSmoothAlgLibDoubleClass : ITwoSourcesHandler, ISecurityInput0,
+                                                IDoubleInput1, IStreamHandler, IDoubleReturns, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -31,6 +32,7 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity security, IList<double> md)
         {
             var t = DateTime.Now;
+            var ctx = Context;
             var count = md.Count;
             if (count < 10)
                 return null;
@@ -72,7 +74,7 @@ namespace TickSpeed
                 result[i] = rbfcalc2(_model, time[i], 0.0);
             }
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("rbf exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            ctx.Log("rbf exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }
