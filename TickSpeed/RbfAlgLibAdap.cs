@@ -14,8 +14,9 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("RBFAlgLibAdap")]
 #pragma warning restore 612
-    public class RbfAlgLibAdapClass : ITwoSourcesHandler, ISecurityInput0,
-                                                IDoubleInput1, IStreamHandler, IDoubleReturns, IContextUses
+    public class RbfAlgLibAdapClass : IThreeSourcesHandler, ISecurityInput0,
+                                                IDoubleInput1, IDoubleInput2,
+                                        IStreamHandler, IDoubleReturns, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -30,7 +31,7 @@ namespace TickSpeed
         public IContext Context { get; set; }
 
 
-        public IList<double> Execute(ISecurity security, IList<double> md)
+        public IList<double> Execute(ISecurity security, IList<double> close, IList<double> md)
         {
             var t = DateTime.Now;
             var rbfconst = (int)Math.Floor(md.Last() * 10);
@@ -45,7 +46,7 @@ namespace TickSpeed
             var time = new double[count];
             for (var i = 0; i < count; i++)
             {
-                values[i] = md[i];
+                values[i] = close[i];
                 //time[i] = i;
             }
             var xy = new double[count, 3];
