@@ -41,6 +41,7 @@ namespace TickSpeed
             if (count < Winsize + 2)
                 return myDoubles;
             var result = new double[count];
+            var result1 = new double[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)
             {
@@ -65,8 +66,9 @@ namespace TickSpeed
                 client.Dispose();
             }
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Array.Copy(result, 0,  result1, count-result.Length, result.Length);
             Context.Log("PE exec for "+g+" msec", MessageType.Info, toMessageWindow:true);
-            return result;
+            return result1;
         }
 
         
