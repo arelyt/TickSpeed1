@@ -51,7 +51,7 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/ssarec_dep"));
+                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri("http://localhost:9910/ssa1_dep"));
                 result = sigDen.ssarec(values, speed, Numrec);
             }
             catch (MATLABException)
