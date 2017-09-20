@@ -19,7 +19,7 @@ namespace TickSpeed
         public interface ISsaFor
         {
             
-            double[] ssa1(double[] in1, int in2, int in3);
+            double[] ssa1(double[] in1, double in2, double in3);
 
         }
 
@@ -35,7 +35,7 @@ namespace TickSpeed
         public IList<double> Execute(IList<double> myDoubles, IList<double> sp)
         {
             var count = myDoubles.Count;
-            var speed = (int) Math.Floor(sp.Last() * 10);
+            var speed = (double) Math.Floor(sp.Last() * 10);
             if (count < 2)
                 return null;
             var result = new double[count];
