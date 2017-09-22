@@ -4,7 +4,7 @@ using TSLab.Script.Helpers;
 
 namespace TickSpeed
 {
-    // Дифференциал
+    // недоделано
     [HandlerCategory("Arelyt")]
     [HandlerName("FilterMedian")]
     public class FilterMedianClass : IDouble2DoubleHandler

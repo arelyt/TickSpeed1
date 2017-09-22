@@ -91,6 +91,11 @@
     <Compile Include="CasheSignalDouble3.cs" />
     <Compile Include="CasheSignalDouble1.cs" />
     <Compile Include="CasheSignalDouble.cs" />
+    <Compile Include="CasheSignalBool1.cs" />
+    <Compile Include="CasheSignalBool2.cs" />
+    <Compile Include="CasheSignalBool3.cs" />
+    <Compile Include="CasheSignalBool4.cs" />
+    <Compile Include="CasheSignalBool5.cs" />
     <Compile Include="CasheSignalDownClose.cs" />
     <Compile Include="CasheSignalDown.cs" />
     <Compile Include="CasheSignalUpClose.cs" />
