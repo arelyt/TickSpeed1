@@ -1,5 +1,167 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\temp\CWTFlow.m" t="Include" />
+    <e p="C:\temp\WSSTFlow.m" t="Include" />
+    <e p="C:\Users\arely\AppData\Local\JetBrains\Transient\ReSharperHost\v10\SolutionCaches\_TickSpeed.-928081065.00" t="ExcludeRecursive" />
+    <e p="C:\Users\arely\AppData\Local\TSLab\TSLab 2.0\Handlers" t="ExcludeRecursive" />
+    <e p="C:\Users\arely\Source\Repos\TickSpeed1" t="IncludeFlat">
+      <e p="ConsoleApp1" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ConsoleApp1.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="rbftest" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="rbftest.csproj" t="IncludeRecursive" />
+      </e>
+      <e p="Solution Items" t="Include" />
+      <e p="TestMatlab.tscript" t="Include" />
+      <e p="tickcandles.xml" t="Include" />
+      <e p="tickcandles1.xml" t="Include" />
+      <e p="TickSpeed" t="IncludeRecursive">
+        <e p="AbsCumDeltaVolume.cs" t="Include" />
+        <e p="alglib_hpc.cs" t="Include" />
+        <e p="CandleOI.cs" t="Include" />
+        <e p="CasheFunTest.cs" t="Include" />
+        <e p="CasheSignal.cs" t="Include" />
+        <e p="CasheSignalBool1.cs" t="Include" />
+        <e p="CasheSignalBool2.cs" t="Include" />
+        <e p="CasheSignalBool3.cs" t="Include" />
+        <e p="CasheSignalBool4.cs" t="Include" />
+        <e p="CasheSignalBool5.cs" t="Include" />
+        <e p="CasheSignalDouble.cs" t="Include" />
+        <e p="CasheSignalDouble1.cs" t="Include" />
+        <e p="CasheSignalDouble2.cs" t="Include" />
+        <e p="CasheSignalDouble3.cs" t="Include" />
+        <e p="CasheSignalDown.cs" t="Include" />
+        <e p="CasheSignalDownClose.cs" t="Include" />
+        <e p="CasheSignalUp.cs" t="Include" />
+        <e p="CasheSignalUpClose.cs" t="Include" />
+        <e p="CumDeltaTick.cs" t="Include" />
+        <e p="CumDeltaTickSpeed.cs" t="Include" />
+        <e p="CumDeltaUni.cs" t="Include" />
+        <e p="CumDeltaVolume.cs" t="Include" />
+        <e p="CumDtCwtFlow.cs" t="Include" />
+        <e p="CumDtCwtFlow1.cs" t="Include" />
+        <e p="CumTickBuy.cs" t="Include" />
+        <e p="CumTickSell.cs" t="Include" />
+        <e p="CumVolumeBuy.cs" t="Include" />
+        <e p="CumVolumeSell.cs" t="Include" />
+        <e p="CwtFlow.cs" t="Include" />
+        <e p="CwtFtFlow.cs" t="Include" />
+        <e p="DeltaCandle.cs" t="Include" />
+        <e p="DeltaLine.cs" t="Include" />
+        <e p="DeltaVolume.cs" t="Include" />
+        <e p="Differ.cs" t="Include" />
+        <e p="Envelope.cs" t="Include" />
+        <e p="FilterMedian.cs" t="Include" />
+        <e p="Fit.cs" t="Include" />
+        <e p="IbyFirDoubleMl.cs" t="Include" />
+        <e p="IbyGlass.cs" t="Include" />
+        <e p="IbyGlassOsc.cs" t="Include" />
+        <e p="IbyYSsaSg.cs" t="Include" />
+        <e p="LoadGlobalBoolBuy.cs" t="Include" />
+        <e p="LoadGlobalBoolBuySWT.cs" t="Include" />
+        <e p="LoadGlobalBoolSell.cs" t="Include" />
+        <e p="LoadGlobalBoolSellSWT.cs" t="Include" />
+        <e p="MovCumVTO.cs" t="Include" />
+        <e p="MoveVtoGlobal.cs" t="Include" />
+        <e p="NBarsDown.cs" t="Include" />
+        <e p="NBarsUp.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="OTOTimeWin.cs" t="Include" />
+        <e p="packages.config" t="Include" />
+        <e p="Pe.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+        </e>
+        <e p="QueueLevels.cs" t="Include" />
+        <e p="RbfAlgLibAdap.cs" t="Include" />
+        <e p="RbfSmooth.cs" t="Include" />
+        <e p="RbfSmoothAlgLib.cs" t="Include" />
+        <e p="RbfSmoothAlgLibDouble.cs" t="Include" />
+        <e p="RbfSmoothAlgLibUni.cs" t="Include" />
+        <e p="RbfSmoothAlgLibUniCashe.cs" t="Include" />
+        <e p="RbfSmoothSecTime.cs" t="Include" />
+        <e p="robustFit.cs" t="Include" />
+        <e p="SavitzkyGolay.cs" t="Include" />
+        <e p="Sgolay.cs" t="Include" />
+        <e p="SimpleSWT.cs" t="Include" />
+        <e p="SplineFit.cs" t="Include" />
+        <e p="SplineFitSecTime.cs" t="Include" />
+        <e p="Ssa.cs" t="Include" />
+        <e p="SsaAdap.cs" t="Include" />
+        <e p="SsaCompare.cs" t="Include" />
+        <e p="SsaSg.cs" t="Include" />
+        <e p="StoreGlobalBoolSec.cs" t="Include" />
+        <e p="swtden.cs" t="Include" />
+        <e p="swtden3.cs" t="Include" />
+        <e p="swtden4.cs" t="Include" />
+        <e p="swtden5.cs" t="Include" />
+        <e p="swtden6.cs" t="Include" />
+        <e p="swtden7.cs" t="Include" />
+        <e p="SWTFull.cs" t="Include" />
+        <e p="SWTFullWin.cs" t="Include" />
+        <e p="Tacc.cs" t="Include" />
+        <e p="TCount.cs" t="Include" />
+        <e p="TickCandle.cs" t="Include" />
+        <e p="TickSpeed.csproj" t="IncludeRecursive" />
+        <e p="TickSpeedOsc.cs" t="Include" />
+        <e p="TLine.cs" t="Include" />
+        <e p="TradeScripts" t="Include">
+          <e p="RealTimeOrder.cs" t="Include" />
+          <e p="RealTimeOrderTest.cs" t="Include" />
+        </e>
+        <e p="TSpeed.cs" t="Include" />
+        <e p="TSpeedAdap.cs" t="Include" />
+        <e p="TSpeedMsec.cs" t="Include" />
+        <e p="V2" t="Include">
+          <e p="LoadTickGlobal.cs" t="Include" />
+          <e p="LoadVTO8Global.cs" t="Include" />
+          <e p="StoreMoveVtoGlobal.cs" t="Include" />
+          <e p="StoreTickGlobal.cs" t="Include" />
+          <e p="StoreVtoGlobal.cs" t="Include" />
+          <e p="TestCounterTicks.cs" t="Include" />
+          <e p="Ts2.cs" t="Include" />
+        </e>
+        <e p="Vacc.cs" t="Include" />
+        <e p="VolTickOsc.cs" t="Include" />
+        <e p="VolTickOscCtx.cs" t="Include" />
+        <e p="VolTickOscCumul.cs" t="Include" />
+        <e p="VolTickOscFilterVol.cs" t="Include" />
+        <e p="VolTickOscFull.cs" t="Include" />
+        <e p="VolTickOscMult.cs" t="Include" />
+        <e p="VolTickOscMultSpeed.cs" t="Include" />
+        <e p="VolTickOscShib.cs" t="Include" />
+        <e p="VSpeed.cs" t="Include" />
+        <e p="VSpeedMsec.cs" t="Include" />
+        <e p="VtoInterpWin.cs" t="Include" />
+        <e p="VtoInterpWinSeconds.cs" t="Include" />
+        <e p="WinNorm.cs" t="Include" />
+        <e p="WsstFlow.cs" t="Include" />
+        <e p="Аск_стакан.cs" t="Include" />
+        <e p="Аск_стакан_Qty.cs" t="Include" />
+        <e p="Бид_стакан.cs" t="Include" />
+        <e p="Бид_стакан_Qty.cs" t="Include" />
+      </e>
+      <e p="TickSpeed.sln" t="IncludeFlat" />
+      <e p="VTO_test_EMA.tscript" t="Include" />
+    </e>
+    <e p="C:\Users\PycharmProjects\TestPandas\func_denoise_sw1d_1_auto.m" t="Include" />
+  </component>
   <component name="RiderRiderContentModelStore">
     <excludedPaths />
   </component>

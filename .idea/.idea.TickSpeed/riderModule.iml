@@ -1,30 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="RIDER_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://C:/Users/PycharmProjects/TestPandas/func_denoise_sw1d_1_auto.m">
-      <sourceFolder url="file://C:/Users/PycharmProjects/TestPandas/func_denoise_sw1d_1_auto.m" isTestSource="false" />
-    </content>
-    <content url="file://$MODULE_DIR$/../..">
-      <sourceFolder url="file://$MODULE_DIR$/../../ConsoleApp1" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../rbftest" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../TestMatlab.tscript" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../tickcandles.xml" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../tickcandles1.xml" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../TickSpeed" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../VTO_test_EMA.tscript" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/../../ConsoleApp1/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/../../ConsoleApp1/obj" />
-      <excludeFolder url="file://$MODULE_DIR$/../../TickSpeed/obj" />
-      <excludeFolder url="file://$MODULE_DIR$/../../packages" />
-      <excludeFolder url="file://$MODULE_DIR$/../../rbftest/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/../../rbftest/obj" />
-    </content>
-    <content url="file://C:/temp/CWTFlow.m">
-      <sourceFolder url="file://C:/temp/CWTFlow.m" isTestSource="false" />
-    </content>
-    <content url="file://C:/temp/WSSTFlow.m">
-      <sourceFolder url="file://C:/temp/WSSTFlow.m" isTestSource="false" />
-    </content>
+    <content url="file://C:/Users/PycharmProjects/TestPandas/func_denoise_sw1d_1_auto.m" />
+    <content url="file://$MODULE_DIR$/../.." />
+    <content url="file://C:/temp/CWTFlow.m" />
+    <content url="file://C:/temp/WSSTFlow.m" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
