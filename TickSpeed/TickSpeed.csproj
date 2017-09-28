@@ -101,6 +101,7 @@
     <Compile Include="CasheSignalUpClose.cs" />
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
+    <Compile Include="CwtFlowAdap.cs" />
     <Compile Include="FilterMedian.cs" />
     <Compile Include="IbyGlassOsc.cs" />
     <Compile Include="NBarsDown.cs" />
