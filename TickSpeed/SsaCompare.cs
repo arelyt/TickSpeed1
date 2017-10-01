@@ -16,17 +16,17 @@ namespace TickSpeed
         public IContext Context { get; set; }
         public interface ISsaFor
         {
-            double[] Ssa_For(double[] in1, int in2, int in3, int in4);
+            double[] ssa2f(double[] in1, double in2, double in3, double in4);
         }
 
         [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numdec { get; set; }
+        public double Numdec { get; set; }
 
         [HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numrec { get; set; }
+        public double Numrec { get; set; }
 
         [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
-        public int Numfor { get; set; }
+        public double Numfor { get; set; }
 
         [HandlerParameter(true, "localhost", Name = "Uri", NotOptimized = true)]
         public string Uria { get; set; }
@@ -39,7 +39,7 @@ namespace TickSpeed
             if (count < 2)
                 return null;
             var result = new double[count];
-            var values = new double[count-Numfor];
+            var values = new double[count-(int)Numfor];
             for (var i = 0; i < count-Numfor; i++)
             {
                 values[i] = myDoubles[i];
@@ -51,8 +51,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri(uriafull + "Ssa_For_dep"));
-                result = sigDen.Ssa_For(values, Numdec, Numrec, Numfor);
+                ISsaFor sigDen = client.CreateProxy<ISsaFor>(new Uri(uriafull + "ssa2f_dep"));
+                result = sigDen.ssa2f(values, Numdec, Numrec, Numfor);
             }
             catch (MATLABException)
             {
