@@ -39,8 +39,8 @@ namespace TickSpeed
             if (count < 2)
                 return null;
             var result = new double[count];
-            var values = new double[count-(int)Numfor];
-            for (var i = 0; i < count-Numfor; i++)
+            var values = new double[count];
+            for (var i = 0; i < count; i++)
             {
                 values[i] = myDoubles[i];
             }
