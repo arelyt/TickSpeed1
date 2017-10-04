@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Markup;
 using TSLab.Script;
 
@@ -191,5 +192,60 @@ namespace TickSpeed.V2
             return values;
         }
     }
-    
-    }
+    public static class Interpolation
+    {
+        public static void InterpolateNan(ref List<double> list)
+        {
+            if (double.IsNaN(list[0]))
+            {
+                list[0] = list.First(t => !double.IsNaN(t));
+            }
+
+            if (double.IsNaN(list[list.Count - 1]))
+            {
+                list[list.Count - 1] = list.Last(t => !double.IsNaN(t));
+            }
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (!double.IsNaN(list[i]))
+                {
+                    continue;
+                }
+
+                int begin = 0;
+                int end = 0;
+
+                for (int j = i; j >= 0; j--)
+                {
+                    begin = j;
+
+                    if (!double.IsNaN(list[j]))
+                    {
+                        break;
+                    }
+                }
+
+                for (int j = i; j < list.Count; j++)
+                {
+                    end = j;
+
+                    if (!double.IsNaN(list[j]))
+                    {
+                        i = j;
+                        break;
+                    }
+                }
+
+                double delta = (list[end] - list[begin]) / (end - begin);
+                double newVal = list[begin];
+
+                for (int j = begin + 1; j < end; j++)
+                {
+                    newVal += delta;
+                    list[j] = newVal;
+                }
+            }
+        }
+    }    
+}
