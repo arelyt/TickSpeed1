@@ -120,6 +120,7 @@
     <Compile Include="CumDtCwtFlow.cs" />
     <Compile Include="CasheFunTest.cs" />
     <Compile Include="RbfAlgLibAdap.cs" />
+    <Compile Include="SsaAlgLib.cs" />
     <Compile Include="RbfSmoothAlgLibDouble.cs" />
     <Compile Include="RbfSmoothAlgLibUniCashe.cs" />
     <Compile Include="RbfSmoothAlgLibUni.cs" />
