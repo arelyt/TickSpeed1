@@ -3,7 +3,7 @@
   <component name="ContentModelStore">
     <e p="C:\temp\CWTFlow.m" t="Include" />
     <e p="C:\temp\WSSTFlow.m" t="Include" />
-    <e p="C:\Users\arely\AppData\Local\JetBrains\Transient\ReSharperHost\v10\SolutionCaches\_TickSpeed.-928081065.00" t="ExcludeRecursive" />
+    <e p="C:\Users\arely\.Rider2017.2\system\resharper-host\Local\Transient\ReSharperHost\v10\SolutionCaches\_TickSpeed.-928081065.00" t="ExcludeRecursive" />
     <e p="C:\Users\arely\AppData\Local\TSLab\TSLab 2.0\Handlers" t="ExcludeRecursive" />
     <e p="C:\Users\arely\Source\Repos\TickSpeed1" t="IncludeFlat">
       <e p="ConsoleApp1" t="IncludeRecursive">
@@ -61,6 +61,7 @@
         <e p="CumVolumeBuy.cs" t="Include" />
         <e p="CumVolumeSell.cs" t="Include" />
         <e p="CwtFlow.cs" t="Include" />
+        <e p="CwtFlowAdap.cs" t="Include" />
         <e p="CwtFtFlow.cs" t="Include" />
         <e p="DeltaCandle.cs" t="Include" />
         <e p="DeltaLine.cs" t="Include" />
@@ -104,7 +105,9 @@
         <e p="SplineFitSecTime.cs" t="Include" />
         <e p="Ssa.cs" t="Include" />
         <e p="SsaAdap.cs" t="Include" />
+        <e p="SsaAlgLib.cs" t="Include" />
         <e p="SsaCompare.cs" t="Include" />
+        <e p="SsaFor.cs" t="Include" />
         <e p="SsaSg.cs" t="Include" />
         <e p="StoreGlobalBoolSec.cs" t="Include" />
         <e p="swtden.cs" t="Include" />

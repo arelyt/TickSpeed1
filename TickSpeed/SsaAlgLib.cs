@@ -55,15 +55,40 @@ namespace TickSpeed
             int jc = 0;
             alglib.setnworkers(0);
             var S = new double[L, L];
-            alglib.smp_rmatrixgemm(m, n, k, alpha, X, ia, ja, optypea, X, ib, jb, optypeb, beta, ref S, ic, jc);
+            alglib.smp_rmatrixgemm(m, n, k, alpha, X, ia, ja,
+                optypea, X, ib, jb, optypeb, beta, ref S, ic, jc);
             int uneeded = 0;
             int vtneeded = 2;
             int additionalmemory = 2;
-            double[] U;
-            double[,] G;
-            double[,] V;
+            double[] G;
+            double[,] U;
+            double[,] R;
             var svdres = alglib.smp_rmatrixsvd(S, m, n, uneeded, vtneeded,
-                additionalmemory, out U, out G, out V);
+                additionalmemory, out G, out U, out R);
+            // ttttt
+            optypea = 1;
+            optypeb = 0;
+            m = S.GetLength(0);
+            n = U.GetLength(1);
+            k = S.GetLength(1);
+            var V = new double[m, n];
+            alglib.smp_rmatrixgemm(m, n, k, alpha, X, ia, ja,
+                optypea, R, ib, jb, optypeb, beta, ref V, ic, jc);
+            // Grouping
+            var In = new int[N];
+            for (int i = 0; i < N; i++)
+            {
+                In[i] = i;
+            }
+            optypea = 0;
+            optypeb = 1;
+            m = U.GetLength(0);
+            n = V.GetLength(1);
+            k = U.GetLength(1);
+            var rca = new double[m, n];
+            alglib.smp_rmatrixgemm(m, n, k, alpha, U, ia, ja,
+                optypea, V, ib, jb, optypeb, beta, ref rca, ic, jc);
+
 
             for (var i = 0; i < count; i++)
             {
