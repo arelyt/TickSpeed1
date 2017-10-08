@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -23,6 +24,10 @@ namespace TickSpeed
             var T = signal.Count;
             var values = signal.ToList();
             V2.Interpolation.InterpolateNan(ref values);
+            if (L > T/2)
+            {
+                L = T - L;
+            }
             var K = T - L + 1;
             if (T < 10)
                 return null;
@@ -80,20 +85,36 @@ namespace TickSpeed
             {
                 In[i] = i;
             }
+            var Vt = new double[V.GetLength(1), V.GetLength(0)];
+            alglib.rmatrixtranspose(V.GetLength(0), V.GetLength(1), V, ia, ja, ref Vt, ib, jb);
             optypea = 0;
-            optypeb = 1;
+            optypeb = 0;
+
             m = U.GetLength(0);
-            n = V.GetLength(1);
-            k = U.GetLength(1);
+            n = N;
+            k = N;
             var rca = new double[m, n];
             alglib.smp_rmatrixgemm(m, n, k, alpha, U, ia, ja,
-                optypea, V, ib, jb, optypeb, beta, ref rca, ic, jc);
+                optypea, Vt, ib, jb, optypeb, beta, ref rca, ic, jc);
 
 
-            for (var i = 0; i < count; i++)
+            // Reconstruction
+
+            var Lp = Math.Max(L, K);
+            var Kp = Math.Min(L, K);
+
+            for (int ki = 0; ki < Lp - 2; ki++)
             {
-                result[i] = rbfcalc2(_model, time[i], 0.0);
+                for (int j = 0; j < ki+1; j++)
+                {
+                    
+                }
             }
+
+            //for (var i = 0; i < count; i++)
+            //{
+            //    result[i] = rbfcalc2(_model, time[i], 0.0);
+            //}
             return result;
         }
     }
