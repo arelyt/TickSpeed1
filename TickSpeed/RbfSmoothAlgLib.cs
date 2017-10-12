@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using static alglib;
@@ -20,11 +22,12 @@ namespace TickSpeed
         public double Rbfconst { get; set; }
 
         private rbfmodel _model;
-        
+        public IContext Context { get; set; }
 
-        
+
         public IList<double> Execute(ISecurity security)
         {
+            var t = DateTime.Now;
             var count = security.Bars.Count;
             if (count < 10)
                 return null;
@@ -54,6 +57,8 @@ namespace TickSpeed
             {
                 result[i] = rbfcalc2(_model, time[i], 0.0);
             }
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("ssa exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }
