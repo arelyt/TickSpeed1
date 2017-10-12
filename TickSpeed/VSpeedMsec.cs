@@ -40,7 +40,7 @@ namespace TickSpeed
                 for (int i = Win - 1; i < count; i++)
                 {
                     var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                    values[i] = tradelastwin.Sum(t => t.Volume)/(double)Win;
+                    values[i] = tradelastwin.Sum(t => t.Quantity)/(double)Win;
                 }
 
                
