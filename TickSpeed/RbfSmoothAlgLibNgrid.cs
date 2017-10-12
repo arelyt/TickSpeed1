@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using MoreLinq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using static alglib;
@@ -10,9 +12,9 @@ namespace TickSpeed
     // RBF model from AlgoLib.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("RBFSmoothAlgLib")]
+    [HandlerName("RBFSmoothAlgLibNgrid")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
+    public class RbfSmoothAlgLibNgridClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -41,6 +43,15 @@ namespace TickSpeed
                 values[i] = security.Bars[i].Close;
                 time[i] = i;
             }
+            var ma = values.Max();
+            var mi = values.Min();
+            var ngridcount = (ma - mi)/security.Tick + 1;
+            var ngrid = new double[(int)ngridcount];
+            ngrid[0] = mi;
+            for (var i = 0; i < ngridcount; i++)
+            {
+                ngrid[i] = ngrid[i-1] + security.Tick;
+            }
             var xy = new double[count, 3];
             for (var i = 0; i < count; i++)
             {
@@ -53,10 +64,11 @@ namespace TickSpeed
             rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
             //rbf.rbfset(_model, Rbfconst, Nlayer, Smooth);
             rbfbuildmodel(_model, out rep);
-            for (var i = 0; i < count; i++)
-            {
-                result[i] = rbfcalc2(_model, time[i], 0.0);
-            }
+            alglib.smp_rbfgridcalc2v(_model, time, count, ngrid, ngrid.Length, out result);
+            //for (var i = 0; i < count; i++)
+            //{
+            //    result[i] = rbfcalc2(_model, time[i], 0.0);
+            //}
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
             Context.Log("RBF exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;

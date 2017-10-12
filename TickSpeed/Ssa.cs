@@ -65,7 +65,7 @@ namespace TickSpeed
                 client.Dispose();
             }
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("RBF exec for "+g+" msec", MessageType.Info, toMessageWindow:true);
+            Context.Log("ssa exec for "+g+" msec", MessageType.Info, toMessageWindow:true);
             return result;
         }
 
