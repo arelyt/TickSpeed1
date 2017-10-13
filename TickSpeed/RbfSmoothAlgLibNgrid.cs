@@ -70,8 +70,8 @@ namespace TickSpeed
             //    result[i] = rbfcalc2(_model, time[i], 0.0);
             //}
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("RBF exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
-            return result;
+            Context.Log("RBFgrid exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            return result.Take(count).ToList();
         }
     }
 }

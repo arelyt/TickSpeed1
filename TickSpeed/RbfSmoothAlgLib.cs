@@ -12,7 +12,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("RBFSmoothAlgLib")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
+    public class RbfSmoothAlgLibClass : IOneSourceHandler, ISecurityInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
