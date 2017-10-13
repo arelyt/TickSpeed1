@@ -14,7 +14,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("RBFSmoothAlgLibNgrid")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibNgridClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
+    public class RbfSmoothAlgLibNgridClass : IOneSourceHandler, ISecurityInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -45,10 +45,10 @@ namespace TickSpeed
             }
             var ma = values.Max();
             var mi = values.Min();
-            var ngridcount = (ma - mi)/security.Tick + 1;
-            var ngrid = new double[(int)ngridcount];
+            var ngridcount = (int)((ma - mi)/security.Tick + 1.0);
+            var ngrid = new double[ngridcount];
             ngrid[0] = mi;
-            for (var i = 0; i < ngridcount; i++)
+            for (var i = 1; i < ngridcount; i++)
             {
                 ngrid[i] = ngrid[i-1] + security.Tick;
             }
