@@ -46,7 +46,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files\MATLAB\MATLAB Production Server\R2016b\client\dotnet\MathWorks.MATLAB.ProductionServer.Client.dll</HintPath>
     </Reference>
-    <Reference Include="MoreLinq, Version=2.8.21218.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+    <Reference Include="MoreLinq, Version=2.0.20029.0, Culture=neutral, PublicKeyToken=384d532d7e88985d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\morelinq.2.8.0\lib\net40\MoreLinq.dll</HintPath>
     </Reference>
     <Reference Include="RusAlgo.Handlers.Public">
@@ -122,6 +123,7 @@
     <Compile Include="CumDtCwtFlow.cs" />
     <Compile Include="CasheFunTest.cs" />
     <Compile Include="RbfAlgLibAdap.cs" />
+    <Compile Include="RbfSmoothAlgLib1.cs" />
     <Compile Include="RbfSmoothAlgLibNgrid.cs" />
     <Compile Include="SsaAlgLib.cs" />
     <Compile Include="RbfSmoothAlgLibDouble.cs" />
