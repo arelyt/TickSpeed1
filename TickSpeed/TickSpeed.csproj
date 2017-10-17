@@ -124,6 +124,7 @@
     <Compile Include="CasheFunTest.cs" />
     <Compile Include="RbfAlgLibAdap.cs" />
     <Compile Include="RbfSmoothAlgLib1.cs" />
+    <Compile Include="RbfSmoothNetrbfit.cs" />
     <Compile Include="RbfSmoothAlgLibNgrid.cs" />
     <Compile Include="SsaAlgLib.cs" />
     <Compile Include="RbfSmoothAlgLibDouble.cs" />
