@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using Altaxo;
-using Altaxo.Calc.Interpolation;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 using static alglib;
@@ -13,9 +10,9 @@ namespace TickSpeed
     // RBF model from AlgoLib.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("RBFSmoothAlgLibNgrid")]
+    [HandlerName("RBFSmoothAlgLib1")]
 #pragma warning restore 612
-    public class RbfSmoothAlgLibNgridClass : IOneSourceHandler, ISecurityInputs, IDoubleReturns, IStreamHandler, IContextUses
+    public class RbfSmoothAlgLib1Class : IOneSourceHandler, ISecurityInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         [HandlerParameter(Name = "NLayer", Default = "3", NotOptimized = false)]
         public int Nlayer { get; set; }
@@ -24,7 +21,7 @@ namespace TickSpeed
         [HandlerParameter(Name = "RbfConst", Default = "2.0", NotOptimized = false)]
         public double Rbfconst { get; set; }
 
-        //private rbfmodel _model;
+        private rbfmodel _model;
         public IContext Context { get; set; }
 
 
@@ -34,7 +31,7 @@ namespace TickSpeed
             var count = security.Bars.Count;
             if (count < 10)
                 return null;
-            //rbfcreate(1, 1, out _model);
+            rbfcreate(1, 1, out _model);
             // var v = alglib.rbfcalc2(model, 0.0, 0.0);
             var result = new double[count];
             var values = new double[count];
@@ -44,39 +41,29 @@ namespace TickSpeed
                 values[i] = security.Bars[i].Close;
                 time[i] = i;
             }
-            IReadOnlyList<double> time1 = time.ToList();
-            IReadOnlyList<double> values1 = values.ToList();
-            //var ma = values.Max();
-            //var mi = values.Min();
-            //var ngridcount = (int)((ma - mi)/security.Tick + 1.0);
-            //var ngrid = new double[ngridcount];
-            //ngrid[0] = 0;
-            //for (var i = 1; i < ngridcount; i++)
-            //{
-            //    //ngrid[i] = ngrid[i-1] + security.Tick;
-            //    ngrid[i] = 0;
-            //}
             var xy = new double[count, 2];
             for (var i = 0; i < count; i++)
             {
                 xy[i, 0] = time[i];
                 xy[i, 1] = values[i];
             }
-            //rbfsetpoints(_model, xy);
+            rbfsetpoints(_model, xy);
             // v = alglib.rbfcalc2(model, 0.0, 0.0);
-            //rbfreport rep;
-            //rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
+            // ReSharper disable once NotAccessedVariable
+            rbfreport rep;
+            //rbfcalcbuffer buf;
+            rbfsetalgohierarchical(_model, Rbfconst, Nlayer, Smooth);
             //rbf.rbfset(_model, Rbfconst, Nlayer, Smooth);
-            //rbfbuildmodel(_model, out rep);
-            //alglib.smp_rbfgridcalc2v(_model, time, count, ngrid, ngrid.Length, out result);
-            //PolyharmonicSpline.Construct(time1, values1);
-            //for (var i = 0; i < count; i++)
-            //{
-            //    result[i] = rbfcalc2(_model, time[i], 0.0);
-            //}
+            rbfbuildmodel(_model, out rep);
+            //rbfcreatecalcbuffer(_model, out buf);
+            for (var i = 0; i < count; i++)
+            {
+                result[i] = rbfcalc1(_model, time[i]);
+            }
+            //rbftscalcbuf(_model, buf, time, ref result);
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("RBFgrid exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
-            return result.Take(count).ToList();
+            Context.Log("RBF1 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            return result;
         }
     }
 }
