@@ -149,6 +149,12 @@ namespace TickSpeed
             {
                 result[i] = rbfcalc2(_model, time[i], 0.0);
             }
+            unsafe
+            {
+                int a = count;
+                int* b = &a;
+                System.Diagnostics.Debug.Assert(*b==a);
+            }
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
             //Context.Log("rbf exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;

@@ -46,7 +46,7 @@ namespace TickSpeed
 
                
             }
-            values = Series.SMA(values, Win);
+            values = Series.EMA(values, Win);
             return values;
         }
     }
