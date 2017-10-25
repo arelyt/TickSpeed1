@@ -14,7 +14,7 @@ namespace TickSpeed
     {
         public interface IPeakFinder
         {
-            Boolean[] peakfinder(double[] in1, double in2, double in3, double in4, bool in5, bool in6);
+            double[] peakfinder(double[] in1, double in2, double in3, double in4, bool in5, bool in6);
         }
 
         [HandlerParameter(Name = "Select", NotOptimized = true)]
@@ -38,7 +38,8 @@ namespace TickSpeed
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
-            var result = new Boolean[count];
+            var result = new double[count];
+            var resultb = new Boolean[count];
             var values = new double[count];
             for (var i = 0; i < count; i++)
             {
@@ -61,9 +62,12 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
-
-
-            return result;
+            var countres = result.Length;
+            for(int i = 0; i < countres; i++)
+            {
+                resultb[(int)result[i]] = true;
+            }
+            return resultb;
         }
     }
 }
