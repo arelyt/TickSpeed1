@@ -119,6 +119,7 @@
     <Compile Include="CasheSignalUp.cs" />
     <Compile Include="CasheSignal.cs" />
     <Compile Include="CwtFlowAdap.cs" />
+    <Compile Include="Detrend.cs" />
     <Compile Include="Zscore.cs" />
     <Compile Include="PeakFinder.cs" />
     <Compile Include="FilterMedian.cs" />
