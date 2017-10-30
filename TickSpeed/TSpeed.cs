@@ -4,6 +4,7 @@ using System.Linq;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
+using TSLab.Script.Helpers;
 
 namespace TickSpeed
 {
@@ -16,6 +17,8 @@ namespace TickSpeed
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
         public TradeDirection Direction { get; set; }
+        [HandlerParameter(Name = "Win", NotOptimized = true)]
+        public double win { get; set; }
 
         public IList<double> Execute(ISecurity security)
         {
@@ -30,18 +33,19 @@ namespace TickSpeed
             {
                 var trades = security.GetTrades(i);
 
-                //datme[i] = TimeSpan.FromTicks(security.Bars[i].Date.Ticks - security.Bars[i-1].Date.Ticks).TotalSeconds;
-                datme[i] = security.Bars[i].Date.TimeOfDay.TotalMilliseconds;
+            datme[i] = TimeSpan.FromMilliseconds(security.Bars[i].Date.TimeOfDay.TotalMilliseconds - security.Bars[i-1].Date.TimeOfDay.TotalMilliseconds).TotalSeconds;
+                //datme[i] = security.Bars[i].Date.TimeOfDay.TotalMilliseconds;
                 var value = trades.Sum(t => t.Direction == Direction ? 1 : 0);
 
                 //  Проверка на ненулевое время (м.б. ошибка в тиковых данных или их отсутствие. Принудительно делим на 0.1)
                 if (datme[i] > 0.0001)
                     values[i] = value / datme[i];
                 else
-                    values[i] = value / 0.1;
+                    values[i] = value / 1.0;
                 
                 
             }
+            values = (double[]) Series.EMA(values, (int)win);
             return values;
         }
     }
