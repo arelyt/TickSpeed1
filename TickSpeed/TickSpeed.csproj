@@ -104,6 +104,7 @@
     <Compile Include="alglib_hpc.cs" />
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
+    <Compile Include="CasheFun.cs" />
     <Compile Include="CasheSignalDouble2.cs" />
     <Compile Include="CasheSignalDouble3.cs" />
     <Compile Include="CasheSignalDouble1.cs" />
