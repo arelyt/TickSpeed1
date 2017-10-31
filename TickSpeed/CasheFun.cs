@@ -14,7 +14,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("CasheFun")]
 #pragma warning restore 612
-    public class CasheFunClass : IThreeSourcesHandler, ISecurityInput0,
+    public class CasheFunClass : IStreamHandler, IThreeSourcesHandler, ISecurityInput0,
                                  IDoubleInput1, IDoubleInput2, IDoubleReturns
     {
         public interface ICasheFun1
