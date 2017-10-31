@@ -62,7 +62,7 @@ namespace TickSpeed
             {
                 if (Math.Abs(nSell[i]) > 0.0001)
                 {
-                    osc[i] = nBuy[i] / nSell[i];
+                    osc[i] = (nBuy[i] - nSell[i]) / (nSell[i] + nBuy[i]);
                 }
                 else
                 {
