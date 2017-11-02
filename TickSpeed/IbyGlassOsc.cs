@@ -16,8 +16,8 @@ namespace TickSpeed
     {
         [HandlerParameter(true, "0", Min = "1", Max = "20", Step = "1")]
         public int Level { get; set; }
-        [HandlerParameter(Name = "Reset", Default = "true", NotOptimized = false)]
-        public bool Reset { get; set; }
+        [HandlerParameter(Name = "Reverse", Default = "true", NotOptimized = false)]
+        public bool Reverse { get; set; }
         //private static IList<double> Glass { get; set; }
         public IList<double> Execute(ISecurity source)
         {
@@ -68,7 +68,15 @@ namespace TickSpeed
                     nSell += sellQueue[j].Quantity;
                     nBuy += buyQueue[j].Quantity;
                 }
-                numArray[i] = (nBuy - nSell) / (nBuy + nSell);
+                if (Reverse)
+                {
+                    numArray[i] = (nBuy - nSell) / (nBuy + nSell);
+                }
+                else
+                {
+                    numArray[i] = (nSell - nBuy) / (nBuy + nSell);
+                }
+                
             }
             return numArray;
         }
