@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TSLab.Script.Handlers;
 using MathNet.Filtering.Median;
 
@@ -20,7 +21,7 @@ namespace TickSpeed
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
-            var values = new double[count];
+            //var values = new double[count];
             //values[0] = 0;
             //for (var i = 0; i < count; i++)
             //{
@@ -28,10 +29,12 @@ namespace TickSpeed
             //}
 
             var f = new OnlineMedianFilter(Win);
-            for (var i = Win-1; i < count; i++)
-            {
-                values[i-Win+1] = f.ProcessSample(myDoubles[i]);
-            }
+            //for (var i = Win-1; i < count; i++)
+            //{
+            //    values[i-Win+1] = f.ProcessSample(myDoubles[i]);
+            //}
+            var val = myDoubles.ToArray();
+            var values = f.ProcessSamples(val);
             return values;
         }
         
