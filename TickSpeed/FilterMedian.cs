@@ -28,9 +28,9 @@ namespace TickSpeed
             //}
 
             var f = new OnlineMedianFilter(Win);
-            for (var i = 0; i < count; i++)
+            for (var i = Win-1; i < count; i++)
             {
-                values[i] = f.ProcessSample(myDoubles[i]);
+                values[i-Win+1] = f.ProcessSample(myDoubles[i]);
             }
             return values;
         }

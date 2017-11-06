@@ -21,18 +21,23 @@ namespace TickSpeed
             if (count < 2)
                 return null;
             var values = new double[count];
-            values[0] = 0;
-            for (var i = 1; i < count; i++)
+            
+            for (var i = 0; i < count; i++)
             {
                 values[i] = myDoubles[i];
             }
             IList<double> koeff = FirCoefficients.LowPass(1, Cutoff, Order);
-            var f = new OnlineFirFilter(koeff);
-            for (var i = 0; i < count; i++)
+            var blackmanWindow = new MathNet.Filtering.Windowing.BlackmanWindow {Width = koeff.Count};
+            var windowArr = blackmanWindow.CopyToArray();
+            for (int i = 0; i < koeff.Count; i++)
             {
-                values[i] = f.ProcessSample(myDoubles[i]);
+                koeff[i] *= windowArr[i];
             }
-            return values;
+            var f = new OnlineFirFilter(koeff);
+            
+            var result = f.ProcessSamples(values);
+            
+            return result;
         }
         
     }
