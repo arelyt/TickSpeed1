@@ -121,6 +121,7 @@
     <Compile Include="CasheSignal.cs" />
     <Compile Include="CwtFlowAdap.cs" />
     <Compile Include="Detrend.cs" />
+    <Compile Include="FilterIir.cs" />
     <Compile Include="FilterFir.cs" />
     <Compile Include="NeuralGlassFitSi.cs" />
     <Compile Include="Znorm.cs" />

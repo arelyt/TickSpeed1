@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using TSLab.Script.Handlers;
 using MathNet.Filtering.FIR;
+using MathNet.Filtering.IIR;
+
 namespace TickSpeed
 {
     // недоделано
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("FilterFIRlp")]
+    [HandlerName("FilterIIRlp")]
 #pragma warning restore 612
-    public class FilterFirlpClass : IDouble2DoubleHandler
+    public class FilterIirlpClass : IDouble2DoubleHandler
     {
         [HandlerParameter(Name = "CutOff", Default = "0.25", NotOptimized = false)]
         public double Cutoff { get; set; }
@@ -26,14 +28,14 @@ namespace TickSpeed
             {
                 values[i] = myDoubles[i];
             }
-            IList<double> koeff = FirCoefficients.LowPass(1, Cutoff, Order);
-            var blackmanWindow = new MathNet.Filtering.Windowing.BlackmanWindow {Width = koeff.Count};
-            var windowArr = blackmanWindow.CopyToArray();
-            for (int i = 0; i < koeff.Count; i++)
-            {
-                koeff[i] *= windowArr[i];
-            }
-            var f = new OnlineFirFilter(koeff);
+            double[] koeff = IirCoefficients.LowPass(1, Cutoff, Order);
+            //var blackmanWindow = new MathNet.Filtering.Windowing.BlackmanWindow {Width = koeff.Count};
+            //var windowArr = blackmanWindow.CopyToArray();
+            //for (int i = 0; i < koeff.Count; i++)
+            //{
+            //    koeff[i] *= windowArr[i];
+            //}
+            var f = new OnlineIirFilter(koeff);
             var result = f.ProcessSamples(values);
             
             return result;
