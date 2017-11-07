@@ -12,7 +12,7 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("JAFilter")]
 #pragma warning restore 612
-    public class JaFilterClass : IDouble2DoubleHandler
+    public class JaFilterClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         [HandlerParameter(Name = "Lambda", Default = "0.25", NotOptimized = false)]
         public double Lambda { get; set; }
