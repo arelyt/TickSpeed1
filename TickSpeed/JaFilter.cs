@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using TSLab.Script.Handlers;
-using MathNet.Filtering.FIR;
 using MathWorks.MATLAB.ProductionServer.Client;
 
 namespace TickSpeed
@@ -21,7 +20,7 @@ namespace TickSpeed
         public interface IJaFilter
         {
             // ReSharper disable once InconsistentNaming
-            double[] IbyFirMl(double[] in1, double in2);
+            double[] jafilter(double[] in1, double in2);
         }
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -37,9 +36,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                JaFilterClass.IJaFilter sigDen =
-                    client.CreateProxy<JaFilterClass.IJaFilter>(new Uri("http://localhost:9910/jafilter_dep"));
-                values = sigDen.IbyFirMl(myDoubles.ToArray(), Lambda);
+                IJaFilter sigDen = client.CreateProxy<IJaFilter>(new Uri("http://localhost:9910/jafilter_dep"));
+                values = sigDen.jafilter(myDoubles.ToArray(), Lambda);
             }
             catch (MATLABException)
             {
