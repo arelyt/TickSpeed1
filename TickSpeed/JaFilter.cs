@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using TSLab.Script.Handlers;
 using MathWorks.MATLAB.ProductionServer.Client;
@@ -22,8 +23,10 @@ namespace TickSpeed
             // ReSharper disable once InconsistentNaming
             double[] jafilter(double[] in1, double in2);
         }
+        public IContext Context { get; set; }
         public IList<double> Execute(IList<double> myDoubles)
         {
+            var t = DateTime.Now;
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
@@ -47,7 +50,8 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
-
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("JAfilter exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return values;
         }
         
