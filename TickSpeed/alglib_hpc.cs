@@ -1,5 +1,5 @@
 /**************************************************************************
-ALGLIB dev (source code generated 2017-11-15)
+ALGLIB dev (source code generated 2017-11-17)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -31403,6 +31403,17 @@ public partial class alglib
     _core_ssaappendsequenceandupdate( s,  x,  nticks,  updateits, alglibmode.serial);
     return;
     }
+    public static void ssaappendsequenceandupdate(ssamodel s, double[] x, double updateits)
+    {
+    int nticks;
+    
+    
+    nticks = ap.len(x);
+    
+    _core_ssaappendsequenceandupdate( s,  x,  nticks,  updateits, alglibmode.serial);
+    
+    return;
+    }
     private static unsafe void _core_ssasetalgoprecomputed(ssamodel s, double[,] a, int windowwidth, int nbasis, alglibmode _alglib_mode)
     {
         // primary initialization
@@ -31442,6 +31453,19 @@ public partial class alglib
     public static void ssasetalgoprecomputed(ssamodel s, double[,] a, int windowwidth, int nbasis)
     {
     _core_ssasetalgoprecomputed( s,  a,  windowwidth,  nbasis, alglibmode.serial);
+    return;
+    }
+    public static void ssasetalgoprecomputed(ssamodel s, double[,] a)
+    {
+    int windowwidth;
+    int nbasis;
+    
+    
+    windowwidth = ap.rows(a);
+    nbasis = ap.cols(a);
+    
+    _core_ssasetalgoprecomputed( s,  a,  windowwidth,  nbasis, alglibmode.serial);
+    
     return;
     }
     private static unsafe void _core_ssasetalgotopkdirect(ssamodel s, int topk, alglibmode _alglib_mode)
@@ -31811,6 +31835,17 @@ public partial class alglib
     _core_ssaanalyzesequence( s,  data,  nticks, out  trend, out  noise, alglibmode.serial);
     return;
     }
+    public static void ssaanalyzesequence(ssamodel s, double[] data, out double[] trend, out double[] noise)
+    {
+    int nticks;
+    
+    
+    nticks = ap.len(data);
+    
+    _core_ssaanalyzesequence( s,  data,  nticks, out  trend, out  noise, alglibmode.serial);
+    
+    return;
+    }
     private static unsafe void _core_ssaforecastlast(ssamodel s, int nticks, out double[] trend, alglibmode _alglib_mode)
     {
         // primary initialization
@@ -31854,7 +31889,7 @@ public partial class alglib
     _core_ssaforecastlast( s,  nticks, out  trend, alglibmode.serial);
     return;
     }
-    private static unsafe void _core_ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, out double[] trend, alglibmode _alglib_mode)
+    private static unsafe void _core_ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, bool smooth, out double[] trend, alglibmode _alglib_mode)
     {
         // primary initialization
         if( hAlglibDL==IntPtr.Zero )
@@ -31867,6 +31902,7 @@ public partial class alglib
         x_vector _d_data = new x_vector();
         x_int _d_datalen = new x_int(datalen);
         x_int _d_forecastlen = new x_int(forecastlen);
+        byte _d_smooth = (byte)(smooth ? 1 : 0);
         x_vector _d_trend = new x_vector();
         
         // Pack, call, unpack
@@ -31876,7 +31912,7 @@ public partial class alglib
                 x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
                 x_vector_create_empty(ref _d_trend, DT_REAL);
                 trend = null;
-                _error_code = _i_ser_ssaforecastsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_forecastlen, &_d_trend);
+                _error_code = _i_ser_ssaforecastsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_forecastlen, &_d_smooth, &_d_trend);
             }
             if( _error_code!=X_OK )
             {
@@ -31898,9 +31934,20 @@ public partial class alglib
         }
         // This function returns no value.
     }
-    public static void ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, out double[] trend)
+    public static void ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, bool smooth, out double[] trend)
     {
-    _core_ssaforecastsequence( s,  data,  datalen,  forecastlen, out  trend, alglibmode.serial);
+    _core_ssaforecastsequence( s,  data,  datalen,  forecastlen,  smooth, out  trend, alglibmode.serial);
+    return;
+    }
+    public static void ssaforecastsequence(ssamodel s, double[] data, int forecastlen, bool smooth, out double[] trend)
+    {
+    int datalen;
+    
+    
+    datalen = ap.len(data);
+    
+    _core_ssaforecastsequence( s,  data,  datalen,  forecastlen,  smooth, out  trend, alglibmode.serial);
+    
     return;
     }
     
@@ -55869,7 +55916,7 @@ public partial class alglib
         private unsafe delegate int _d_ssaforecastlast(byte **error_msg, void **s, x_int *nticks, x_vector *trend);
         private static _d_ssaforecastlast _i_ser_ssaforecastlast = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_ssaforecastsequence(byte **error_msg, void **s, x_vector *data, x_int *datalen, x_int *forecastlen, x_vector *trend);
+        private unsafe delegate int _d_ssaforecastsequence(byte **error_msg, void **s, x_vector *data, x_int *datalen, x_int *forecastlen, byte *smooth, x_vector *trend);
         private static _d_ssaforecastsequence _i_ser_ssaforecastsequence = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_gammafunction(byte **error_msg, double *result, double *x);
