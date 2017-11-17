@@ -1,5 +1,5 @@
 /**************************************************************************
-ALGLIB 3.11.0 (source code generated 2017-05-11)
+ALGLIB dev (source code generated 2017-11-15)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -840,6 +840,7 @@ public partial class alglib
 //
 // Code below contains interface to HPC computational core
 //
+#pragma warning disable 414
 public partial class alglib
 {
     private static object   CoreInitLock     = new object();
@@ -1688,22 +1689,63 @@ public partial class alglib
         }
     }
     
+    /*
+     * Windows dynamic PInvoke
+     *
+     * Can be turned off by defining AE_OS_NOT_WINDOWS at global level.
+     */
+#if !AE_OS_NOT_WINDOWS
     [DllImport("kernel32")]
     private extern static IntPtr LoadLibrary(string libraryName);
-    
+
     [DllImport("kernel32", CharSet=CharSet.Ansi)]
     private extern static IntPtr GetProcAddress(IntPtr hwnd, string procedureName);
+#endif
+
+    /*
+     * Linux dynamic PInvoke
+     */
+#if !AE_OS_NOT_LINUX
+    const int RTLD_NOW = 2; // for dlopen's flags
+
+    [DllImport("libdl.so")]
+    static extern IntPtr dlopen(string filename, int flags);
+
+    [DllImport("libdl.so")]
+    protected static extern IntPtr dlsym(IntPtr handle, string symbol);
+#endif
     
+    /*
+     * ALGLIB compatibility layer
+     */
     // loads dynamic library returns IntPtr which holds its handle
     private static IntPtr DynamicLoad(string name)
     {
-        return LoadLibrary(name);
+        string s = GetOSName();
+#if !AE_OS_NOT_WINDOWS
+        if( s=="windows" )
+            return LoadLibrary(name);
+#endif
+#if !AE_OS_NOT_LINUX
+        if( s=="linux" )
+            return dlopen(name, RTLD_NOW);
+#endif
+        return IntPtr.Zero;
     }
     
     // returns IntPtr pointing to function 'name' from dynamic library hLib
     private static IntPtr DynamicAddr(IntPtr hLib, string name)
     {
-        return GetProcAddress(hLib, name);
+        string s = GetOSName();
+#if !AE_OS_NOT_WINDOWS
+        if( s=="windows" )
+            return GetProcAddress(hLib, name);
+#endif
+#if !AE_OS_NOT_LINUX
+        if( s=="linux" )
+            return dlsym(hLib, name);
+#endif
+        return IntPtr.Zero;
     }
     
     // returns OS name: 'windows' or 'linux'
@@ -1779,9 +1821,9 @@ public partial class alglib
                     string os = GetOSName();
                     string libname = "";
                     if( os=="linux" )
-                        libname = "alglib311_"+(IntPtr.Size*8).ToString()+"hpc.so";
+                        libname = "alglibdev_"+(IntPtr.Size*8).ToString()+"hpc.so";
                     if( os=="windows" )
-                        libname = "alglib311_"+(IntPtr.Size*8).ToString()+"hpc.dll";
+                        libname = "alglibdev_"+(IntPtr.Size*8).ToString()+"hpc.dll";
                     if( libname=="" )
                         throw new System.Exception("ALGLIB: unknown OS - '"+os+"'");
                     libname = LocateLibrary(libname);
@@ -1999,7 +2041,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_kdtreerequestbuffer(void *x);
     private static _d_x_obj_copy_kdtreerequestbuffer _i_x_obj_copy_kdtreerequestbuffer = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_kdtreerequestbuffer(void *x);
+    private unsafe delegate void _d_x_obj_free_kdtreerequestbuffer(void *x);
     private static _d_x_obj_free_kdtreerequestbuffer _i_x_obj_free_kdtreerequestbuffer = null;
 
     public unsafe class kdtree : alglibobject
@@ -2030,7 +2072,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_kdtree(void *x);
     private static _d_x_obj_copy_kdtree _i_x_obj_copy_kdtree = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_kdtree(void *x);
+    private unsafe delegate void _d_x_obj_free_kdtree(void *x);
     private static _d_x_obj_free_kdtree _i_x_obj_free_kdtree = null;
     public static unsafe void kdtreeserialize(kdtree obj, out string s_out)
     {
@@ -3245,7 +3287,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_hqrndstate(void *x);
     private static _d_x_obj_copy_hqrndstate _i_x_obj_copy_hqrndstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_hqrndstate(void *x);
+    private unsafe delegate void _d_x_obj_free_hqrndstate(void *x);
     private static _d_x_obj_free_hqrndstate _i_x_obj_free_hqrndstate = null;
     private static unsafe void _core_hqrndrandomize(out hqrndstate state, alglibmode _alglib_mode)
     {
@@ -5120,24 +5162,24 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_odesolverstate(void *x);
     private static _d_x_obj_copy_odesolverstate _i_x_obj_copy_odesolverstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_odesolverstate(void *x);
+    private unsafe delegate void _d_x_obj_free_odesolverstate(void *x);
     private static _d_x_obj_free_odesolverstate _i_x_obj_free_odesolverstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_get_needdy(void *x, byte *dst);
+    private unsafe delegate void _d_x_odesolverstate_get_needdy(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_set_needdy(void *x, byte *dst);
+    private unsafe delegate void _d_x_odesolverstate_set_needdy(void *x, byte *dst);
     private static _d_x_odesolverstate_get_needdy _i_x_odesolverstate_get_needdy = null;
     private static _d_x_odesolverstate_set_needdy _i_x_odesolverstate_set_needdy = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_get_y(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_odesolverstate_get_y(void *x, x_vector *dst);
     private static _d_x_odesolverstate_get_y _i_x_odesolverstate_get_y = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_get_dy(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_odesolverstate_get_dy(void *x, x_vector *dst);
     private static _d_x_odesolverstate_get_dy _i_x_odesolverstate_get_dy = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_get_x(void *x, double *dst);
+    private unsafe delegate void _d_x_odesolverstate_get_x(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_odesolverstate_set_x(void *x, double *dst);
+    private unsafe delegate void _d_x_odesolverstate_set_x(void *x, double *dst);
     private static _d_x_odesolverstate_get_x _i_x_odesolverstate_get_x = null;
     private static _d_x_odesolverstate_set_x _i_x_odesolverstate_set_x = null;
 
@@ -5449,7 +5491,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_sparsematrix(void *x);
     private static _d_x_obj_copy_sparsematrix _i_x_obj_copy_sparsematrix = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_sparsematrix(void *x);
+    private unsafe delegate void _d_x_obj_free_sparsematrix(void *x);
     private static _d_x_obj_free_sparsematrix _i_x_obj_free_sparsematrix = null;
 
     public unsafe class sparsebuffers : alglibobject
@@ -5480,7 +5522,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_sparsebuffers(void *x);
     private static _d_x_obj_copy_sparsebuffers _i_x_obj_copy_sparsebuffers = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_sparsebuffers(void *x);
+    private unsafe delegate void _d_x_obj_free_sparsebuffers(void *x);
     private static _d_x_obj_free_sparsebuffers _i_x_obj_free_sparsebuffers = null;
     private static unsafe void _core_sparsecreate(int m, int n, int k, out sparsematrix s, alglibmode _alglib_mode)
     {
@@ -7585,6 +7627,1317 @@ public partial class alglib
     
     
     //
+    // Subpackage ablas
+    //
+    
+    private static unsafe void _core_cmatrixtranspose(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_cmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixtranspose' call");
+            }
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixtranspose(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb)
+    {
+    _core_cmatrixtranspose( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixtranspose(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_rmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixtranspose' call");
+            }
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixtranspose(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb)
+    {
+    _core_rmatrixtranspose( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixenforcesymmetricity(ref double[,] a, int n, bool isupper, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_n = new x_int(n);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixenforcesymmetricity(&_s_errormsg, &_d_a, &_d_n, &_d_isupper);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixenforcesymmetricity' call");
+            }
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixenforcesymmetricity(ref double[,] a, int n, bool isupper)
+    {
+    _core_rmatrixenforcesymmetricity(ref  a,  n,  isupper, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_cmatrixcopy(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_cmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixcopy' call");
+            }
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixcopy(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb)
+    {
+    _core_cmatrixcopy( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixcopy(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_rmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixcopy' call");
+            }
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixcopy(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb)
+    {
+    _core_rmatrixcopy( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixger(int m, int n, ref double[,] a, int ia, int ja, double alpha, double[] u, int iu, double[] v, int iv, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        double _d_alpha = alpha;
+        x_vector _d_u = new x_vector();
+        x_int _d_iu = new x_int(iu);
+        x_vector _d_v = new x_vector();
+        x_int _d_iv = new x_int(iv);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixger(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_alpha, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixger' call");
+            }
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_u);
+            x_vector_clear(ref _d_v);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixger(int m, int n, ref double[,] a, int ia, int ja, double alpha, double[] u, int iu, double[] v, int iv)
+    {
+    _core_rmatrixger( m,  n, ref  a,  ia,  ja,  alpha,  u,  iu,  v,  iv, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_cmatrixrank1(int m, int n, ref complex[,] a, int ia, int ja, ref complex[] u, int iu, ref complex[] v, int iv, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_vector _d_u = new x_vector();
+        x_int _d_iu = new x_int(iu);
+        x_vector _d_v = new x_vector();
+        x_int _d_iv = new x_int(iv);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_cmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixrank1' call");
+            }
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new alglib.complex[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new alglib.complex[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_u);
+            x_vector_clear(ref _d_v);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixrank1(int m, int n, ref complex[,] a, int ia, int ja, ref complex[] u, int iu, ref complex[] v, int iv)
+    {
+    _core_cmatrixrank1( m,  n, ref  a,  ia,  ja, ref  u,  iu, ref  v,  iv, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixrank1(int m, int n, ref double[,] a, int ia, int ja, ref double[] u, int iu, ref double[] v, int iv, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_vector _d_u = new x_vector();
+        x_int _d_iu = new x_int(iu);
+        x_vector _d_v = new x_vector();
+        x_int _d_iv = new x_int(iv);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixrank1' call");
+            }
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new double[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_u);
+            x_vector_clear(ref _d_v);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixrank1(int m, int n, ref double[,] a, int ia, int ja, ref double[] u, int iu, ref double[] v, int iv)
+    {
+    _core_rmatrixrank1( m,  n, ref  a,  ia,  ja, ref  u,  iu, ref  v,  iv, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixgemv(int m, int n, double alpha, double[,] a, int ia, int ja, int opa, double[] x, int ix, double beta, ref double[] y, int iy, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_opa = new x_int(opa);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        double _d_beta = beta;
+        x_vector _d_y = new x_vector();
+        x_int _d_iy = new x_int(iy);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixgemv(&_s_errormsg, &_d_m, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixgemv' call");
+            }
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixgemv(int m, int n, double alpha, double[,] a, int ia, int ja, int opa, double[] x, int ix, double beta, ref double[] y, int iy)
+    {
+    _core_rmatrixgemv( m,  n,  alpha,  a,  ia,  ja,  opa,  x,  ix,  beta, ref  y,  iy, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_cmatrixmv(int m, int n, complex[,] a, int ia, int ja, int opa, complex[] x, int ix, ref complex[] y, int iy, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_opa = new x_int(opa);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        x_vector _d_y = new x_vector();
+        x_int _d_iy = new x_int(iy);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_cmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixmv' call");
+            }
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new alglib.complex[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixmv(int m, int n, complex[,] a, int ia, int ja, int opa, complex[] x, int ix, ref complex[] y, int iy)
+    {
+    _core_cmatrixmv( m,  n,  a,  ia,  ja,  opa,  x,  ix, ref  y,  iy, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixmv(int m, int n, double[,] a, int ia, int ja, int opa, double[] x, int ix, ref double[] y, int iy, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_opa = new x_int(opa);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        x_vector _d_y = new x_vector();
+        x_int _d_iy = new x_int(iy);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixmv' call");
+            }
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixmv(int m, int n, double[,] a, int ia, int ja, int opa, double[] x, int ix, ref double[] y, int iy)
+    {
+    _core_rmatrixmv( m,  n,  a,  ia,  ja,  opa,  x,  ix, ref  y,  iy, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_rmatrixsymv(int n, double alpha, double[,] a, int ia, int ja, bool isupper, double[] x, int ix, double beta, ref double[] y, int iy, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_n = new x_int(n);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        double _d_beta = beta;
+        x_vector _d_y = new x_vector();
+        x_int _d_iy = new x_int(iy);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixsymv(&_s_errormsg, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixsymv' call");
+            }
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixsymv(int n, double alpha, double[,] a, int ia, int ja, bool isupper, double[] x, int ix, double beta, ref double[] y, int iy)
+    {
+    _core_rmatrixsymv( n,  alpha,  a,  ia,  ja,  isupper,  x,  ix,  beta, ref  y,  iy, alglibmode.serial);
+    return;
+    }
+    private static unsafe double _core_rmatrixsyvmv(int n, double[,] a, int ia, int ja, bool isupper, double[] x, int ix, ref double[] tmp, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        double result;
+        double _d_result = 0;
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        x_vector _d_tmp = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x, _fp_tmp = tmp){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_tmp, _fp_tmp, ap.len(tmp));
+                _error_code = _i_ser_rmatrixsyvmv(&_s_errormsg, &_d_result, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_tmp);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixsyvmv' call");
+            }
+            result = _d_result;
+            if( _d_tmp.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tmp, ref tmp);
+            if( tmp == null )
+                tmp = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_tmp);
+        }
+        return result;
+    }
+    public static double rmatrixsyvmv(int n, double[,] a, int ia, int ja, bool isupper, double[] x, int ix, ref double[] tmp)
+    {
+    double result = _core_rmatrixsyvmv( n,  a,  ia,  ja,  isupper,  x,  ix, ref  tmp, alglibmode.serial);
+    return result;
+    }
+    private static unsafe void _core_rmatrixtrsv(int n, double[,] a, int ia, int ja, bool isupper, bool isunit, int optype, ref double[] x, int ix, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        byte _d_isunit = (byte)(isunit ? 1 : 0);
+        x_int _d_optype = new x_int(optype);
+        x_vector _d_x = new x_vector();
+        x_int _d_ix = new x_int(ix);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_rmatrixtrsv(&_s_errormsg, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_ix);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixtrsv' call");
+            }
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixtrsv(int n, double[,] a, int ia, int ja, bool isupper, bool isunit, int optype, ref double[] x, int ix)
+    {
+    _core_rmatrixtrsv( n,  a,  ia,  ja,  isupper,  isunit,  optype, ref  x,  ix, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_i1 = new x_int(i1);
+        x_int _d_j1 = new x_int(j1);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        byte _d_isunit = (byte)(isunit ? 1 : 0);
+        x_int _d_optype = new x_int(optype);
+        x_matrix _d_x = new x_matrix();
+        x_int _d_i2 = new x_int(i2);
+        x_int _d_j2 = new x_int(j2);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixrighttrsm' call");
+            }
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
+    {
+    _core_cmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
+    return;
+    }
+    public static void smp_cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
+    {
+    _core_cmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_i1 = new x_int(i1);
+        x_int _d_j1 = new x_int(j1);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        byte _d_isunit = (byte)(isunit ? 1 : 0);
+        x_int _d_optype = new x_int(optype);
+        x_matrix _d_x = new x_matrix();
+        x_int _d_i2 = new x_int(i2);
+        x_int _d_j2 = new x_int(j2);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixlefttrsm' call");
+            }
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
+    {
+    _core_cmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
+    return;
+    }
+    public static void smp_cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
+    {
+    _core_cmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_i1 = new x_int(i1);
+        x_int _d_j1 = new x_int(j1);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        byte _d_isunit = (byte)(isunit ? 1 : 0);
+        x_int _d_optype = new x_int(optype);
+        x_matrix _d_x = new x_matrix();
+        x_int _d_i2 = new x_int(i2);
+        x_int _d_j2 = new x_int(j2);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixrighttrsm' call");
+            }
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
+    {
+    _core_rmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
+    return;
+    }
+    public static void smp_rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
+    {
+    _core_rmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_matrix _d_a = new x_matrix();
+        x_int _d_i1 = new x_int(i1);
+        x_int _d_j1 = new x_int(j1);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        byte _d_isunit = (byte)(isunit ? 1 : 0);
+        x_int _d_optype = new x_int(optype);
+        x_matrix _d_x = new x_matrix();
+        x_int _d_i2 = new x_int(i2);
+        x_int _d_j2 = new x_int(j2);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixlefttrsm' call");
+            }
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
+    {
+    _core_rmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
+    return;
+    }
+    public static void smp_rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
+    {
+    _core_rmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_n = new x_int(n);
+        x_int _d_k = new x_int(k);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_optypea = new x_int(optypea);
+        double _d_beta = beta;
+        x_matrix _d_c = new x_matrix();
+        x_int _d_ic = new x_int(ic);
+        x_int _d_jc = new x_int(jc);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixherk' call");
+            }
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_c);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
+    {
+    _core_cmatrixherk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
+    return;
+    }
+    public static void smp_cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
+    {
+    _core_cmatrixherk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_n = new x_int(n);
+        x_int _d_k = new x_int(k);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_optypea = new x_int(optypea);
+        double _d_beta = beta;
+        x_matrix _d_c = new x_matrix();
+        x_int _d_ic = new x_int(ic);
+        x_int _d_jc = new x_int(jc);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixsyrk' call");
+            }
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_c);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper)
+    {
+    _core_rmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
+    return;
+    }
+    public static void smp_rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper)
+    {
+    _core_rmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_int _d_k = new x_int(k);
+        alglib.complex _d_alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_optypea = new x_int(optypea);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        x_int _d_optypeb = new x_int(optypeb);
+        alglib.complex _d_beta;
+        x_matrix _d_c = new x_matrix();
+        x_int _d_ic = new x_int(ic);
+        x_int _d_jc = new x_int(jc);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_b = b, _fp_c = c){
+                _d_alpha.x = alpha.x;
+                _d_alpha.y = alpha.y;
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _d_beta.x = beta.x;
+                _d_beta.y = beta.y;
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+                else    _error_code = _i_smp_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixgemm' call");
+            }
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+            x_matrix_clear(ref _d_c);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc)
+    {
+    _core_cmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.serial);
+    return;
+    }
+    public static void smp_cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc)
+    {
+    _core_cmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_int _d_k = new x_int(k);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_optypea = new x_int(optypea);
+        x_matrix _d_b = new x_matrix();
+        x_int _d_ib = new x_int(ib);
+        x_int _d_jb = new x_int(jb);
+        x_int _d_optypeb = new x_int(optypeb);
+        double _d_beta = beta;
+        x_matrix _d_c = new x_matrix();
+        x_int _d_ic = new x_int(ic);
+        x_int _d_jc = new x_int(jc);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a, _fp_b = b, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+                else    _error_code = _i_smp_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixgemm' call");
+            }
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_b);
+            x_matrix_clear(ref _d_c);
+        }
+        // This function returns no value.
+    }
+    public static void rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc)
+    {
+    _core_rmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.serial);
+    return;
+    }
+    public static void smp_rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc)
+    {
+    _core_rmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.parallel);
+    return;
+    }
+    private static unsafe void _core_cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_n = new x_int(n);
+        x_int _d_k = new x_int(k);
+        double _d_alpha = alpha;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_ia = new x_int(ia);
+        x_int _d_ja = new x_int(ja);
+        x_int _d_optypea = new x_int(optypea);
+        double _d_beta = beta;
+        x_matrix _d_c = new x_matrix();
+        x_int _d_ic = new x_int(ic);
+        x_int _d_jc = new x_int(jc);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(alglib.complex* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixsyrk' call");
+            }
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_matrix_clear(ref _d_c);
+        }
+        // This function returns no value.
+    }
+    public static void cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
+    {
+    _core_cmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
+    return;
+    }
+    public static void smp_cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
+    {
+    _core_cmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
+    return;
+    }
+    
+    
+    //
     // Subpackage matgen
     //
     
@@ -8176,1046 +9529,6 @@ public partial class alglib
     public static void hmatrixrndmultiply(ref complex[,] a, int n)
     {
     _core_hmatrixrndmultiply(ref  a,  n, alglibmode.serial);
-    return;
-    }
-    
-    
-    //
-    // Subpackage ablas
-    //
-    
-    private static unsafe void _core_cmatrixtranspose(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_b = b){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                _error_code = _i_ser_cmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixtranspose' call");
-            }
-            if( _d_b.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_b, ref b);
-            if( b == null )
-                b = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixtranspose(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb)
-    {
-    _core_cmatrixtranspose( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_rmatrixtranspose(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_b = b){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                _error_code = _i_ser_rmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixtranspose' call");
-            }
-            if( _d_b.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_b, ref b);
-            if( b == null )
-                b = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixtranspose(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb)
-    {
-    _core_rmatrixtranspose( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_rmatrixenforcesymmetricity(ref double[,] a, int n, bool isupper, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_n = new x_int(n);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                _error_code = _i_ser_rmatrixenforcesymmetricity(&_s_errormsg, &_d_a, &_d_n, &_d_isupper);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixenforcesymmetricity' call");
-            }
-            if( _d_a.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_a, ref a);
-            if( a == null )
-                a = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixenforcesymmetricity(ref double[,] a, int n, bool isupper)
-    {
-    _core_rmatrixenforcesymmetricity(ref  a,  n,  isupper, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_cmatrixcopy(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_b = b){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                _error_code = _i_ser_cmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixcopy' call");
-            }
-            if( _d_b.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_b, ref b);
-            if( b == null )
-                b = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixcopy(int m, int n, complex[,] a, int ia, int ja, ref complex[,] b, int ib, int jb)
-    {
-    _core_cmatrixcopy( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_rmatrixcopy(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_b = b){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                _error_code = _i_ser_rmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixcopy' call");
-            }
-            if( _d_b.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_b, ref b);
-            if( b == null )
-                b = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixcopy(int m, int n, double[,] a, int ia, int ja, ref double[,] b, int ib, int jb)
-    {
-    _core_rmatrixcopy( m,  n,  a,  ia,  ja, ref  b,  ib,  jb, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_cmatrixrank1(int m, int n, ref complex[,] a, int ia, int ja, ref complex[] u, int iu, ref complex[] v, int iv, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_vector _d_u = new x_vector();
-        x_int _d_iu = new x_int(iu);
-        x_vector _d_v = new x_vector();
-        x_int _d_iv = new x_int(iv);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_u = u, _fp_v = v){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
-                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
-                _error_code = _i_ser_cmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixrank1' call");
-            }
-            if( _d_a.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_a, ref a);
-            if( a == null )
-                a = new alglib.complex[0,0];
-            if( _d_u.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_u, ref u);
-            if( u == null )
-                u = new alglib.complex[0];
-            if( _d_v.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_v, ref v);
-            if( v == null )
-                v = new alglib.complex[0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_vector_clear(ref _d_u);
-            x_vector_clear(ref _d_v);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixrank1(int m, int n, ref complex[,] a, int ia, int ja, ref complex[] u, int iu, ref complex[] v, int iv)
-    {
-    _core_cmatrixrank1( m,  n, ref  a,  ia,  ja, ref  u,  iu, ref  v,  iv, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_rmatrixrank1(int m, int n, ref double[,] a, int ia, int ja, ref double[] u, int iu, ref double[] v, int iv, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_vector _d_u = new x_vector();
-        x_int _d_iu = new x_int(iu);
-        x_vector _d_v = new x_vector();
-        x_int _d_iv = new x_int(iv);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_u = u, _fp_v = v){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
-                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
-                _error_code = _i_ser_rmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixrank1' call");
-            }
-            if( _d_a.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_a, ref a);
-            if( a == null )
-                a = new double[0,0];
-            if( _d_u.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_u, ref u);
-            if( u == null )
-                u = new double[0];
-            if( _d_v.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_v, ref v);
-            if( v == null )
-                v = new double[0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_vector_clear(ref _d_u);
-            x_vector_clear(ref _d_v);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixrank1(int m, int n, ref double[,] a, int ia, int ja, ref double[] u, int iu, ref double[] v, int iv)
-    {
-    _core_rmatrixrank1( m,  n, ref  a,  ia,  ja, ref  u,  iu, ref  v,  iv, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_cmatrixmv(int m, int n, complex[,] a, int ia, int ja, int opa, complex[] x, int ix, ref complex[] y, int iy, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_opa = new x_int(opa);
-        x_vector _d_x = new x_vector();
-        x_int _d_ix = new x_int(ix);
-        x_vector _d_y = new x_vector();
-        x_int _d_iy = new x_int(iy);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_x = x, _fp_y = y){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
-                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
-                _error_code = _i_ser_cmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixmv' call");
-            }
-            if( _d_y.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_y, ref y);
-            if( y == null )
-                y = new alglib.complex[0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_vector_clear(ref _d_x);
-            x_vector_clear(ref _d_y);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixmv(int m, int n, complex[,] a, int ia, int ja, int opa, complex[] x, int ix, ref complex[] y, int iy)
-    {
-    _core_cmatrixmv( m,  n,  a,  ia,  ja,  opa,  x,  ix, ref  y,  iy, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_rmatrixmv(int m, int n, double[,] a, int ia, int ja, int opa, double[] x, int ix, ref double[] y, int iy, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_opa = new x_int(opa);
-        x_vector _d_x = new x_vector();
-        x_int _d_ix = new x_int(ix);
-        x_vector _d_y = new x_vector();
-        x_int _d_iy = new x_int(iy);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
-                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
-                _error_code = _i_ser_rmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixmv' call");
-            }
-            if( _d_y.last_action==ACT_NEW_LOCATION )
-                x_vector_to_array(ref _d_y, ref y);
-            if( y == null )
-                y = new double[0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_vector_clear(ref _d_x);
-            x_vector_clear(ref _d_y);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixmv(int m, int n, double[,] a, int ia, int ja, int opa, double[] x, int ix, ref double[] y, int iy)
-    {
-    _core_rmatrixmv( m,  n,  a,  ia,  ja,  opa,  x,  ix, ref  y,  iy, alglibmode.serial);
-    return;
-    }
-    private static unsafe void _core_cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_i1 = new x_int(i1);
-        x_int _d_j1 = new x_int(j1);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        byte _d_isunit = (byte)(isunit ? 1 : 0);
-        x_int _d_optype = new x_int(optype);
-        x_matrix _d_x = new x_matrix();
-        x_int _d_i2 = new x_int(i2);
-        x_int _d_j2 = new x_int(j2);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_x = x){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-                else    _error_code = _i_smp_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixrighttrsm' call");
-            }
-            if( _d_x.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_x, ref x);
-            if( x == null )
-                x = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_x);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
-    {
-    _core_cmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
-    return;
-    }
-    public static void smp_cmatrixrighttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
-    {
-    _core_cmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_i1 = new x_int(i1);
-        x_int _d_j1 = new x_int(j1);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        byte _d_isunit = (byte)(isunit ? 1 : 0);
-        x_int _d_optype = new x_int(optype);
-        x_matrix _d_x = new x_matrix();
-        x_int _d_i2 = new x_int(i2);
-        x_int _d_j2 = new x_int(j2);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_x = x){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-                else    _error_code = _i_smp_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixlefttrsm' call");
-            }
-            if( _d_x.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_x, ref x);
-            if( x == null )
-                x = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_x);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
-    {
-    _core_cmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
-    return;
-    }
-    public static void smp_cmatrixlefttrsm(int m, int n, complex[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref complex[,] x, int i2, int j2)
-    {
-    _core_cmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_i1 = new x_int(i1);
-        x_int _d_j1 = new x_int(j1);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        byte _d_isunit = (byte)(isunit ? 1 : 0);
-        x_int _d_optype = new x_int(optype);
-        x_matrix _d_x = new x_matrix();
-        x_int _d_i2 = new x_int(i2);
-        x_int _d_j2 = new x_int(j2);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_x = x){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-                else    _error_code = _i_smp_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixrighttrsm' call");
-            }
-            if( _d_x.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_x, ref x);
-            if( x == null )
-                x = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_x);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
-    {
-    _core_rmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
-    return;
-    }
-    public static void smp_rmatrixrighttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
-    {
-    _core_rmatrixrighttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_matrix _d_a = new x_matrix();
-        x_int _d_i1 = new x_int(i1);
-        x_int _d_j1 = new x_int(j1);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        byte _d_isunit = (byte)(isunit ? 1 : 0);
-        x_int _d_optype = new x_int(optype);
-        x_matrix _d_x = new x_matrix();
-        x_int _d_i2 = new x_int(i2);
-        x_int _d_j2 = new x_int(j2);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_x = x){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-                else    _error_code = _i_smp_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixlefttrsm' call");
-            }
-            if( _d_x.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_x, ref x);
-            if( x == null )
-                x = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_x);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
-    {
-    _core_rmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.serial);
-    return;
-    }
-    public static void smp_rmatrixlefttrsm(int m, int n, double[,] a, int i1, int j1, bool isupper, bool isunit, int optype, ref double[,] x, int i2, int j2)
-    {
-    _core_rmatrixlefttrsm( m,  n,  a,  i1,  j1,  isupper,  isunit,  optype, ref  x,  i2,  j2, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_n = new x_int(n);
-        x_int _d_k = new x_int(k);
-        double _d_alpha = alpha;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_optypea = new x_int(optypea);
-        double _d_beta = beta;
-        x_matrix _d_c = new x_matrix();
-        x_int _d_ic = new x_int(ic);
-        x_int _d_jc = new x_int(jc);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_c = c){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-                else    _error_code = _i_smp_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixherk' call");
-            }
-            if( _d_c.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_c, ref c);
-            if( c == null )
-                c = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_c);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
-    {
-    _core_cmatrixherk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
-    return;
-    }
-    public static void smp_cmatrixherk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
-    {
-    _core_cmatrixherk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_n = new x_int(n);
-        x_int _d_k = new x_int(k);
-        double _d_alpha = alpha;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_optypea = new x_int(optypea);
-        double _d_beta = beta;
-        x_matrix _d_c = new x_matrix();
-        x_int _d_ic = new x_int(ic);
-        x_int _d_jc = new x_int(jc);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_c = c){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-                else    _error_code = _i_smp_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixsyrk' call");
-            }
-            if( _d_c.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_c, ref c);
-            if( c == null )
-                c = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_c);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper)
-    {
-    _core_rmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
-    return;
-    }
-    public static void smp_rmatrixsyrk(int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double beta, ref double[,] c, int ic, int jc, bool isupper)
-    {
-    _core_rmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_int _d_k = new x_int(k);
-        alglib.complex _d_alpha;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_optypea = new x_int(optypea);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        x_int _d_optypeb = new x_int(optypeb);
-        alglib.complex _d_beta;
-        x_matrix _d_c = new x_matrix();
-        x_int _d_ic = new x_int(ic);
-        x_int _d_jc = new x_int(jc);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_b = b, _fp_c = c){
-                _d_alpha.x = alpha.x;
-                _d_alpha.y = alpha.y;
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                _d_beta.x = beta.x;
-                _d_beta.y = beta.y;
-                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-                else    _error_code = _i_smp_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixgemm' call");
-            }
-            if( _d_c.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_c, ref c);
-            if( c == null )
-                c = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-            x_matrix_clear(ref _d_c);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc)
-    {
-    _core_cmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.serial);
-    return;
-    }
-    public static void smp_cmatrixgemm(int m, int n, int k, complex alpha, complex[,] a, int ia, int ja, int optypea, complex[,] b, int ib, int jb, int optypeb, complex beta, ref complex[,] c, int ic, int jc)
-    {
-    _core_cmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_m = new x_int(m);
-        x_int _d_n = new x_int(n);
-        x_int _d_k = new x_int(k);
-        double _d_alpha = alpha;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_optypea = new x_int(optypea);
-        x_matrix _d_b = new x_matrix();
-        x_int _d_ib = new x_int(ib);
-        x_int _d_jb = new x_int(jb);
-        x_int _d_optypeb = new x_int(optypeb);
-        double _d_beta = beta;
-        x_matrix _d_c = new x_matrix();
-        x_int _d_ic = new x_int(ic);
-        x_int _d_jc = new x_int(jc);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_a = a, _fp_b = b, _fp_c = c){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
-                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-                else    _error_code = _i_smp_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'rmatrixgemm' call");
-            }
-            if( _d_c.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_c, ref c);
-            if( c == null )
-                c = new double[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_b);
-            x_matrix_clear(ref _d_c);
-        }
-        // This function returns no value.
-    }
-    public static void rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc)
-    {
-    _core_rmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.serial);
-    return;
-    }
-    public static void smp_rmatrixgemm(int m, int n, int k, double alpha, double[,] a, int ia, int ja, int optypea, double[,] b, int ib, int jb, int optypeb, double beta, ref double[,] c, int ic, int jc)
-    {
-    _core_rmatrixgemm( m,  n,  k,  alpha,  a,  ia,  ja,  optypea,  b,  ib,  jb,  optypeb,  beta, ref  c,  ic,  jc, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_int _d_n = new x_int(n);
-        x_int _d_k = new x_int(k);
-        double _d_alpha = alpha;
-        x_matrix _d_a = new x_matrix();
-        x_int _d_ia = new x_int(ia);
-        x_int _d_ja = new x_int(ja);
-        x_int _d_optypea = new x_int(optypea);
-        double _d_beta = beta;
-        x_matrix _d_c = new x_matrix();
-        x_int _d_ic = new x_int(ic);
-        x_int _d_jc = new x_int(jc);
-        byte _d_isupper = (byte)(isupper ? 1 : 0);
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(alglib.complex* _fp_a = a, _fp_c = c){
-                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
-                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-                else    _error_code = _i_smp_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'cmatrixsyrk' call");
-            }
-            if( _d_c.last_action==ACT_NEW_LOCATION )
-                x_matrix_to_array(ref _d_c, ref c);
-            if( c == null )
-                c = new alglib.complex[0,0];
-        }
-        finally
-        {
-            x_matrix_clear(ref _d_a);
-            x_matrix_clear(ref _d_c);
-        }
-        // This function returns no value.
-    }
-    public static void cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
-    {
-    _core_cmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.serial);
-    return;
-    }
-    public static void smp_cmatrixsyrk(int n, int k, double alpha, complex[,] a, int ia, int ja, int optypea, double beta, ref complex[,] c, int ic, int jc, bool isupper)
-    {
-    _core_cmatrixsyrk( n,  k,  alpha,  a,  ia,  ja,  optypea,  beta, ref  c,  ic,  jc,  isupper, alglibmode.parallel);
     return;
     }
     
@@ -12879,37 +13192,37 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minlbfgsstate(void *x);
     private static _d_x_obj_copy_minlbfgsstate _i_x_obj_copy_minlbfgsstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minlbfgsstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minlbfgsstate(void *x);
     private static _d_x_obj_free_minlbfgsstate _i_x_obj_free_minlbfgsstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_set_needf(void *x, byte *dst);
     private static _d_x_minlbfgsstate_get_needf _i_x_minlbfgsstate_get_needf = null;
     private static _d_x_minlbfgsstate_set_needf _i_x_minlbfgsstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_set_needfg(void *x, byte *dst);
     private static _d_x_minlbfgsstate_get_needfg _i_x_minlbfgsstate_get_needfg = null;
     private static _d_x_minlbfgsstate_set_needfg _i_x_minlbfgsstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minlbfgsstate_get_xupdated _i_x_minlbfgsstate_get_xupdated = null;
     private static _d_x_minlbfgsstate_set_xupdated _i_x_minlbfgsstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_set_f(void *x, double *dst);
     private static _d_x_minlbfgsstate_get_f _i_x_minlbfgsstate_get_f = null;
     private static _d_x_minlbfgsstate_set_f _i_x_minlbfgsstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_g(void *x, x_vector *dst);
     private static _d_x_minlbfgsstate_get_g _i_x_minlbfgsstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlbfgsstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minlbfgsstate_get_x(void *x, x_vector *dst);
     private static _d_x_minlbfgsstate_get_x _i_x_minlbfgsstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -16127,7 +16440,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_normestimatorstate(void *x);
     private static _d_x_obj_copy_normestimatorstate _i_x_obj_copy_normestimatorstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_normestimatorstate(void *x);
+    private unsafe delegate void _d_x_obj_free_normestimatorstate(void *x);
     private static _d_x_obj_free_normestimatorstate _i_x_obj_free_normestimatorstate = null;
     private static unsafe void _core_normestimatorcreate(int m, int n, int nstart, int nits, out normestimatorstate state, alglibmode _alglib_mode)
     {
@@ -16319,7 +16632,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_linlsqrstate(void *x);
     private static _d_x_obj_copy_linlsqrstate _i_x_obj_copy_linlsqrstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_linlsqrstate(void *x);
+    private unsafe delegate void _d_x_obj_free_linlsqrstate(void *x);
     private static _d_x_obj_free_linlsqrstate _i_x_obj_free_linlsqrstate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -16739,37 +17052,37 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_mincgstate(void *x);
     private static _d_x_obj_copy_mincgstate _i_x_obj_copy_mincgstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_mincgstate(void *x);
+    private unsafe delegate void _d_x_obj_free_mincgstate(void *x);
     private static _d_x_obj_free_mincgstate _i_x_obj_free_mincgstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_set_needf(void *x, byte *dst);
     private static _d_x_mincgstate_get_needf _i_x_mincgstate_get_needf = null;
     private static _d_x_mincgstate_set_needf _i_x_mincgstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_set_needfg(void *x, byte *dst);
     private static _d_x_mincgstate_get_needfg _i_x_mincgstate_get_needfg = null;
     private static _d_x_mincgstate_set_needfg _i_x_mincgstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_mincgstate_set_xupdated(void *x, byte *dst);
     private static _d_x_mincgstate_get_xupdated _i_x_mincgstate_get_xupdated = null;
     private static _d_x_mincgstate_set_xupdated _i_x_mincgstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_mincgstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_mincgstate_set_f(void *x, double *dst);
     private static _d_x_mincgstate_get_f _i_x_mincgstate_get_f = null;
     private static _d_x_mincgstate_set_f _i_x_mincgstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_mincgstate_get_g(void *x, x_vector *dst);
     private static _d_x_mincgstate_get_g _i_x_mincgstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_mincgstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_mincgstate_get_x(void *x, x_vector *dst);
     private static _d_x_mincgstate_get_x _i_x_mincgstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -17708,37 +18021,37 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minbleicstate(void *x);
     private static _d_x_obj_copy_minbleicstate _i_x_obj_copy_minbleicstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minbleicstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minbleicstate(void *x);
     private static _d_x_obj_free_minbleicstate _i_x_obj_free_minbleicstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_set_needf(void *x, byte *dst);
     private static _d_x_minbleicstate_get_needf _i_x_minbleicstate_get_needf = null;
     private static _d_x_minbleicstate_set_needf _i_x_minbleicstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_set_needfg(void *x, byte *dst);
     private static _d_x_minbleicstate_get_needfg _i_x_minbleicstate_get_needfg = null;
     private static _d_x_minbleicstate_set_needfg _i_x_minbleicstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbleicstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minbleicstate_get_xupdated _i_x_minbleicstate_get_xupdated = null;
     private static _d_x_minbleicstate_set_xupdated _i_x_minbleicstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minbleicstate_set_f(void *x, double *dst);
     private static _d_x_minbleicstate_get_f _i_x_minbleicstate_get_f = null;
     private static _d_x_minbleicstate_set_f _i_x_minbleicstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_g(void *x, x_vector *dst);
     private static _d_x_minbleicstate_get_g _i_x_minbleicstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbleicstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minbleicstate_get_x(void *x, x_vector *dst);
     private static _d_x_minbleicstate_get_x _i_x_minbleicstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -18755,7 +19068,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minqpstate(void *x);
     private static _d_x_obj_copy_minqpstate _i_x_obj_copy_minqpstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minqpstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minqpstate(void *x);
     private static _d_x_obj_free_minqpstate _i_x_obj_free_minqpstate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -19622,40 +19935,40 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minnlcstate(void *x);
     private static _d_x_obj_copy_minnlcstate _i_x_obj_copy_minnlcstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minnlcstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minnlcstate(void *x);
     private static _d_x_obj_free_minnlcstate _i_x_obj_free_minnlcstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_needfi(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_set_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_set_needfi(void *x, byte *dst);
     private static _d_x_minnlcstate_get_needfi _i_x_minnlcstate_get_needfi = null;
     private static _d_x_minnlcstate_set_needfi _i_x_minnlcstate_set_needfi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_needfij(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_set_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_set_needfij(void *x, byte *dst);
     private static _d_x_minnlcstate_get_needfij _i_x_minnlcstate_get_needfij = null;
     private static _d_x_minnlcstate_set_needfij _i_x_minnlcstate_set_needfij = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnlcstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minnlcstate_get_xupdated _i_x_minnlcstate_get_xupdated = null;
     private static _d_x_minnlcstate_set_xupdated _i_x_minnlcstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minnlcstate_set_f(void *x, double *dst);
     private static _d_x_minnlcstate_get_f _i_x_minnlcstate_get_f = null;
     private static _d_x_minnlcstate_set_f _i_x_minnlcstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_fi(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_fi(void *x, x_vector *dst);
     private static _d_x_minnlcstate_get_fi _i_x_minnlcstate_get_fi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_j(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_j(void *x, x_matrix *dst);
     private static _d_x_minnlcstate_get_j _i_x_minnlcstate_get_j = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnlcstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minnlcstate_get_x(void *x, x_vector *dst);
     private static _d_x_minnlcstate_get_x _i_x_minnlcstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -20713,37 +21026,37 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minbcstate(void *x);
     private static _d_x_obj_copy_minbcstate _i_x_obj_copy_minbcstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minbcstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minbcstate(void *x);
     private static _d_x_obj_free_minbcstate _i_x_obj_free_minbcstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_set_needf(void *x, byte *dst);
     private static _d_x_minbcstate_get_needf _i_x_minbcstate_get_needf = null;
     private static _d_x_minbcstate_set_needf _i_x_minbcstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_set_needfg(void *x, byte *dst);
     private static _d_x_minbcstate_get_needfg _i_x_minbcstate_get_needfg = null;
     private static _d_x_minbcstate_set_needfg _i_x_minbcstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minbcstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minbcstate_get_xupdated _i_x_minbcstate_get_xupdated = null;
     private static _d_x_minbcstate_set_xupdated _i_x_minbcstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minbcstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minbcstate_set_f(void *x, double *dst);
     private static _d_x_minbcstate_get_f _i_x_minbcstate_get_f = null;
     private static _d_x_minbcstate_set_f _i_x_minbcstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minbcstate_get_g(void *x, x_vector *dst);
     private static _d_x_minbcstate_get_g _i_x_minbcstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minbcstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minbcstate_get_x(void *x, x_vector *dst);
     private static _d_x_minbcstate_get_x _i_x_minbcstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -21650,40 +21963,40 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minnsstate(void *x);
     private static _d_x_obj_copy_minnsstate _i_x_obj_copy_minnsstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minnsstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minnsstate(void *x);
     private static _d_x_obj_free_minnsstate _i_x_obj_free_minnsstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_get_needfi(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_set_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_set_needfi(void *x, byte *dst);
     private static _d_x_minnsstate_get_needfi _i_x_minnsstate_get_needfi = null;
     private static _d_x_minnsstate_set_needfi _i_x_minnsstate_set_needfi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_get_needfij(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_set_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_set_needfij(void *x, byte *dst);
     private static _d_x_minnsstate_get_needfij _i_x_minnsstate_get_needfij = null;
     private static _d_x_minnsstate_set_needfij _i_x_minnsstate_set_needfij = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minnsstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minnsstate_get_xupdated _i_x_minnsstate_get_xupdated = null;
     private static _d_x_minnsstate_set_xupdated _i_x_minnsstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minnsstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minnsstate_set_f(void *x, double *dst);
     private static _d_x_minnsstate_get_f _i_x_minnsstate_get_f = null;
     private static _d_x_minnsstate_set_f _i_x_minnsstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_fi(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minnsstate_get_fi(void *x, x_vector *dst);
     private static _d_x_minnsstate_get_fi _i_x_minnsstate_get_fi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_j(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_minnsstate_get_j(void *x, x_matrix *dst);
     private static _d_x_minnsstate_get_j _i_x_minnsstate_get_j = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minnsstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minnsstate_get_x(void *x, x_vector *dst);
     private static _d_x_minnsstate_get_x _i_x_minnsstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -22567,31 +22880,31 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minasastate(void *x);
     private static _d_x_obj_copy_minasastate _i_x_obj_copy_minasastate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minasastate(void *x);
+    private unsafe delegate void _d_x_obj_free_minasastate(void *x);
     private static _d_x_obj_free_minasastate _i_x_obj_free_minasastate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minasastate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minasastate_set_needfg(void *x, byte *dst);
     private static _d_x_minasastate_get_needfg _i_x_minasastate_get_needfg = null;
     private static _d_x_minasastate_set_needfg _i_x_minasastate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minasastate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minasastate_set_xupdated(void *x, byte *dst);
     private static _d_x_minasastate_get_xupdated _i_x_minasastate_get_xupdated = null;
     private static _d_x_minasastate_set_xupdated _i_x_minasastate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minasastate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minasastate_set_f(void *x, double *dst);
     private static _d_x_minasastate_get_f _i_x_minasastate_get_f = null;
     private static _d_x_minasastate_set_f _i_x_minasastate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minasastate_get_g(void *x, x_vector *dst);
     private static _d_x_minasastate_get_g _i_x_minasastate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minasastate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minasastate_get_x(void *x, x_vector *dst);
     private static _d_x_minasastate_get_x _i_x_minasastate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -23309,64 +23622,64 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_minlmstate(void *x);
     private static _d_x_obj_copy_minlmstate _i_x_obj_copy_minlmstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_minlmstate(void *x);
+    private unsafe delegate void _d_x_obj_free_minlmstate(void *x);
     private static _d_x_obj_free_minlmstate _i_x_obj_free_minlmstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_needf(void *x, byte *dst);
     private static _d_x_minlmstate_get_needf _i_x_minlmstate_get_needf = null;
     private static _d_x_minlmstate_set_needf _i_x_minlmstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_needfg(void *x, byte *dst);
     private static _d_x_minlmstate_get_needfg _i_x_minlmstate_get_needfg = null;
     private static _d_x_minlmstate_set_needfg _i_x_minlmstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_needfgh(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_needfgh(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_needfgh(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_needfgh(void *x, byte *dst);
     private static _d_x_minlmstate_get_needfgh _i_x_minlmstate_get_needfgh = null;
     private static _d_x_minlmstate_set_needfgh _i_x_minlmstate_set_needfgh = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_needfi(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_needfi(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_needfi(void *x, byte *dst);
     private static _d_x_minlmstate_get_needfi _i_x_minlmstate_get_needfi = null;
     private static _d_x_minlmstate_set_needfi _i_x_minlmstate_set_needfi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_needfij(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_needfij(void *x, byte *dst);
     private static _d_x_minlmstate_get_needfij _i_x_minlmstate_get_needfij = null;
     private static _d_x_minlmstate_set_needfij _i_x_minlmstate_set_needfij = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_minlmstate_set_xupdated(void *x, byte *dst);
     private static _d_x_minlmstate_get_xupdated _i_x_minlmstate_get_xupdated = null;
     private static _d_x_minlmstate_set_xupdated _i_x_minlmstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minlmstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_minlmstate_set_f(void *x, double *dst);
     private static _d_x_minlmstate_get_f _i_x_minlmstate_get_f = null;
     private static _d_x_minlmstate_set_f _i_x_minlmstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_fi(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minlmstate_get_fi(void *x, x_vector *dst);
     private static _d_x_minlmstate_get_fi _i_x_minlmstate_get_fi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minlmstate_get_g(void *x, x_vector *dst);
     private static _d_x_minlmstate_get_g _i_x_minlmstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_h(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_minlmstate_get_h(void *x, x_matrix *dst);
     private static _d_x_minlmstate_get_h _i_x_minlmstate_get_h = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_j(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_minlmstate_get_j(void *x, x_matrix *dst);
     private static _d_x_minlmstate_get_j _i_x_minlmstate_get_j = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_minlmstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_minlmstate_get_x(void *x, x_vector *dst);
     private static _d_x_minlmstate_get_x _i_x_minlmstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -24791,6 +25104,12 @@ public partial class alglib
     
     
     //
+    // Subpackage hsschur
+    //
+    
+    
+    
+    //
     // Subpackage evd
     //
     
@@ -24823,7 +25142,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_eigsubspacestate(void *x);
     private static _d_x_obj_copy_eigsubspacestate _i_x_obj_copy_eigsubspacestate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_eigsubspacestate(void *x);
+    private unsafe delegate void _d_x_obj_free_eigsubspacestate(void *x);
     private static _d_x_obj_free_eigsubspacestate _i_x_obj_free_eigsubspacestate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -24985,6 +25304,43 @@ public partial class alglib
     public static void eigsubspacesetcond(eigsubspacestate state, double eps, int maxits)
     {
     _core_eigsubspacesetcond( state,  eps,  maxits, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_eigsubspacesetwarmstart(eigsubspacestate state, bool usewarmstart, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_state = state.ptr;
+        byte _d_usewarmstart = (byte)(usewarmstart ? 1 : 0);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_eigsubspacesetwarmstart(&_s_errormsg, &_d_state, &_d_usewarmstart);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'eigsubspacesetwarmstart' call");
+            }
+            ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void eigsubspacesetwarmstart(eigsubspacestate state, bool usewarmstart)
+    {
+    _core_eigsubspacesetwarmstart( state,  usewarmstart, alglibmode.serial);
     return;
     }
     private static unsafe void _core_eigsubspaceoocstart(eigsubspacestate state, int mtype, alglibmode _alglib_mode)
@@ -27708,7 +28064,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_multilayerperceptron(void *x);
     private static _d_x_obj_copy_multilayerperceptron _i_x_obj_copy_multilayerperceptron = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_multilayerperceptron(void *x);
+    private unsafe delegate void _d_x_obj_free_multilayerperceptron(void *x);
     private static _d_x_obj_free_multilayerperceptron _i_x_obj_free_multilayerperceptron = null;
     public static unsafe void mlpserialize(multilayerperceptron obj, out string s_out)
     {
@@ -30734,6 +31090,822 @@ public partial class alglib
     
     
     //
+    // Subpackage ssa
+    //
+    
+
+    public unsafe class ssamodel : alglibobject
+    {
+        public void *ptr;
+        public ssamodel(void *x)
+        {
+            ptr = x;
+        }
+        ~ssamodel()
+        {
+            _deallocate();
+        }
+        public override alglib.alglibobject make_copy()
+        {
+            if( ptr==null )
+                return new ssamodel(null);
+            return new ssamodel(_i_x_obj_copy_ssamodel(ptr));
+        }
+        public override void _deallocate()
+        {
+            if( ptr!=null )
+                _i_x_obj_free_ssamodel(ptr);
+            ptr = null;
+        }
+    }
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void* _d_x_obj_copy_ssamodel(void *x);
+    private static _d_x_obj_copy_ssamodel _i_x_obj_copy_ssamodel = null;
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void _d_x_obj_free_ssamodel(void *x);
+    private static _d_x_obj_free_ssamodel _i_x_obj_free_ssamodel = null;
+    private static unsafe void _core_ssacreate(out ssamodel s, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = null;
+        s = null;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssacreate(&_s_errormsg, &_d_s);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssacreate' call");
+            }
+            s = new ssamodel(_d_s);
+        }
+        finally
+        {
+            if( _d_s!=null && s==null)
+                _i_x_obj_free_ssamodel(_d_s); // on exception clean up X objects which were not attached to C# objects
+        }
+        // This function returns no value.
+    }
+    public static void ssacreate(out ssamodel s)
+    {
+    _core_ssacreate(out  s, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetwindow(ssamodel s, int windowwidth, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_windowwidth = new x_int(windowwidth);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetwindow(&_s_errormsg, &_d_s, &_d_windowwidth);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetwindow' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetwindow(ssamodel s, int windowwidth)
+    {
+    _core_ssasetwindow( s,  windowwidth, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetseed(ssamodel s, int seed, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_seed = new x_int(seed);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetseed(&_s_errormsg, &_d_s, &_d_seed);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetseed' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetseed(ssamodel s, int seed)
+    {
+    _core_ssasetseed( s,  seed, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetpoweruplength(ssamodel s, int pwlen, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_pwlen = new x_int(pwlen);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetpoweruplength(&_s_errormsg, &_d_s, &_d_pwlen);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetpoweruplength' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetpoweruplength(ssamodel s, int pwlen)
+    {
+    _core_ssasetpoweruplength( s,  pwlen, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaaddsequence(ssamodel s, double[] x, int n, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_x = new x_vector();
+        x_int _d_n = new x_int(n);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_ssaaddsequence(&_s_errormsg, &_d_s, &_d_x, &_d_n);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaaddsequence' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            x_vector_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void ssaaddsequence(ssamodel s, double[] x, int n)
+    {
+    _core_ssaaddsequence( s,  x,  n, alglibmode.serial);
+    return;
+    }
+    public static void ssaaddsequence(ssamodel s, double[] x)
+    {
+    int n;
+    
+    
+    n = ap.len(x);
+    
+    _core_ssaaddsequence( s,  x,  n, alglibmode.serial);
+    
+    return;
+    }
+    private static unsafe void _core_ssaappendpointandupdate(ssamodel s, double x, double updateits, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        double _d_x = x;
+        double _d_updateits = updateits;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssaappendpointandupdate(&_s_errormsg, &_d_s, &_d_x, &_d_updateits);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaappendpointandupdate' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssaappendpointandupdate(ssamodel s, double x, double updateits)
+    {
+    _core_ssaappendpointandupdate( s,  x,  updateits, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaappendsequenceandupdate(ssamodel s, double[] x, int nticks, double updateits, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_x = new x_vector();
+        x_int _d_nticks = new x_int(nticks);
+        double _d_updateits = updateits;
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_ssaappendsequenceandupdate(&_s_errormsg, &_d_s, &_d_x, &_d_nticks, &_d_updateits);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaappendsequenceandupdate' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            x_vector_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void ssaappendsequenceandupdate(ssamodel s, double[] x, int nticks, double updateits)
+    {
+    _core_ssaappendsequenceandupdate( s,  x,  nticks,  updateits, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetalgoprecomputed(ssamodel s, double[,] a, int windowwidth, int nbasis, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_matrix _d_a = new x_matrix();
+        x_int _d_windowwidth = new x_int(windowwidth);
+        x_int _d_nbasis = new x_int(nbasis);
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_ssasetalgoprecomputed(&_s_errormsg, &_d_s, &_d_a, &_d_windowwidth, &_d_nbasis);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetalgoprecomputed' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+        }
+        // This function returns no value.
+    }
+    public static void ssasetalgoprecomputed(ssamodel s, double[,] a, int windowwidth, int nbasis)
+    {
+    _core_ssasetalgoprecomputed( s,  a,  windowwidth,  nbasis, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetalgotopkdirect(ssamodel s, int topk, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_topk = new x_int(topk);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetalgotopkdirect(&_s_errormsg, &_d_s, &_d_topk);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetalgotopkdirect' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetalgotopkdirect(ssamodel s, int topk)
+    {
+    _core_ssasetalgotopkdirect( s,  topk, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssasetalgotopkrealtime(ssamodel s, int topk, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_topk = new x_int(topk);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetalgotopkrealtime(&_s_errormsg, &_d_s, &_d_topk);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetalgotopkrealtime' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetalgotopkrealtime(ssamodel s, int topk)
+    {
+    _core_ssasetalgotopkrealtime( s,  topk, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssacleardata(ssamodel s, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssacleardata(&_s_errormsg, &_d_s);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssacleardata' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssacleardata(ssamodel s)
+    {
+    _core_ssacleardata( s, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssagetbasis(ssamodel s, out double[,] a, out double[] sv, out int windowwidth, out int nbasis, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_matrix _d_a = new x_matrix();
+        x_vector _d_sv = new x_vector();
+        x_int _d_windowwidth = new x_int();
+        x_int _d_nbasis = new x_int();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_matrix_create_empty(ref _d_a, DT_REAL);
+            a = null;
+            x_vector_create_empty(ref _d_sv, DT_REAL);
+            sv = null;
+            _error_code = _i_ser_ssagetbasis(&_s_errormsg, &_d_s, &_d_a, &_d_sv, &_d_windowwidth, &_d_nbasis);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssagetbasis' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_sv.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_sv, ref sv);
+            if( sv == null )
+                sv = new double[0];
+            windowwidth = _d_windowwidth.intval;
+            nbasis = _d_nbasis.intval;
+        }
+        finally
+        {
+            x_matrix_clear(ref _d_a);
+            x_vector_clear(ref _d_sv);
+        }
+        // This function returns no value.
+    }
+    public static void ssagetbasis(ssamodel s, out double[,] a, out double[] sv, out int windowwidth, out int nbasis)
+    {
+    _core_ssagetbasis( s, out  a, out  sv, out  windowwidth, out  nbasis, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssagetlrr(ssamodel s, out double[] a, out int windowwidth, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_a = new x_vector();
+        x_int _d_windowwidth = new x_int();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_vector_create_empty(ref _d_a, DT_REAL);
+            a = null;
+            _error_code = _i_ser_ssagetlrr(&_s_errormsg, &_d_s, &_d_a, &_d_windowwidth);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssagetlrr' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
+            windowwidth = _d_windowwidth.intval;
+        }
+        finally
+        {
+            x_vector_clear(ref _d_a);
+        }
+        // This function returns no value.
+    }
+    public static void ssagetlrr(ssamodel s, out double[] a, out int windowwidth)
+    {
+    _core_ssagetlrr( s, out  a, out  windowwidth, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaanalyzelastwindow(ssamodel s, out double[] trend, out double[] noise, out int nticks, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_trend = new x_vector();
+        x_vector _d_noise = new x_vector();
+        x_int _d_nticks = new x_int();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_vector_create_empty(ref _d_trend, DT_REAL);
+            trend = null;
+            x_vector_create_empty(ref _d_noise, DT_REAL);
+            noise = null;
+            _error_code = _i_ser_ssaanalyzelastwindow(&_s_errormsg, &_d_s, &_d_trend, &_d_noise, &_d_nticks);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzelastwindow' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
+            nticks = _d_nticks.intval;
+        }
+        finally
+        {
+            x_vector_clear(ref _d_trend);
+            x_vector_clear(ref _d_noise);
+        }
+        // This function returns no value.
+    }
+    public static void ssaanalyzelastwindow(ssamodel s, out double[] trend, out double[] noise, out int nticks)
+    {
+    _core_ssaanalyzelastwindow( s, out  trend, out  noise, out  nticks, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaanalyzelast(ssamodel s, int nticks, out double[] trend, out double[] noise, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_nticks = new x_int(nticks);
+        x_vector _d_trend = new x_vector();
+        x_vector _d_noise = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_vector_create_empty(ref _d_trend, DT_REAL);
+            trend = null;
+            x_vector_create_empty(ref _d_noise, DT_REAL);
+            noise = null;
+            _error_code = _i_ser_ssaanalyzelast(&_s_errormsg, &_d_s, &_d_nticks, &_d_trend, &_d_noise);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzelast' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_trend);
+            x_vector_clear(ref _d_noise);
+        }
+        // This function returns no value.
+    }
+    public static void ssaanalyzelast(ssamodel s, int nticks, out double[] trend, out double[] noise)
+    {
+    _core_ssaanalyzelast( s,  nticks, out  trend, out  noise, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaanalyzesequence(ssamodel s, double[] data, int nticks, out double[] trend, out double[] noise, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_data = new x_vector();
+        x_int _d_nticks = new x_int(nticks);
+        x_vector _d_trend = new x_vector();
+        x_vector _d_noise = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                x_vector_create_empty(ref _d_noise, DT_REAL);
+                noise = null;
+                _error_code = _i_ser_ssaanalyzesequence(&_s_errormsg, &_d_s, &_d_data, &_d_nticks, &_d_trend, &_d_noise);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzesequence' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_data);
+            x_vector_clear(ref _d_trend);
+            x_vector_clear(ref _d_noise);
+        }
+        // This function returns no value.
+    }
+    public static void ssaanalyzesequence(ssamodel s, double[] data, int nticks, out double[] trend, out double[] noise)
+    {
+    _core_ssaanalyzesequence( s,  data,  nticks, out  trend, out  noise, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaforecastlast(ssamodel s, int nticks, out double[] trend, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_nticks = new x_int(nticks);
+        x_vector _d_trend = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_vector_create_empty(ref _d_trend, DT_REAL);
+            trend = null;
+            _error_code = _i_ser_ssaforecastlast(&_s_errormsg, &_d_s, &_d_nticks, &_d_trend);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaforecastlast' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_trend);
+        }
+        // This function returns no value.
+    }
+    public static void ssaforecastlast(ssamodel s, int nticks, out double[] trend)
+    {
+    _core_ssaforecastlast( s,  nticks, out  trend, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, out double[] trend, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_data = new x_vector();
+        x_int _d_datalen = new x_int(datalen);
+        x_int _d_forecastlen = new x_int(forecastlen);
+        x_vector _d_trend = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                _error_code = _i_ser_ssaforecastsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_forecastlen, &_d_trend);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaforecastsequence' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_data);
+            x_vector_clear(ref _d_trend);
+        }
+        // This function returns no value.
+    }
+    public static void ssaforecastsequence(ssamodel s, double[] data, int datalen, int forecastlen, out double[] trend)
+    {
+    _core_ssaforecastsequence( s,  data,  datalen,  forecastlen, out  trend, alglibmode.serial);
+    return;
+    }
+    
+    
+    //
     // Subpackage gammafunc
     //
     
@@ -31169,7 +32341,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_linearmodel(void *x);
     private static _d_x_obj_copy_linearmodel _i_x_obj_copy_linearmodel = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_linearmodel(void *x);
+    private unsafe delegate void _d_x_obj_free_linearmodel(void *x);
     private static _d_x_obj_free_linearmodel _i_x_obj_free_linearmodel = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -31936,7 +33108,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_logitmodel(void *x);
     private static _d_x_obj_copy_logitmodel _i_x_obj_copy_logitmodel = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_logitmodel(void *x);
+    private unsafe delegate void _d_x_obj_free_logitmodel(void *x);
     private static _d_x_obj_free_logitmodel _i_x_obj_free_logitmodel = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -32518,7 +33690,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_mcpdstate(void *x);
     private static _d_x_obj_copy_mcpdstate _i_x_obj_copy_mcpdstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_mcpdstate(void *x);
+    private unsafe delegate void _d_x_obj_free_mcpdstate(void *x);
     private static _d_x_obj_free_mcpdstate _i_x_obj_free_mcpdstate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -33244,7 +34416,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_mlpensemble(void *x);
     private static _d_x_obj_copy_mlpensemble _i_x_obj_copy_mlpensemble = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_mlpensemble(void *x);
+    private unsafe delegate void _d_x_obj_free_mlpensemble(void *x);
     private static _d_x_obj_free_mlpensemble _i_x_obj_free_mlpensemble = null;
     public static unsafe void mlpeserialize(mlpensemble obj, out string s_out)
     {
@@ -34501,7 +35673,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_mlptrainer(void *x);
     private static _d_x_obj_copy_mlptrainer _i_x_obj_copy_mlptrainer = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_mlptrainer(void *x);
+    private unsafe delegate void _d_x_obj_free_mlptrainer(void *x);
     private static _d_x_obj_free_mlptrainer _i_x_obj_free_mlptrainer = null;
     private static unsafe void _core_mlptrainlm(multilayerperceptron network, double[,] xy, int npoints, double decay, int restarts, out int info, out mlpreport rep, alglibmode _alglib_mode)
     {
@@ -35467,7 +36639,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_clusterizerstate(void *x);
     private static _d_x_obj_copy_clusterizerstate _i_x_obj_copy_clusterizerstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_clusterizerstate(void *x);
+    private unsafe delegate void _d_x_obj_free_clusterizerstate(void *x);
     private static _d_x_obj_free_clusterizerstate _i_x_obj_free_clusterizerstate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -35898,6 +37070,43 @@ public partial class alglib
     _core_clusterizersetkmeansinit( s,  initalgo, alglibmode.serial);
     return;
     }
+    private static unsafe void _core_clusterizersetseed(clusterizerstate s, int seed, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_seed = new x_int(seed);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_clusterizersetseed(&_s_errormsg, &_d_s, &_d_seed);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'clusterizersetseed' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void clusterizersetseed(clusterizerstate s, int seed)
+    {
+    _core_clusterizersetseed( s,  seed, alglibmode.serial);
+    return;
+    }
     private static unsafe void _core_clusterizerrunahc(clusterizerstate s, out ahcreport rep, alglibmode _alglib_mode)
     {
         // primary initialization
@@ -36223,7 +37432,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_decisionforest(void *x);
     private static _d_x_obj_copy_decisionforest _i_x_obj_copy_decisionforest = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_decisionforest(void *x);
+    private unsafe delegate void _d_x_obj_free_decisionforest(void *x);
     private static _d_x_obj_free_decisionforest _i_x_obj_free_decisionforest = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -37687,36 +38896,36 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_autogkstate(void *x);
     private static _d_x_obj_copy_autogkstate _i_x_obj_copy_autogkstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_autogkstate(void *x);
+    private unsafe delegate void _d_x_obj_free_autogkstate(void *x);
     private static _d_x_obj_free_autogkstate _i_x_obj_free_autogkstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_autogkstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_autogkstate_set_needf(void *x, byte *dst);
     private static _d_x_autogkstate_get_needf _i_x_autogkstate_get_needf = null;
     private static _d_x_autogkstate_set_needf _i_x_autogkstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_get_x(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_get_x(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_set_x(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_set_x(void *x, double *dst);
     private static _d_x_autogkstate_get_x _i_x_autogkstate_get_x = null;
     private static _d_x_autogkstate_set_x _i_x_autogkstate_set_x = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_get_xminusa(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_get_xminusa(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_set_xminusa(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_set_xminusa(void *x, double *dst);
     private static _d_x_autogkstate_get_xminusa _i_x_autogkstate_get_xminusa = null;
     private static _d_x_autogkstate_set_xminusa _i_x_autogkstate_set_xminusa = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_get_bminusx(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_get_bminusx(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_set_bminusx(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_set_bminusx(void *x, double *dst);
     private static _d_x_autogkstate_get_bminusx _i_x_autogkstate_get_bminusx = null;
     private static _d_x_autogkstate_set_bminusx _i_x_autogkstate_set_bminusx = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_autogkstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_autogkstate_set_f(void *x, double *dst);
     private static _d_x_autogkstate_get_f _i_x_autogkstate_get_f = null;
     private static _d_x_autogkstate_set_f _i_x_autogkstate_set_f = null;
     private static unsafe void _core_autogksmooth(double a, double b, out autogkstate state, alglibmode _alglib_mode)
@@ -38939,7 +40148,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_idwinterpolant(void *x);
     private static _d_x_obj_copy_idwinterpolant _i_x_obj_copy_idwinterpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_idwinterpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_idwinterpolant(void *x);
     private static _d_x_obj_free_idwinterpolant _i_x_obj_free_idwinterpolant = null;
     private static unsafe double _core_idwcalc(idwinterpolant z, double[] x, alglibmode _alglib_mode)
     {
@@ -39157,7 +40366,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_barycentricinterpolant(void *x);
     private static _d_x_obj_copy_barycentricinterpolant _i_x_obj_copy_barycentricinterpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_barycentricinterpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_barycentricinterpolant(void *x);
     private static _d_x_obj_free_barycentricinterpolant _i_x_obj_free_barycentricinterpolant = null;
     private static unsafe double _core_barycentriccalc(barycentricinterpolant b, double t, alglibmode _alglib_mode)
     {
@@ -39550,7 +40759,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_spline1dinterpolant(void *x);
     private static _d_x_obj_copy_spline1dinterpolant _i_x_obj_copy_spline1dinterpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_spline1dinterpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_spline1dinterpolant(void *x);
     private static _d_x_obj_free_spline1dinterpolant _i_x_obj_free_spline1dinterpolant = null;
     private static unsafe void _core_spline1dbuildlinear(double[] x, double[] y, int n, out spline1dinterpolant c, alglibmode _alglib_mode)
     {
@@ -40625,7 +41834,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_pspline2interpolant(void *x);
     private static _d_x_obj_copy_pspline2interpolant _i_x_obj_copy_pspline2interpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_pspline2interpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_pspline2interpolant(void *x);
     private static _d_x_obj_free_pspline2interpolant _i_x_obj_free_pspline2interpolant = null;
 
     public unsafe class pspline3interpolant : alglibobject
@@ -40656,7 +41865,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_pspline3interpolant(void *x);
     private static _d_x_obj_copy_pspline3interpolant _i_x_obj_copy_pspline3interpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_pspline3interpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_pspline3interpolant(void *x);
     private static _d_x_obj_free_pspline3interpolant _i_x_obj_free_pspline3interpolant = null;
     private static unsafe void _core_pspline2build(double[,] xy, int n, int st, int pt, out pspline2interpolant p, alglibmode _alglib_mode)
     {
@@ -41465,7 +42674,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_spline3dinterpolant(void *x);
     private static _d_x_obj_copy_spline3dinterpolant _i_x_obj_copy_spline3dinterpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_spline3dinterpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_spline3dinterpolant(void *x);
     private static _d_x_obj_free_spline3dinterpolant _i_x_obj_free_spline3dinterpolant = null;
     private static unsafe double _core_spline3dcalc(spline3dinterpolant c, double x, double y, double z, alglibmode _alglib_mode)
     {
@@ -42822,49 +44031,49 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_lsfitstate(void *x);
     private static _d_x_obj_copy_lsfitstate _i_x_obj_copy_lsfitstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_lsfitstate(void *x);
+    private unsafe delegate void _d_x_obj_free_lsfitstate(void *x);
     private static _d_x_obj_free_lsfitstate _i_x_obj_free_lsfitstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_set_needf(void *x, byte *dst);
     private static _d_x_lsfitstate_get_needf _i_x_lsfitstate_get_needf = null;
     private static _d_x_lsfitstate_set_needf _i_x_lsfitstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_needfg(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_set_needfg(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_set_needfg(void *x, byte *dst);
     private static _d_x_lsfitstate_get_needfg _i_x_lsfitstate_get_needfg = null;
     private static _d_x_lsfitstate_set_needfg _i_x_lsfitstate_set_needfg = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_needfgh(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_needfgh(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_set_needfgh(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_set_needfgh(void *x, byte *dst);
     private static _d_x_lsfitstate_get_needfgh _i_x_lsfitstate_get_needfgh = null;
     private static _d_x_lsfitstate_set_needfgh _i_x_lsfitstate_set_needfgh = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_lsfitstate_set_xupdated(void *x, byte *dst);
     private static _d_x_lsfitstate_get_xupdated _i_x_lsfitstate_get_xupdated = null;
     private static _d_x_lsfitstate_set_xupdated _i_x_lsfitstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_c(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_c(void *x, x_vector *dst);
     private static _d_x_lsfitstate_get_c _i_x_lsfitstate_get_c = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_lsfitstate_set_f(void *x, double *dst);
     private static _d_x_lsfitstate_get_f _i_x_lsfitstate_get_f = null;
     private static _d_x_lsfitstate_set_f _i_x_lsfitstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_g(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_g(void *x, x_vector *dst);
     private static _d_x_lsfitstate_get_g _i_x_lsfitstate_get_g = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_h(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_h(void *x, x_matrix *dst);
     private static _d_x_lsfitstate_get_h _i_x_lsfitstate_get_h = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_lsfitstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_lsfitstate_get_x(void *x, x_vector *dst);
     private static _d_x_lsfitstate_get_x _i_x_lsfitstate_get_x = null;
     private static unsafe void _core_lstfitpiecewiselinearrdpfixed(double[] x, double[] y, int n, int m, out double[] x2, out double[] y2, out int nsections, alglibmode _alglib_mode)
     {
@@ -45985,7 +47194,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_spline2dinterpolant(void *x);
     private static _d_x_obj_copy_spline2dinterpolant _i_x_obj_copy_spline2dinterpolant = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_spline2dinterpolant(void *x);
+    private unsafe delegate void _d_x_obj_free_spline2dinterpolant(void *x);
     private static _d_x_obj_free_spline2dinterpolant _i_x_obj_free_spline2dinterpolant = null;
     private static unsafe double _core_spline2dcalc(spline2dinterpolant c, double x, double y, alglibmode _alglib_mode)
     {
@@ -46716,7 +47925,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_rbfcalcbuffer(void *x);
     private static _d_x_obj_copy_rbfcalcbuffer _i_x_obj_copy_rbfcalcbuffer = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_rbfcalcbuffer(void *x);
+    private unsafe delegate void _d_x_obj_free_rbfcalcbuffer(void *x);
     private static _d_x_obj_free_rbfcalcbuffer _i_x_obj_free_rbfcalcbuffer = null;
 
     public unsafe class rbfmodel : alglibobject
@@ -46747,7 +47956,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_rbfmodel(void *x);
     private static _d_x_obj_copy_rbfmodel _i_x_obj_copy_rbfmodel = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_rbfmodel(void *x);
+    private unsafe delegate void _d_x_obj_free_rbfmodel(void *x);
     private static _d_x_obj_free_rbfmodel _i_x_obj_free_rbfmodel = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -51866,40 +53075,40 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_nleqstate(void *x);
     private static _d_x_obj_copy_nleqstate _i_x_obj_copy_nleqstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_nleqstate(void *x);
+    private unsafe delegate void _d_x_obj_free_nleqstate(void *x);
     private static _d_x_obj_free_nleqstate _i_x_obj_free_nleqstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_get_needf(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_set_needf(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_set_needf(void *x, byte *dst);
     private static _d_x_nleqstate_get_needf _i_x_nleqstate_get_needf = null;
     private static _d_x_nleqstate_set_needf _i_x_nleqstate_set_needf = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_get_needfij(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_set_needfij(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_set_needfij(void *x, byte *dst);
     private static _d_x_nleqstate_get_needfij _i_x_nleqstate_get_needfij = null;
     private static _d_x_nleqstate_set_needfij _i_x_nleqstate_set_needfij = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_get_xupdated(void *x, byte *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_set_xupdated(void *x, byte *dst);
+    private unsafe delegate void _d_x_nleqstate_set_xupdated(void *x, byte *dst);
     private static _d_x_nleqstate_get_xupdated _i_x_nleqstate_get_xupdated = null;
     private static _d_x_nleqstate_set_xupdated _i_x_nleqstate_set_xupdated = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_f(void *x, double *dst);
+    private unsafe delegate void _d_x_nleqstate_get_f(void *x, double *dst);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_set_f(void *x, double *dst);
+    private unsafe delegate void _d_x_nleqstate_set_f(void *x, double *dst);
     private static _d_x_nleqstate_get_f _i_x_nleqstate_get_f = null;
     private static _d_x_nleqstate_set_f _i_x_nleqstate_set_f = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_fi(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_nleqstate_get_fi(void *x, x_vector *dst);
     private static _d_x_nleqstate_get_fi _i_x_nleqstate_get_fi = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_j(void *x, x_matrix *dst);
+    private unsafe delegate void _d_x_nleqstate_get_j(void *x, x_matrix *dst);
     private static _d_x_nleqstate_get_j _i_x_nleqstate_get_j = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_nleqstate_get_x(void *x, x_vector *dst);
+    private unsafe delegate void _d_x_nleqstate_get_x(void *x, x_vector *dst);
     private static _d_x_nleqstate_get_x _i_x_nleqstate_get_x = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -52430,7 +53639,7 @@ public partial class alglib
     private unsafe delegate void* _d_x_obj_copy_lincgstate(void *x);
     private static _d_x_obj_copy_lincgstate _i_x_obj_copy_lincgstate = null;
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private unsafe delegate int _d_x_obj_free_lincgstate(void *x);
+    private unsafe delegate void _d_x_obj_free_lincgstate(void *x);
     private static _d_x_obj_free_lincgstate _i_x_obj_free_lincgstate = null;
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
@@ -53283,6 +54492,84 @@ public partial class alglib
         private unsafe delegate int _d_sparsegetlowercount(byte **error_msg, x_int *result, void **s);
         private static _d_sparsegetlowercount _i_ser_sparsegetlowercount = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixtranspose(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
+        private static _d_cmatrixtranspose _i_ser_cmatrixtranspose = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixtranspose(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
+        private static _d_rmatrixtranspose _i_ser_rmatrixtranspose = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixenforcesymmetricity(byte **error_msg, x_matrix *a, x_int *n, byte *isupper);
+        private static _d_rmatrixenforcesymmetricity _i_ser_rmatrixenforcesymmetricity = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixcopy(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
+        private static _d_cmatrixcopy _i_ser_cmatrixcopy = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixcopy(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
+        private static _d_rmatrixcopy _i_ser_rmatrixcopy = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixger(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, double *alpha, x_vector *u, x_int *iu, x_vector *v, x_int *iv);
+        private static _d_rmatrixger _i_ser_rmatrixger = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixrank1(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_vector *u, x_int *iu, x_vector *v, x_int *iv);
+        private static _d_cmatrixrank1 _i_ser_cmatrixrank1 = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixrank1(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_vector *u, x_int *iu, x_vector *v, x_int *iv);
+        private static _d_rmatrixrank1 _i_ser_rmatrixrank1 = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixgemv(byte **error_msg, x_int *m, x_int *n, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *opa, x_vector *x, x_int *ix, double *beta, x_vector *y, x_int *iy);
+        private static _d_rmatrixgemv _i_ser_rmatrixgemv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixmv(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_int *opa, x_vector *x, x_int *ix, x_vector *y, x_int *iy);
+        private static _d_cmatrixmv _i_ser_cmatrixmv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixmv(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_int *opa, x_vector *x, x_int *ix, x_vector *y, x_int *iy);
+        private static _d_rmatrixmv _i_ser_rmatrixmv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixsymv(byte **error_msg, x_int *n, double *alpha, x_matrix *a, x_int *ia, x_int *ja, byte *isupper, x_vector *x, x_int *ix, double *beta, x_vector *y, x_int *iy);
+        private static _d_rmatrixsymv _i_ser_rmatrixsymv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixsyvmv(byte **error_msg, double *result, x_int *n, x_matrix *a, x_int *ia, x_int *ja, byte *isupper, x_vector *x, x_int *ix, x_vector *tmp);
+        private static _d_rmatrixsyvmv _i_ser_rmatrixsyvmv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixtrsv(byte **error_msg, x_int *n, x_matrix *a, x_int *ia, x_int *ja, byte *isupper, byte *isunit, x_int *optype, x_vector *x, x_int *ix);
+        private static _d_rmatrixtrsv _i_ser_rmatrixtrsv = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixrighttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
+        private static _d_cmatrixrighttrsm _i_ser_cmatrixrighttrsm = null;
+        private static _d_cmatrixrighttrsm _i_smp_cmatrixrighttrsm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixlefttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
+        private static _d_cmatrixlefttrsm _i_ser_cmatrixlefttrsm = null;
+        private static _d_cmatrixlefttrsm _i_smp_cmatrixlefttrsm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixrighttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
+        private static _d_rmatrixrighttrsm _i_ser_rmatrixrighttrsm = null;
+        private static _d_rmatrixrighttrsm _i_smp_rmatrixrighttrsm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixlefttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
+        private static _d_rmatrixlefttrsm _i_ser_rmatrixlefttrsm = null;
+        private static _d_rmatrixlefttrsm _i_smp_rmatrixlefttrsm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixherk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
+        private static _d_cmatrixherk _i_ser_cmatrixherk = null;
+        private static _d_cmatrixherk _i_smp_cmatrixherk = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixsyrk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
+        private static _d_rmatrixsyrk _i_ser_rmatrixsyrk = null;
+        private static _d_rmatrixsyrk _i_smp_rmatrixsyrk = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixgemm(byte **error_msg, x_int *m, x_int *n, x_int *k, alglib.complex *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, x_matrix *b, x_int *ib, x_int *jb, x_int *optypeb, alglib.complex *beta, x_matrix *c, x_int *ic, x_int *jc);
+        private static _d_cmatrixgemm _i_ser_cmatrixgemm = null;
+        private static _d_cmatrixgemm _i_smp_cmatrixgemm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_rmatrixgemm(byte **error_msg, x_int *m, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, x_matrix *b, x_int *ib, x_int *jb, x_int *optypeb, double *beta, x_matrix *c, x_int *ic, x_int *jc);
+        private static _d_rmatrixgemm _i_ser_rmatrixgemm = null;
+        private static _d_rmatrixgemm _i_smp_rmatrixgemm = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_cmatrixsyrk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
+        private static _d_cmatrixsyrk _i_ser_cmatrixsyrk = null;
+        private static _d_cmatrixsyrk _i_smp_cmatrixsyrk = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_rmatrixrndorthogonal(byte **error_msg, x_int *n, x_matrix *a);
         private static _d_rmatrixrndorthogonal _i_ser_rmatrixrndorthogonal = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -53324,69 +54611,6 @@ public partial class alglib
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_hmatrixrndmultiply(byte **error_msg, x_matrix *a, x_int *n);
         private static _d_hmatrixrndmultiply _i_ser_hmatrixrndmultiply = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixtranspose(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
-        private static _d_cmatrixtranspose _i_ser_cmatrixtranspose = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixtranspose(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
-        private static _d_rmatrixtranspose _i_ser_rmatrixtranspose = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixenforcesymmetricity(byte **error_msg, x_matrix *a, x_int *n, byte *isupper);
-        private static _d_rmatrixenforcesymmetricity _i_ser_rmatrixenforcesymmetricity = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixcopy(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
-        private static _d_cmatrixcopy _i_ser_cmatrixcopy = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixcopy(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_matrix *b, x_int *ib, x_int *jb);
-        private static _d_rmatrixcopy _i_ser_rmatrixcopy = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixrank1(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_vector *u, x_int *iu, x_vector *v, x_int *iv);
-        private static _d_cmatrixrank1 _i_ser_cmatrixrank1 = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixrank1(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_vector *u, x_int *iu, x_vector *v, x_int *iv);
-        private static _d_rmatrixrank1 _i_ser_rmatrixrank1 = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixmv(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_int *opa, x_vector *x, x_int *ix, x_vector *y, x_int *iy);
-        private static _d_cmatrixmv _i_ser_cmatrixmv = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixmv(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *ia, x_int *ja, x_int *opa, x_vector *x, x_int *ix, x_vector *y, x_int *iy);
-        private static _d_rmatrixmv _i_ser_rmatrixmv = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixrighttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
-        private static _d_cmatrixrighttrsm _i_ser_cmatrixrighttrsm = null;
-        private static _d_cmatrixrighttrsm _i_smp_cmatrixrighttrsm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixlefttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
-        private static _d_cmatrixlefttrsm _i_ser_cmatrixlefttrsm = null;
-        private static _d_cmatrixlefttrsm _i_smp_cmatrixlefttrsm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixrighttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
-        private static _d_rmatrixrighttrsm _i_ser_rmatrixrighttrsm = null;
-        private static _d_rmatrixrighttrsm _i_smp_rmatrixrighttrsm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixlefttrsm(byte **error_msg, x_int *m, x_int *n, x_matrix *a, x_int *i1, x_int *j1, byte *isupper, byte *isunit, x_int *optype, x_matrix *x, x_int *i2, x_int *j2);
-        private static _d_rmatrixlefttrsm _i_ser_rmatrixlefttrsm = null;
-        private static _d_rmatrixlefttrsm _i_smp_rmatrixlefttrsm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixherk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
-        private static _d_cmatrixherk _i_ser_cmatrixherk = null;
-        private static _d_cmatrixherk _i_smp_cmatrixherk = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixsyrk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
-        private static _d_rmatrixsyrk _i_ser_rmatrixsyrk = null;
-        private static _d_rmatrixsyrk _i_smp_rmatrixsyrk = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixgemm(byte **error_msg, x_int *m, x_int *n, x_int *k, alglib.complex *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, x_matrix *b, x_int *ib, x_int *jb, x_int *optypeb, alglib.complex *beta, x_matrix *c, x_int *ic, x_int *jc);
-        private static _d_cmatrixgemm _i_ser_cmatrixgemm = null;
-        private static _d_cmatrixgemm _i_smp_cmatrixgemm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_rmatrixgemm(byte **error_msg, x_int *m, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, x_matrix *b, x_int *ib, x_int *jb, x_int *optypeb, double *beta, x_matrix *c, x_int *ic, x_int *jc);
-        private static _d_rmatrixgemm _i_ser_rmatrixgemm = null;
-        private static _d_rmatrixgemm _i_smp_rmatrixgemm = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_cmatrixsyrk(byte **error_msg, x_int *n, x_int *k, double *alpha, x_matrix *a, x_int *ia, x_int *ja, x_int *optypea, double *beta, x_matrix *c, x_int *ic, x_int *jc, byte *isupper);
-        private static _d_cmatrixsyrk _i_ser_cmatrixsyrk = null;
-        private static _d_cmatrixsyrk _i_smp_cmatrixsyrk = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_rmatrixlu(byte **error_msg, x_matrix *a, x_int *m, x_int *n, x_vector *pivots);
         private static _d_rmatrixlu _i_ser_rmatrixlu = null;
@@ -54225,6 +55449,9 @@ public partial class alglib
         private unsafe delegate int _d_eigsubspacesetcond(byte **error_msg, void **state, double *eps, x_int *maxits);
         private static _d_eigsubspacesetcond _i_ser_eigsubspacesetcond = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_eigsubspacesetwarmstart(byte **error_msg, void **state, byte *usewarmstart);
+        private static _d_eigsubspacesetwarmstart _i_ser_eigsubspacesetwarmstart = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_eigsubspaceoocstart(byte **error_msg, void **state, x_int *mtype);
         private static _d_eigsubspaceoocstart _i_ser_eigsubspaceoocstart = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -54591,6 +55818,60 @@ public partial class alglib
         private static _d_fisherldan _i_ser_fisherldan = null;
         private static _d_fisherldan _i_smp_fisherldan = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssacreate(byte **error_msg, void **s);
+        private static _d_ssacreate _i_ser_ssacreate = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetwindow(byte **error_msg, void **s, x_int *windowwidth);
+        private static _d_ssasetwindow _i_ser_ssasetwindow = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetseed(byte **error_msg, void **s, x_int *seed);
+        private static _d_ssasetseed _i_ser_ssasetseed = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetpoweruplength(byte **error_msg, void **s, x_int *pwlen);
+        private static _d_ssasetpoweruplength _i_ser_ssasetpoweruplength = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaaddsequence(byte **error_msg, void **s, x_vector *x, x_int *n);
+        private static _d_ssaaddsequence _i_ser_ssaaddsequence = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaappendpointandupdate(byte **error_msg, void **s, double *x, double *updateits);
+        private static _d_ssaappendpointandupdate _i_ser_ssaappendpointandupdate = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaappendsequenceandupdate(byte **error_msg, void **s, x_vector *x, x_int *nticks, double *updateits);
+        private static _d_ssaappendsequenceandupdate _i_ser_ssaappendsequenceandupdate = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetalgoprecomputed(byte **error_msg, void **s, x_matrix *a, x_int *windowwidth, x_int *nbasis);
+        private static _d_ssasetalgoprecomputed _i_ser_ssasetalgoprecomputed = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetalgotopkdirect(byte **error_msg, void **s, x_int *topk);
+        private static _d_ssasetalgotopkdirect _i_ser_ssasetalgotopkdirect = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetalgotopkrealtime(byte **error_msg, void **s, x_int *topk);
+        private static _d_ssasetalgotopkrealtime _i_ser_ssasetalgotopkrealtime = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssacleardata(byte **error_msg, void **s);
+        private static _d_ssacleardata _i_ser_ssacleardata = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssagetbasis(byte **error_msg, void **s, x_matrix *a, x_vector *sv, x_int *windowwidth, x_int *nbasis);
+        private static _d_ssagetbasis _i_ser_ssagetbasis = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssagetlrr(byte **error_msg, void **s, x_vector *a, x_int *windowwidth);
+        private static _d_ssagetlrr _i_ser_ssagetlrr = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaanalyzelastwindow(byte **error_msg, void **s, x_vector *trend, x_vector *noise, x_int *nticks);
+        private static _d_ssaanalyzelastwindow _i_ser_ssaanalyzelastwindow = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaanalyzelast(byte **error_msg, void **s, x_int *nticks, x_vector *trend, x_vector *noise);
+        private static _d_ssaanalyzelast _i_ser_ssaanalyzelast = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaanalyzesequence(byte **error_msg, void **s, x_vector *data, x_int *nticks, x_vector *trend, x_vector *noise);
+        private static _d_ssaanalyzesequence _i_ser_ssaanalyzesequence = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaforecastlast(byte **error_msg, void **s, x_int *nticks, x_vector *trend);
+        private static _d_ssaforecastlast _i_ser_ssaforecastlast = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaforecastsequence(byte **error_msg, void **s, x_vector *data, x_int *datalen, x_int *forecastlen, x_vector *trend);
+        private static _d_ssaforecastsequence _i_ser_ssaforecastsequence = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_gammafunction(byte **error_msg, double *result, double *x);
         private static _d_gammafunction _i_ser_gammafunction = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -54900,6 +56181,9 @@ public partial class alglib
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_clusterizersetkmeansinit(byte **error_msg, void **s, x_int *initalgo);
         private static _d_clusterizersetkmeansinit _i_ser_clusterizersetkmeansinit = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_clusterizersetseed(byte **error_msg, void **s, x_int *seed);
+        private static _d_clusterizersetseed _i_ser_clusterizersetseed = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_clusterizerrunahc(byte **error_msg, void **s, x_ahcreport *rep);
         private static _d_clusterizerrunahc _i_ser_clusterizerrunahc = null;
@@ -55995,29 +57279,20 @@ public partial class alglib
             _i_ser_sparsegetncols = (_d_sparsegetncols)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsegetncols"), typeof(_d_sparsegetncols));
             _i_ser_sparsegetuppercount = (_d_sparsegetuppercount)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsegetuppercount"), typeof(_d_sparsegetuppercount));
             _i_ser_sparsegetlowercount = (_d_sparsegetlowercount)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsegetlowercount"), typeof(_d_sparsegetlowercount));
-            _i_ser_rmatrixrndorthogonal = (_d_rmatrixrndorthogonal)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonal"), typeof(_d_rmatrixrndorthogonal));
-            _i_ser_rmatrixrndcond = (_d_rmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndcond"), typeof(_d_rmatrixrndcond));
-            _i_ser_cmatrixrndorthogonal = (_d_cmatrixrndorthogonal)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonal"), typeof(_d_cmatrixrndorthogonal));
-            _i_ser_cmatrixrndcond = (_d_cmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndcond"), typeof(_d_cmatrixrndcond));
-            _i_ser_smatrixrndcond = (_d_smatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smatrixrndcond"), typeof(_d_smatrixrndcond));
-            _i_ser_spdmatrixrndcond = (_d_spdmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spdmatrixrndcond"), typeof(_d_spdmatrixrndcond));
-            _i_ser_hmatrixrndcond = (_d_hmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hmatrixrndcond"), typeof(_d_hmatrixrndcond));
-            _i_ser_hpdmatrixrndcond = (_d_hpdmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hpdmatrixrndcond"), typeof(_d_hpdmatrixrndcond));
-            _i_ser_rmatrixrndorthogonalfromtheright = (_d_rmatrixrndorthogonalfromtheright)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonalfromtheright"), typeof(_d_rmatrixrndorthogonalfromtheright));
-            _i_ser_rmatrixrndorthogonalfromtheleft = (_d_rmatrixrndorthogonalfromtheleft)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonalfromtheleft"), typeof(_d_rmatrixrndorthogonalfromtheleft));
-            _i_ser_cmatrixrndorthogonalfromtheright = (_d_cmatrixrndorthogonalfromtheright)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonalfromtheright"), typeof(_d_cmatrixrndorthogonalfromtheright));
-            _i_ser_cmatrixrndorthogonalfromtheleft = (_d_cmatrixrndorthogonalfromtheleft)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonalfromtheleft"), typeof(_d_cmatrixrndorthogonalfromtheleft));
-            _i_ser_smatrixrndmultiply = (_d_smatrixrndmultiply)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smatrixrndmultiply"), typeof(_d_smatrixrndmultiply));
-            _i_ser_hmatrixrndmultiply = (_d_hmatrixrndmultiply)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hmatrixrndmultiply"), typeof(_d_hmatrixrndmultiply));
             _i_ser_cmatrixtranspose = (_d_cmatrixtranspose)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixtranspose"), typeof(_d_cmatrixtranspose));
             _i_ser_rmatrixtranspose = (_d_rmatrixtranspose)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixtranspose"), typeof(_d_rmatrixtranspose));
             _i_ser_rmatrixenforcesymmetricity = (_d_rmatrixenforcesymmetricity)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixenforcesymmetricity"), typeof(_d_rmatrixenforcesymmetricity));
             _i_ser_cmatrixcopy = (_d_cmatrixcopy)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixcopy"), typeof(_d_cmatrixcopy));
             _i_ser_rmatrixcopy = (_d_rmatrixcopy)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixcopy"), typeof(_d_rmatrixcopy));
+            _i_ser_rmatrixger = (_d_rmatrixger)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixger"), typeof(_d_rmatrixger));
             _i_ser_cmatrixrank1 = (_d_cmatrixrank1)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrank1"), typeof(_d_cmatrixrank1));
             _i_ser_rmatrixrank1 = (_d_rmatrixrank1)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrank1"), typeof(_d_rmatrixrank1));
+            _i_ser_rmatrixgemv = (_d_rmatrixgemv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixgemv"), typeof(_d_rmatrixgemv));
             _i_ser_cmatrixmv = (_d_cmatrixmv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixmv"), typeof(_d_cmatrixmv));
             _i_ser_rmatrixmv = (_d_rmatrixmv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixmv"), typeof(_d_rmatrixmv));
+            _i_ser_rmatrixsymv = (_d_rmatrixsymv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixsymv"), typeof(_d_rmatrixsymv));
+            _i_ser_rmatrixsyvmv = (_d_rmatrixsyvmv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixsyvmv"), typeof(_d_rmatrixsyvmv));
+            _i_ser_rmatrixtrsv = (_d_rmatrixtrsv)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixtrsv"), typeof(_d_rmatrixtrsv));
             _i_ser_cmatrixrighttrsm = (_d_cmatrixrighttrsm)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrighttrsm"), typeof(_d_cmatrixrighttrsm));
             _i_smp_cmatrixrighttrsm = (_d_cmatrixrighttrsm)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_cmatrixrighttrsm"), typeof(_d_cmatrixrighttrsm));
             _i_ser_cmatrixlefttrsm = (_d_cmatrixlefttrsm)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixlefttrsm"), typeof(_d_cmatrixlefttrsm));
@@ -56036,6 +57311,20 @@ public partial class alglib
             _i_smp_rmatrixgemm = (_d_rmatrixgemm)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_rmatrixgemm"), typeof(_d_rmatrixgemm));
             _i_ser_cmatrixsyrk = (_d_cmatrixsyrk)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixsyrk"), typeof(_d_cmatrixsyrk));
             _i_smp_cmatrixsyrk = (_d_cmatrixsyrk)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_cmatrixsyrk"), typeof(_d_cmatrixsyrk));
+            _i_ser_rmatrixrndorthogonal = (_d_rmatrixrndorthogonal)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonal"), typeof(_d_rmatrixrndorthogonal));
+            _i_ser_rmatrixrndcond = (_d_rmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndcond"), typeof(_d_rmatrixrndcond));
+            _i_ser_cmatrixrndorthogonal = (_d_cmatrixrndorthogonal)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonal"), typeof(_d_cmatrixrndorthogonal));
+            _i_ser_cmatrixrndcond = (_d_cmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndcond"), typeof(_d_cmatrixrndcond));
+            _i_ser_smatrixrndcond = (_d_smatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smatrixrndcond"), typeof(_d_smatrixrndcond));
+            _i_ser_spdmatrixrndcond = (_d_spdmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spdmatrixrndcond"), typeof(_d_spdmatrixrndcond));
+            _i_ser_hmatrixrndcond = (_d_hmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hmatrixrndcond"), typeof(_d_hmatrixrndcond));
+            _i_ser_hpdmatrixrndcond = (_d_hpdmatrixrndcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hpdmatrixrndcond"), typeof(_d_hpdmatrixrndcond));
+            _i_ser_rmatrixrndorthogonalfromtheright = (_d_rmatrixrndorthogonalfromtheright)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonalfromtheright"), typeof(_d_rmatrixrndorthogonalfromtheright));
+            _i_ser_rmatrixrndorthogonalfromtheleft = (_d_rmatrixrndorthogonalfromtheleft)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixrndorthogonalfromtheleft"), typeof(_d_rmatrixrndorthogonalfromtheleft));
+            _i_ser_cmatrixrndorthogonalfromtheright = (_d_cmatrixrndorthogonalfromtheright)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonalfromtheright"), typeof(_d_cmatrixrndorthogonalfromtheright));
+            _i_ser_cmatrixrndorthogonalfromtheleft = (_d_cmatrixrndorthogonalfromtheleft)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixrndorthogonalfromtheleft"), typeof(_d_cmatrixrndorthogonalfromtheleft));
+            _i_ser_smatrixrndmultiply = (_d_smatrixrndmultiply)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smatrixrndmultiply"), typeof(_d_smatrixrndmultiply));
+            _i_ser_hmatrixrndmultiply = (_d_hmatrixrndmultiply)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_hmatrixrndmultiply"), typeof(_d_hmatrixrndmultiply));
             _i_ser_rmatrixlu = (_d_rmatrixlu)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_rmatrixlu"), typeof(_d_rmatrixlu));
             _i_smp_rmatrixlu = (_d_rmatrixlu)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_rmatrixlu"), typeof(_d_rmatrixlu));
             _i_ser_cmatrixlu = (_d_cmatrixlu)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_cmatrixlu"), typeof(_d_cmatrixlu));
@@ -56460,6 +57749,7 @@ public partial class alglib
             _i_ser_eigsubspacecreate = (_d_eigsubspacecreate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspacecreate"), typeof(_d_eigsubspacecreate));
             _i_ser_eigsubspacecreatebuf = (_d_eigsubspacecreatebuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspacecreatebuf"), typeof(_d_eigsubspacecreatebuf));
             _i_ser_eigsubspacesetcond = (_d_eigsubspacesetcond)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspacesetcond"), typeof(_d_eigsubspacesetcond));
+            _i_ser_eigsubspacesetwarmstart = (_d_eigsubspacesetwarmstart)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspacesetwarmstart"), typeof(_d_eigsubspacesetwarmstart));
             _i_ser_eigsubspaceoocstart = (_d_eigsubspaceoocstart)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspaceoocstart"), typeof(_d_eigsubspaceoocstart));
             _i_ser_eigsubspaceooccontinue = (_d_eigsubspaceooccontinue)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspaceooccontinue"), typeof(_d_eigsubspaceooccontinue));
             _i_ser_eigsubspaceoocgetrequestinfo = (_d_eigsubspaceoocgetrequestinfo)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_eigsubspaceoocgetrequestinfo"), typeof(_d_eigsubspaceoocgetrequestinfo));
@@ -56606,6 +57896,26 @@ public partial class alglib
             _i_ser_fisherlda = (_d_fisherlda)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_fisherlda"), typeof(_d_fisherlda));
             _i_ser_fisherldan = (_d_fisherldan)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_fisherldan"), typeof(_d_fisherldan));
             _i_smp_fisherldan = (_d_fisherldan)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_fisherldan"), typeof(_d_fisherldan));
+        _i_x_obj_copy_ssamodel = (_d_x_obj_copy_ssamodel)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_copy_ssamodel"), typeof(_d_x_obj_copy_ssamodel));
+        _i_x_obj_free_ssamodel = (_d_x_obj_free_ssamodel)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_free_ssamodel"), typeof(_d_x_obj_free_ssamodel));
+            _i_ser_ssacreate = (_d_ssacreate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssacreate"), typeof(_d_ssacreate));
+            _i_ser_ssasetwindow = (_d_ssasetwindow)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetwindow"), typeof(_d_ssasetwindow));
+            _i_ser_ssasetseed = (_d_ssasetseed)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetseed"), typeof(_d_ssasetseed));
+            _i_ser_ssasetpoweruplength = (_d_ssasetpoweruplength)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetpoweruplength"), typeof(_d_ssasetpoweruplength));
+            _i_ser_ssaaddsequence = (_d_ssaaddsequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaaddsequence"), typeof(_d_ssaaddsequence));
+            _i_ser_ssaappendpointandupdate = (_d_ssaappendpointandupdate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaappendpointandupdate"), typeof(_d_ssaappendpointandupdate));
+            _i_ser_ssaappendsequenceandupdate = (_d_ssaappendsequenceandupdate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaappendsequenceandupdate"), typeof(_d_ssaappendsequenceandupdate));
+            _i_ser_ssasetalgoprecomputed = (_d_ssasetalgoprecomputed)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetalgoprecomputed"), typeof(_d_ssasetalgoprecomputed));
+            _i_ser_ssasetalgotopkdirect = (_d_ssasetalgotopkdirect)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetalgotopkdirect"), typeof(_d_ssasetalgotopkdirect));
+            _i_ser_ssasetalgotopkrealtime = (_d_ssasetalgotopkrealtime)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetalgotopkrealtime"), typeof(_d_ssasetalgotopkrealtime));
+            _i_ser_ssacleardata = (_d_ssacleardata)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssacleardata"), typeof(_d_ssacleardata));
+            _i_ser_ssagetbasis = (_d_ssagetbasis)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssagetbasis"), typeof(_d_ssagetbasis));
+            _i_ser_ssagetlrr = (_d_ssagetlrr)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssagetlrr"), typeof(_d_ssagetlrr));
+            _i_ser_ssaanalyzelastwindow = (_d_ssaanalyzelastwindow)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaanalyzelastwindow"), typeof(_d_ssaanalyzelastwindow));
+            _i_ser_ssaanalyzelast = (_d_ssaanalyzelast)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaanalyzelast"), typeof(_d_ssaanalyzelast));
+            _i_ser_ssaanalyzesequence = (_d_ssaanalyzesequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaanalyzesequence"), typeof(_d_ssaanalyzesequence));
+            _i_ser_ssaforecastlast = (_d_ssaforecastlast)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastlast"), typeof(_d_ssaforecastlast));
+            _i_ser_ssaforecastsequence = (_d_ssaforecastsequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastsequence"), typeof(_d_ssaforecastsequence));
             _i_ser_gammafunction = (_d_gammafunction)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_gammafunction"), typeof(_d_gammafunction));
             _i_ser_lngamma = (_d_lngamma)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_lngamma"), typeof(_d_lngamma));
             _i_ser_errorfunction = (_d_errorfunction)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_errorfunction"), typeof(_d_errorfunction));
@@ -56724,6 +58034,7 @@ public partial class alglib
             _i_ser_clusterizersetahcalgo = (_d_clusterizersetahcalgo)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizersetahcalgo"), typeof(_d_clusterizersetahcalgo));
             _i_ser_clusterizersetkmeanslimits = (_d_clusterizersetkmeanslimits)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizersetkmeanslimits"), typeof(_d_clusterizersetkmeanslimits));
             _i_ser_clusterizersetkmeansinit = (_d_clusterizersetkmeansinit)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizersetkmeansinit"), typeof(_d_clusterizersetkmeansinit));
+            _i_ser_clusterizersetseed = (_d_clusterizersetseed)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizersetseed"), typeof(_d_clusterizersetseed));
             _i_ser_clusterizerrunahc = (_d_clusterizerrunahc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizerrunahc"), typeof(_d_clusterizerrunahc));
             _i_smp_clusterizerrunahc = (_d_clusterizerrunahc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_clusterizerrunahc"), typeof(_d_clusterizerrunahc));
             _i_ser_clusterizerrunkmeans = (_d_clusterizerrunkmeans)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_clusterizerrunkmeans"), typeof(_d_clusterizerrunkmeans));
