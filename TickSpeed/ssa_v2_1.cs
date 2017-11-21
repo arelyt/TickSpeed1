@@ -61,6 +61,7 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
+            var t = DateTime.Now;
             // вырожденные случаи
             if (myDoubles == null)
                 return myDoubles;
@@ -126,7 +127,8 @@ namespace TickSpeed
             last_result = new double[count];
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
-
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            Context.Log("ssaV2_1 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }
