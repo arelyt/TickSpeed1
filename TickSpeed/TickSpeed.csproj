@@ -125,6 +125,8 @@
     <Compile Include="FilterIir.cs" />
     <Compile Include="FilterFir.cs" />
     <Compile Include="NeuralGlassFitSi.cs" />
+    <Compile Include="ssa_v2_1N2.cs" />
+    <Compile Include="ssa_v2_1N1.cs" />
     <Compile Include="ssa_v2_1.cs" />
     <Compile Include="ssa_v2.cs" />
     <Compile Include="Znorm.cs" />
