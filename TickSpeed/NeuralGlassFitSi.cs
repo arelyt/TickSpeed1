@@ -17,7 +17,7 @@ namespace TickSpeed
         public interface INeuralFitSi
         {
             // ReSharper disable once InconsistentNaming
-            double[] mynet(double[] in1, double in2);
+            double[] mynet1(double[] in1, double in2);
         }
         [HandlerParameter(true, "10.0", Name = "NN")]
         public double Nn { get; set; }
@@ -36,8 +36,8 @@ namespace TickSpeed
             MWClient client = new MWHttpClient();
             try
             {
-                INeuralFitSi sigDen = client.CreateProxy<INeuralFitSi>(new Uri("http://localhost:9910/mynet_dep"));
-                values = sigDen.mynet(myDoubles.TakeLast(Win).ToArray(), Nn);
+                INeuralFitSi sigDen = client.CreateProxy<INeuralFitSi>(new Uri("http://localhost:9910/mynet1_dep"));
+                values = sigDen.mynet1(myDoubles.TakeLast(Win).ToArray(), Nn);
             }
             catch (MATLABException)
             {
