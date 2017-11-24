@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MathWorks.MATLAB.ProductionServer.Client;
+using MoreLinq;
 using TSLab.Script.Handlers;
 
 namespace TickSpeed
@@ -16,13 +17,13 @@ namespace TickSpeed
         public interface INeuralFitSi
         {
             // ReSharper disable once InconsistentNaming
-            double[] mynet(double[] in1, int in2);
+            double[] mynet(double[] in1, double in2);
         }
-        [HandlerParameter(true, "10", Name = "NN")]
-        public int Nn { get; set; }
+        [HandlerParameter(true, "10.0", Name = "NN")]
+        public double Nn { get; set; }
 
-        //[HandlerParameter(true, "0.5", Name = "K")]
-        //public double K { get; set; }
+        [HandlerParameter(true, "300", Name = "Win")]
+        public int Win { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -30,13 +31,13 @@ namespace TickSpeed
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
-            var values = new double[count]; // values result
-           
+            var values = new double[Win]; // values result
+            var result = new double[count];
             MWClient client = new MWHttpClient();
             try
             {
                 INeuralFitSi sigDen = client.CreateProxy<INeuralFitSi>(new Uri("http://localhost:9910/mynet_dep"));
-                values = sigDen.mynet(myDoubles.ToArray(), Nn);
+                values = sigDen.mynet(myDoubles.TakeLast(Win).ToArray(), Nn);
             }
             catch (MATLABException)
             {
@@ -46,7 +47,8 @@ namespace TickSpeed
             {
                 client.Dispose();
             }
-            return values;
+            values.CopyTo(result, count-Win);
+            return result;
         }
     }
 }
