@@ -17,8 +17,10 @@ namespace TickSpeed
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
         public TradeDirection Direction { get; set; }
-        [HandlerParameter(Name = "Win", NotOptimized = false)]
+        [HandlerParameter(true, "2", Name = "Win", NotOptimized = false)]
         public int Win { get; set; }
+        [HandlerParameter(true, "5", Name = "WinExp", NotOptimized = false)]
+        public int WinExp{ get; set; }
 
         public IList<double> Execute(ISecurity security)
         {
@@ -46,7 +48,7 @@ namespace TickSpeed
 
                
             }
-            values = Series.EMA(values, Win);
+            values = Series.EMA(values, WinExp);
             return values;
         }
     }

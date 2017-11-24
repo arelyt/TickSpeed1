@@ -21,10 +21,10 @@ namespace TickSpeed
         const int overwrite_windows = 2;
 
         // worker - модель, которая строит базис, возможно - в фоновом режиме
-        private static alglib.ssamodel worker;
+        private static readonly alglib.ssamodel worker;
 
         // analyzer - модель, которая делает анализ на основе базиса, построенного worker
-        private static alglib.ssamodel analyzer;
+        private static readonly alglib.ssamodel analyzer;
 
         // последний сглаженный результат
         private static double[] last_result;
