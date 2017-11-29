@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Altaxo.Calc;
 using TSLab.Script.Handlers;
 namespace TickSpeed
 {
@@ -62,6 +63,13 @@ namespace TickSpeed
         public IList<double> Execute(IList<double> myDoubles)
         {
             var t = DateTime.Now;
+            for (int i = 0; i < myDoubles.Count; i++)
+            {
+                if (myDoubles[i].IsNaN())
+                {
+                    myDoubles[i] = 0;
+                }
+            }
             // вырожденные случаи
             if (myDoubles == null)
                 return myDoubles;
