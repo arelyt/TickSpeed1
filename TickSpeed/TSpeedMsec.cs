@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Altaxo.Calc;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
-using TSLab.Script.Helpers;
+using Series = TSLab.Script.Helpers.Series;
 
 namespace TickSpeed
 {
@@ -49,6 +50,13 @@ namespace TickSpeed
                
             }
             values = Series.EMA(values, WinExp);
+            for (int i = 0; i < count; i++)
+            {
+                if (values[i].IsNaN())
+                {
+                    values[i] = 0;
+                }
+            }
             return values;
         }
     }
