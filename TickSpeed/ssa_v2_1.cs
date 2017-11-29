@@ -18,8 +18,7 @@ namespace TickSpeed
         // частота обновления при поступлении новой точки
         const double update_freq = 1.0;
 
-        // количество последних окон, которые перезаписываются при анализе
-        const int overwrite_windows = 2;
+        
 
         // worker - модель, которая строит базис, возможно - в фоновом режиме
         private static readonly alglib.ssamodel worker;
@@ -59,6 +58,11 @@ namespace TickSpeed
 
         [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numfor { get; set; }
+
+        [HandlerParameter(true, "2", Name = "QWin", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        // количество последних окон, которые перезаписываются при анализе
+        public int overwrite_windows { get; set; }
+    
 
         public IList<double> Execute(IList<double> myDoubles)
         {

@@ -18,9 +18,6 @@ namespace TickSpeed
         // частота обновления при поступлении новой точки
         const double update_freq = 1.0;
 
-        // количество последних окон, которые перезаписываются при анализе
-        const int overwrite_windows = 2;
-
         // worker - модель, которая строит базис, возможно - в фоновом режиме
         private static alglib.ssamodel worker2;
 
@@ -59,6 +56,10 @@ namespace TickSpeed
 
         [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numfor { get; set; }
+
+        [HandlerParameter(true, "2", Name = "QWin", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        // количество последних окон, которые перезаписываются при анализе
+        public int overwrite_windows2 { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -110,12 +111,12 @@ namespace TickSpeed
             alglib.ssasetalgoprecomputed(analyzer2, new_basis, window_size, k);
 
             // анализ
-            int alen = (overwrite_windows + 1) * window_size; // +1 позволяет сгладить шум в начале окна
+            int alen = (overwrite_windows2 + 1) * window_size; // +1 позволяет сгладить шум в начале окна
             double[] last_trend, last_noise;
             alglib.ssaanalyzelast(analyzer2, alen, out last_trend, out last_noise);
 
             // результат
-            int olen = overwrite_windows * window_size;
+            int olen = overwrite_windows2 * window_size;
             double[] result = new double[count + Numfor];
             for (int i = 0; i < last_result2.Length; i++)
                 result[i] = last_result2[i];
