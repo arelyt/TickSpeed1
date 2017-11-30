@@ -5,10 +5,10 @@ using System.Globalization;
 using TSLab.Script.Handlers;
 namespace TickSpeed
 {
-    // Инкрементальный SSA.
+    // Инкрементальный SSA на фоне реала через квант времени.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("SSA_V2_1")]
+    [HandlerName("SSA_V2_1FRec")]
 #pragma warning restore 612
 
 
@@ -31,14 +31,15 @@ namespace TickSpeed
         private static double[] fc_last3;
 
         // Последнее количество отсчетов при пересчете прогноза
-        private static double count_last;
+        private static int count_last;
 
-
+        // Время конструктора класса
+        private static DateTime _timestart = DateTime.Now;
         // количество данных в моделях
         private static int data_inside3;
 
         // Инициализация счетчика прогнозирования
-        private static int Cf = 0;
+        private int Cf = 0;
 
         // инициализация моделей
         static IncrementalSSA1Frec()
@@ -77,7 +78,14 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
+            // Проверка на то, что конструктор класса и индикатор отработали хотя бы  10 сек
             var t = DateTime.Now;
+            if ((t - _timestart).Seconds < 10 )
+            {
+                //Cf = myDoubles.Count % Counter;
+                return myDoubles;
+            }
+            //Cf = myDoubles.Count - (myDoubles.Count % Counter);
             for (int i = 0; i < myDoubles.Count; i++)
             {
                 if (myDoubles[i].IsNaN())
@@ -142,18 +150,28 @@ namespace TickSpeed
             // Прогнозируем только каждые Counter пересчетов и если Numfor не ноль
             if (Numfor > 0)
             {
-                if (count - Counter*(Cf + 1) < 0)
+                if (Cf==0)
                 {
-                    Cf = Cf + Counter;
                     double[] fc;
                     alglib.ssaforecastlast(analyzer3, Numfor, out fc);
                     count_last = count;
                     fc_last3 = fc;
+                    Cf++;
                 }
                 var mm = count - count_last;
+                if (mm < Counter)
+                {
+                    Cf=Cf+mm;
+                }
+                else
+                {
+                    Cf = 0;
+                }
+                
+                
                 // Наползающий на остаток прогноза реал
-                for (int i = 0; i < Numfor; i++)
-                    result[count + i] = fc_last3[i];
+                for (int i = 0; i < Counter-Cf; i++)
+                    result[count + i] = fc_last3[mm + i];
 
             }
 
