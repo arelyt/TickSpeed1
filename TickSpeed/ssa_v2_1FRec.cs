@@ -40,6 +40,8 @@ namespace TickSpeed
 
         // Инициализация счетчика прогнозирования
         private int Cf = 0;
+        // Остаток стека прогноза
+        private int mm;
 
         // инициализация моделей
         static IncrementalSSA1Frec()
@@ -150,6 +152,7 @@ namespace TickSpeed
             // Прогнозируем только каждые Counter пересчетов и если Numfor не ноль
             if (Numfor > 0)
             {
+                
                 if (Cf==0)
                 {
                     double[] fc;
@@ -157,11 +160,13 @@ namespace TickSpeed
                     count_last = count;
                     fc_last3 = fc;
                     Cf++;
+                    mm = Cf;
                 }
-                var mm = count - count_last;
-                if (mm < Counter)
+                
+                if (Cf >= 1 && Cf < Counter - 1 && Cf != 0)
                 {
-                    Cf=Cf+mm;
+                    mm = count - count_last;
+                    Cf =Cf+mm;
                 }
                 else
                 {
