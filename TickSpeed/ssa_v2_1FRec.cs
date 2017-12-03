@@ -2,6 +2,7 @@ using Altaxo.Calc;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Altaxo.Collections;
 using TSLab.Script.Handlers;
 namespace TickSpeed
 {
@@ -37,11 +38,6 @@ namespace TickSpeed
         private static DateTime _timestart = DateTime.Now;
         // количество данных в моделях
         private static int data_inside3;
-
-        // Инициализация счетчика прогнозирования
-        private int Cf = 0;
-        // Остаток стека прогноза
-        private int mm;
 
         // инициализация моделей
         static IncrementalSSA1Frec()
@@ -82,9 +78,9 @@ namespace TickSpeed
         {
             // Проверка на то, что конструктор класса и индикатор отработали хотя бы  10 сек
             var t = DateTime.Now;
+            var ctx = Context;
             if ((t - _timestart).Seconds < 10 )
             {
-                //Cf = myDoubles.Count % Counter;
                 return myDoubles;
             }
             //Cf = myDoubles.Count - (myDoubles.Count % Counter);
@@ -153,31 +149,21 @@ namespace TickSpeed
             if (Numfor > 0)
             {
                 
-                if (Cf==0)
+                if (count % Counter ==0)
                 {
                     double[] fc;
                     alglib.ssaforecastlast(analyzer3, Numfor, out fc);
                     count_last = count;
                     fc_last3 = fc;
-                    Cf++;
-                    mm = Cf;
+                    ctx.StoreObject("forecast", fc_last3);
                 }
-                
-                if (Cf >= 1 && Cf < Counter - 1 && Cf != 0)
-                {
-                    mm = count - count_last;
-                    Cf =Cf+mm;
-                }
-                else
-                {
-                    Cf = 0;
-                }
-                
+               
+                var vv = (IList<double>)ctx.LoadObject("forecast");
                 
                 // Наползающий на остаток прогноза реал
-                for (int i = 0; i < Counter-Cf; i++)
-                    result[count + i] = fc_last3[mm + i];
-
+                for (int i = 0; i < Numfor - (count - count_last); i++)
+                    result[count + i] = vv[count - count_last + i];
+                
             }
 
             // кэшировать сглаженный тренд, предсказание не кешируем
