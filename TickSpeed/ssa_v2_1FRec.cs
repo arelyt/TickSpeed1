@@ -161,7 +161,7 @@ namespace TickSpeed
                 var vv = (IList<double>)ctx.LoadObject("forecast");
                 if (count - count_last != 0)
                 {
-                    Array.Resize(ref result, count + Numfor - count_last);
+                    Array.Resize(ref result, Numfor + count_last);
                 }
                 // Наползающий на остаток прогноза реал
                 for (int i = 0; i < Numfor - (count - count_last); i++)
