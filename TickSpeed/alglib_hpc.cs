@@ -1,5 +1,5 @@
 /**************************************************************************
-ALGLIB dev (source code generated 2017-11-17)
+ALGLIB dev (source code generated 2017-12-04)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -31950,6 +31950,112 @@ public partial class alglib
     
     return;
     }
+    private static unsafe void _core_ssaforecastavglast(ssamodel s, int m, int nticks, out double[] trend, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_m = new x_int(m);
+        x_int _d_nticks = new x_int(nticks);
+        x_vector _d_trend = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            x_vector_create_empty(ref _d_trend, DT_REAL);
+            trend = null;
+            _error_code = _i_ser_ssaforecastavglast(&_s_errormsg, &_d_s, &_d_m, &_d_nticks, &_d_trend);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaforecastavglast' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_trend);
+        }
+        // This function returns no value.
+    }
+    public static void ssaforecastavglast(ssamodel s, int m, int nticks, out double[] trend)
+    {
+    _core_ssaforecastavglast( s,  m,  nticks, out  trend, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_ssaforecastavgsequence(ssamodel s, double[] data, int datalen, int m, int forecastlen, bool smooth, out double[] trend, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_vector _d_data = new x_vector();
+        x_int _d_datalen = new x_int(datalen);
+        x_int _d_m = new x_int(m);
+        x_int _d_forecastlen = new x_int(forecastlen);
+        byte _d_smooth = (byte)(smooth ? 1 : 0);
+        x_vector _d_trend = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                _error_code = _i_ser_ssaforecastavgsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_m, &_d_forecastlen, &_d_smooth, &_d_trend);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssaforecastavgsequence' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_data);
+            x_vector_clear(ref _d_trend);
+        }
+        // This function returns no value.
+    }
+    public static void ssaforecastavgsequence(ssamodel s, double[] data, int datalen, int m, int forecastlen, bool smooth, out double[] trend)
+    {
+    _core_ssaforecastavgsequence( s,  data,  datalen,  m,  forecastlen,  smooth, out  trend, alglibmode.serial);
+    return;
+    }
+    public static void ssaforecastavgsequence(ssamodel s, double[] data, int m, int forecastlen, bool smooth, out double[] trend)
+    {
+    int datalen;
+    
+    
+    datalen = ap.len(data);
+    
+    _core_ssaforecastavgsequence( s,  data,  datalen,  m,  forecastlen,  smooth, out  trend, alglibmode.serial);
+    
+    return;
+    }
     
     
     //
@@ -40774,6 +40880,12 @@ public partial class alglib
     
     
     //
+    // Subpackage intfitserv
+    //
+    
+    
+    
+    //
     // Subpackage spline1d
     //
     
@@ -40808,6 +40920,76 @@ public partial class alglib
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate void _d_x_obj_free_spline1dinterpolant(void *x);
     private static _d_x_obj_free_spline1dinterpolant _i_x_obj_free_spline1dinterpolant = null;
+
+    [StructLayout(LayoutKind.Sequential, Pack=8)]
+    private struct x_spline1dfitreport
+    {
+        public double taskrcond;
+        public double rmserror;
+        public double avgerror;
+        public double avgrelerror;
+        public double maxerror;
+    }
+
+    public class spline1dfitreport : alglibobject
+    {
+        public double taskrcond;
+        public double rmserror;
+        public double avgerror;
+        public double avgrelerror;
+        public double maxerror;
+        public override alglib.alglibobject make_copy()
+        {
+            spline1dfitreport dst = new spline1dfitreport();
+            dst.taskrcond = taskrcond;
+            dst.rmserror = rmserror;
+            dst.avgerror = avgerror;
+            dst.avgrelerror = avgrelerror;
+            dst.maxerror = maxerror;
+            return dst;
+        }
+    }
+
+    // This function initializes X-structure (its previous content is ignored)
+    private static void x_spline1dfitreport_init(ref x_spline1dfitreport x)
+    {
+        x.taskrcond = 0;
+        x.rmserror = 0;
+        x.avgerror = 0;
+        x.avgrelerror = 0;
+        x.maxerror = 0;
+    }
+
+    // This function finalizes fields of X-structure (however, memory occupied by structure itself is not freed)
+    // After destruction structure becomes unusable and should be re-initialized if you want to use it
+    private static void x_spline1dfitreport_clear(ref x_spline1dfitreport x)
+    {
+    }
+
+    // This function initializes X-structure by appropriate C# instance
+    // (previous content of X structure is ignored)
+    private static void x_spline1dfitreport_init_from(ref x_spline1dfitreport x, spline1dfitreport v)
+    {
+        x.taskrcond = v.taskrcond;
+        x.rmserror = v.rmserror;
+        x.avgerror = v.avgerror;
+        x.avgrelerror = v.avgrelerror;
+        x.maxerror = v.maxerror;
+    }
+
+    // This function initializes C# structure by appropriate X instance
+    // (previous content of C# structure is ignored).
+    // This function may accept null v, in this case v is automatically allocated with new().
+    private static void x_spline1dfitreport_to_record(ref x_spline1dfitreport x, ref spline1dfitreport v)
+    {
+        if( v==null )
+            v = new spline1dfitreport();
+        v.taskrcond = x.taskrcond;
+        v.rmserror = x.rmserror;
+        v.avgerror = x.avgerror;
+        v.avgrelerror = x.avgrelerror;
+        v.maxerror = x.maxerror;
+    }
     private static unsafe void _core_spline1dbuildlinear(double[] x, double[] y, int n, out spline1dinterpolant c, alglibmode _alglib_mode)
     {
         // primary initialization
@@ -41786,6 +41968,185 @@ public partial class alglib
     {
     double result = _core_spline1dintegrate( c,  x, alglibmode.serial);
     return result;
+    }
+    private static unsafe void _core_spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_vector _d_x = new x_vector();
+        x_vector _d_y = new x_vector();
+        x_int _d_n = new x_int(n);
+        x_int _d_m = new x_int(m);
+        double _d_rho = rho;
+        x_int _d_info = new x_int();
+        void *_d_s = null;
+        s = null;
+        x_spline1dfitreport _d_rep = new x_spline1dfitreport();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'spline1dfitpenalized' call");
+            }
+            info = _d_info.intval;
+            s = new spline1dinterpolant(_d_s);
+            rep = null;
+            x_spline1dfitreport_to_record(ref _d_rep, ref rep);
+        }
+        finally
+        {
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+            if( _d_s!=null && s==null)
+                _i_x_obj_free_spline1dinterpolant(_d_s); // on exception clean up X objects which were not attached to C# objects
+            x_spline1dfitreport_clear(ref _d_rep);
+        }
+        // This function returns no value.
+    }
+    public static void spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
+    return;
+    }
+    public static void spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    int n;
+    
+    if( (ap.len(x)!=ap.len(y)))
+        throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
+    
+    n = ap.len(x);
+    
+    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
+    
+    return;
+    }
+    public static void smp_spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
+    return;
+    }
+    public static void smp_spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    int n;
+    
+    if( (ap.len(x)!=ap.len(y)))
+        throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
+    
+    n = ap.len(x);
+    
+    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
+    
+    return;
+    }
+    private static unsafe void _core_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_vector _d_x = new x_vector();
+        x_vector _d_y = new x_vector();
+        x_vector _d_w = new x_vector();
+        x_int _d_n = new x_int(n);
+        x_int _d_m = new x_int(m);
+        double _d_rho = rho;
+        x_int _d_info = new x_int();
+        void *_d_s = null;
+        s = null;
+        x_spline1dfitreport _d_rep = new x_spline1dfitreport();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'spline1dfitpenalizedw' call");
+            }
+            info = _d_info.intval;
+            s = new spline1dinterpolant(_d_s);
+            rep = null;
+            x_spline1dfitreport_to_record(ref _d_rep, ref rep);
+        }
+        finally
+        {
+            x_vector_clear(ref _d_x);
+            x_vector_clear(ref _d_y);
+            x_vector_clear(ref _d_w);
+            if( _d_s!=null && s==null)
+                _i_x_obj_free_spline1dinterpolant(_d_s); // on exception clean up X objects which were not attached to C# objects
+            x_spline1dfitreport_clear(ref _d_rep);
+        }
+        // This function returns no value.
+    }
+    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
+    return;
+    }
+    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    int n;
+    
+    if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+        throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
+    
+    n = ap.len(x);
+    
+    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
+    
+    return;
+    }
+    public static void smp_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
+    return;
+    }
+    public static void smp_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
+    {
+    int n;
+    
+    if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
+        throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
+    
+    n = ap.len(x);
+    
+    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
+    
+    return;
     }
     private static unsafe void _core_spline1dbuildmonotone(double[] x, double[] y, int n, out spline1dinterpolant c, alglibmode _alglib_mode)
     {
@@ -43863,76 +44224,6 @@ public partial class alglib
     }
 
     [StructLayout(LayoutKind.Sequential, Pack=8)]
-    private struct x_spline1dfitreport
-    {
-        public double taskrcond;
-        public double rmserror;
-        public double avgerror;
-        public double avgrelerror;
-        public double maxerror;
-    }
-
-    public class spline1dfitreport : alglibobject
-    {
-        public double taskrcond;
-        public double rmserror;
-        public double avgerror;
-        public double avgrelerror;
-        public double maxerror;
-        public override alglib.alglibobject make_copy()
-        {
-            spline1dfitreport dst = new spline1dfitreport();
-            dst.taskrcond = taskrcond;
-            dst.rmserror = rmserror;
-            dst.avgerror = avgerror;
-            dst.avgrelerror = avgrelerror;
-            dst.maxerror = maxerror;
-            return dst;
-        }
-    }
-
-    // This function initializes X-structure (its previous content is ignored)
-    private static void x_spline1dfitreport_init(ref x_spline1dfitreport x)
-    {
-        x.taskrcond = 0;
-        x.rmserror = 0;
-        x.avgerror = 0;
-        x.avgrelerror = 0;
-        x.maxerror = 0;
-    }
-
-    // This function finalizes fields of X-structure (however, memory occupied by structure itself is not freed)
-    // After destruction structure becomes unusable and should be re-initialized if you want to use it
-    private static void x_spline1dfitreport_clear(ref x_spline1dfitreport x)
-    {
-    }
-
-    // This function initializes X-structure by appropriate C# instance
-    // (previous content of X structure is ignored)
-    private static void x_spline1dfitreport_init_from(ref x_spline1dfitreport x, spline1dfitreport v)
-    {
-        x.taskrcond = v.taskrcond;
-        x.rmserror = v.rmserror;
-        x.avgerror = v.avgerror;
-        x.avgrelerror = v.avgrelerror;
-        x.maxerror = v.maxerror;
-    }
-
-    // This function initializes C# structure by appropriate X instance
-    // (previous content of C# structure is ignored).
-    // This function may accept null v, in this case v is automatically allocated with new().
-    private static void x_spline1dfitreport_to_record(ref x_spline1dfitreport x, ref spline1dfitreport v)
-    {
-        if( v==null )
-            v = new spline1dfitreport();
-        v.taskrcond = x.taskrcond;
-        v.rmserror = x.rmserror;
-        v.avgerror = x.avgerror;
-        v.avgrelerror = x.avgrelerror;
-        v.maxerror = x.maxerror;
-    }
-
-    [StructLayout(LayoutKind.Sequential, Pack=8)]
     private struct x_lsfitreport
     {
         public double taskrcond;
@@ -44941,185 +45232,6 @@ public partial class alglib
     public static void smp_barycentricfitfloaterhormann(double[] x, double[] y, int n, int m, out int info, out barycentricinterpolant b, out barycentricfitreport rep)
     {
     _core_barycentricfitfloaterhormann( x,  y,  n,  m, out  info, out  b, out  rep, alglibmode.parallel);
-    return;
-    }
-    private static unsafe void _core_spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_vector _d_x = new x_vector();
-        x_vector _d_y = new x_vector();
-        x_int _d_n = new x_int(n);
-        x_int _d_m = new x_int(m);
-        double _d_rho = rho;
-        x_int _d_info = new x_int();
-        void *_d_s = null;
-        s = null;
-        x_spline1dfitreport _d_rep = new x_spline1dfitreport();
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_x = x, _fp_y = y){
-                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
-                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
-                x_spline1dfitreport_init(ref _d_rep);
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-                else    _error_code = _i_smp_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'spline1dfitpenalized' call");
-            }
-            info = _d_info.intval;
-            s = new spline1dinterpolant(_d_s);
-            rep = null;
-            x_spline1dfitreport_to_record(ref _d_rep, ref rep);
-        }
-        finally
-        {
-            x_vector_clear(ref _d_x);
-            x_vector_clear(ref _d_y);
-            if( _d_s!=null && s==null)
-                _i_x_obj_free_spline1dinterpolant(_d_s); // on exception clean up X objects which were not attached to C# objects
-            x_spline1dfitreport_clear(ref _d_rep);
-        }
-        // This function returns no value.
-    }
-    public static void spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
-    return;
-    }
-    public static void spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    int n;
-    
-    if( (ap.len(x)!=ap.len(y)))
-        throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
-    
-    n = ap.len(x);
-    
-    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
-    
-    return;
-    }
-    public static void smp_spline1dfitpenalized(double[] x, double[] y, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
-    return;
-    }
-    public static void smp_spline1dfitpenalized(double[] x, double[] y, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    int n;
-    
-    if( (ap.len(x)!=ap.len(y)))
-        throw new alglibexception("Error while calling 'spline1dfitpenalized': looks like one of arguments has wrong size");
-    
-    n = ap.len(x);
-    
-    _core_spline1dfitpenalized( x,  y,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
-    
-    return;
-    }
-    private static unsafe void _core_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep, alglibmode _alglib_mode)
-    {
-        // primary initialization
-        if( hAlglibDL==IntPtr.Zero )
-            activatealglibcore();
-        
-        // Locals
-        byte *_s_errormsg = null;
-        int _error_code = 0;
-        x_vector _d_x = new x_vector();
-        x_vector _d_y = new x_vector();
-        x_vector _d_w = new x_vector();
-        x_int _d_n = new x_int(n);
-        x_int _d_m = new x_int(m);
-        double _d_rho = rho;
-        x_int _d_info = new x_int();
-        void *_d_s = null;
-        s = null;
-        x_spline1dfitreport _d_rep = new x_spline1dfitreport();
-        
-        // Pack, call, unpack
-        try
-        {
-            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w){
-                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
-                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
-                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
-                x_spline1dfitreport_init(ref _d_rep);
-                if( _alglib_mode == alglibmode.serial )
-                    _error_code = _i_ser_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-                else    _error_code = _i_smp_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-            }
-            if( _error_code!=X_OK )
-            {
-                if( _error_code==X_ASSERTION_FAILED )
-                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
-                else
-                    throw new alglibexception("ALGLIB: unknown error during 'spline1dfitpenalizedw' call");
-            }
-            info = _d_info.intval;
-            s = new spline1dinterpolant(_d_s);
-            rep = null;
-            x_spline1dfitreport_to_record(ref _d_rep, ref rep);
-        }
-        finally
-        {
-            x_vector_clear(ref _d_x);
-            x_vector_clear(ref _d_y);
-            x_vector_clear(ref _d_w);
-            if( _d_s!=null && s==null)
-                _i_x_obj_free_spline1dinterpolant(_d_s); // on exception clean up X objects which were not attached to C# objects
-            x_spline1dfitreport_clear(ref _d_rep);
-        }
-        // This function returns no value.
-    }
-    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
-    return;
-    }
-    public static void spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    int n;
-    
-    if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-        throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
-    
-    n = ap.len(x);
-    
-    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.serial);
-    
-    return;
-    }
-    public static void smp_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int n, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
-    return;
-    }
-    public static void smp_spline1dfitpenalizedw(double[] x, double[] y, double[] w, int m, double rho, out int info, out spline1dinterpolant s, out spline1dfitreport rep)
-    {
-    int n;
-    
-    if( (ap.len(x)!=ap.len(y)) || (ap.len(x)!=ap.len(w)))
-        throw new alglibexception("Error while calling 'spline1dfitpenalizedw': looks like one of arguments has wrong size");
-    
-    n = ap.len(x);
-    
-    _core_spline1dfitpenalizedw( x,  y,  w,  n,  m,  rho, out  info, out  s, out  rep, alglibmode.parallel);
-    
     return;
     }
     private static unsafe void _core_spline1dfitcubicwc(double[] x, double[] y, double[] w, int n, double[] xc, double[] yc, int[] dc, int k, int m, out int info, out spline1dinterpolant s, out spline1dfitreport rep, alglibmode _alglib_mode)
@@ -55919,6 +56031,12 @@ public partial class alglib
         private unsafe delegate int _d_ssaforecastsequence(byte **error_msg, void **s, x_vector *data, x_int *datalen, x_int *forecastlen, byte *smooth, x_vector *trend);
         private static _d_ssaforecastsequence _i_ser_ssaforecastsequence = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaforecastavglast(byte **error_msg, void **s, x_int *m, x_int *nticks, x_vector *trend);
+        private static _d_ssaforecastavglast _i_ser_ssaforecastavglast = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssaforecastavgsequence(byte **error_msg, void **s, x_vector *data, x_int *datalen, x_int *m, x_int *forecastlen, byte *smooth, x_vector *trend);
+        private static _d_ssaforecastavgsequence _i_ser_ssaforecastavgsequence = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_gammafunction(byte **error_msg, double *result, double *x);
         private static _d_gammafunction _i_ser_gammafunction = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -56484,6 +56602,14 @@ public partial class alglib
         private unsafe delegate int _d_spline1dintegrate(byte **error_msg, double *result, void **c, double *x);
         private static _d_spline1dintegrate _i_ser_spline1dintegrate = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_spline1dfitpenalized(byte **error_msg, x_vector *x, x_vector *y, x_int *n, x_int *m, double *rho, x_int *info, void **s, x_spline1dfitreport *rep);
+        private static _d_spline1dfitpenalized _i_ser_spline1dfitpenalized = null;
+        private static _d_spline1dfitpenalized _i_smp_spline1dfitpenalized = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_spline1dfitpenalizedw(byte **error_msg, x_vector *x, x_vector *y, x_vector *w, x_int *n, x_int *m, double *rho, x_int *info, void **s, x_spline1dfitreport *rep);
+        private static _d_spline1dfitpenalizedw _i_ser_spline1dfitpenalizedw = null;
+        private static _d_spline1dfitpenalizedw _i_smp_spline1dfitpenalizedw = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_spline1dbuildmonotone(byte **error_msg, x_vector *x, x_vector *y, x_int *n, void **c);
         private static _d_spline1dbuildmonotone _i_ser_spline1dbuildmonotone = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -56637,14 +56763,6 @@ public partial class alglib
         private unsafe delegate int _d_barycentricfitfloaterhormann(byte **error_msg, x_vector *x, x_vector *y, x_int *n, x_int *m, x_int *info, void **b, x_barycentricfitreport *rep);
         private static _d_barycentricfitfloaterhormann _i_ser_barycentricfitfloaterhormann = null;
         private static _d_barycentricfitfloaterhormann _i_smp_barycentricfitfloaterhormann = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_spline1dfitpenalized(byte **error_msg, x_vector *x, x_vector *y, x_int *n, x_int *m, double *rho, x_int *info, void **s, x_spline1dfitreport *rep);
-        private static _d_spline1dfitpenalized _i_ser_spline1dfitpenalized = null;
-        private static _d_spline1dfitpenalized _i_smp_spline1dfitpenalized = null;
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        private unsafe delegate int _d_spline1dfitpenalizedw(byte **error_msg, x_vector *x, x_vector *y, x_vector *w, x_int *n, x_int *m, double *rho, x_int *info, void **s, x_spline1dfitreport *rep);
-        private static _d_spline1dfitpenalizedw _i_ser_spline1dfitpenalizedw = null;
-        private static _d_spline1dfitpenalizedw _i_smp_spline1dfitpenalizedw = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_spline1dfitcubicwc(byte **error_msg, x_vector *x, x_vector *y, x_vector *w, x_int *n, x_vector *xc, x_vector *yc, x_vector *dc, x_int *k, x_int *m, x_int *info, void **s, x_spline1dfitreport *rep);
         private static _d_spline1dfitcubicwc _i_ser_spline1dfitcubicwc = null;
@@ -57963,6 +58081,8 @@ public partial class alglib
             _i_ser_ssaanalyzesequence = (_d_ssaanalyzesequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaanalyzesequence"), typeof(_d_ssaanalyzesequence));
             _i_ser_ssaforecastlast = (_d_ssaforecastlast)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastlast"), typeof(_d_ssaforecastlast));
             _i_ser_ssaforecastsequence = (_d_ssaforecastsequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastsequence"), typeof(_d_ssaforecastsequence));
+            _i_ser_ssaforecastavglast = (_d_ssaforecastavglast)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastavglast"), typeof(_d_ssaforecastavglast));
+            _i_ser_ssaforecastavgsequence = (_d_ssaforecastavgsequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaforecastavgsequence"), typeof(_d_ssaforecastavgsequence));
             _i_ser_gammafunction = (_d_gammafunction)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_gammafunction"), typeof(_d_gammafunction));
             _i_ser_lngamma = (_d_lngamma)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_lngamma"), typeof(_d_lngamma));
             _i_ser_errorfunction = (_d_errorfunction)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_errorfunction"), typeof(_d_errorfunction));
@@ -58188,6 +58308,10 @@ public partial class alglib
             _i_ser_spline1dlintransx = (_d_spline1dlintransx)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dlintransx"), typeof(_d_spline1dlintransx));
             _i_ser_spline1dlintransy = (_d_spline1dlintransy)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dlintransy"), typeof(_d_spline1dlintransy));
             _i_ser_spline1dintegrate = (_d_spline1dintegrate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dintegrate"), typeof(_d_spline1dintegrate));
+            _i_ser_spline1dfitpenalized = (_d_spline1dfitpenalized)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfitpenalized"), typeof(_d_spline1dfitpenalized));
+            _i_smp_spline1dfitpenalized = (_d_spline1dfitpenalized)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_spline1dfitpenalized"), typeof(_d_spline1dfitpenalized));
+            _i_ser_spline1dfitpenalizedw = (_d_spline1dfitpenalizedw)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfitpenalizedw"), typeof(_d_spline1dfitpenalizedw));
+            _i_smp_spline1dfitpenalizedw = (_d_spline1dfitpenalizedw)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_spline1dfitpenalizedw"), typeof(_d_spline1dfitpenalizedw));
             _i_ser_spline1dbuildmonotone = (_d_spline1dbuildmonotone)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dbuildmonotone"), typeof(_d_spline1dbuildmonotone));
         _i_x_obj_copy_pspline2interpolant = (_d_x_obj_copy_pspline2interpolant)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_copy_pspline2interpolant"), typeof(_d_x_obj_copy_pspline2interpolant));
         _i_x_obj_free_pspline2interpolant = (_d_x_obj_free_pspline2interpolant)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_free_pspline2interpolant"), typeof(_d_x_obj_free_pspline2interpolant));
@@ -58264,10 +58388,6 @@ public partial class alglib
             _i_smp_barycentricfitfloaterhormannwc = (_d_barycentricfitfloaterhormannwc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_barycentricfitfloaterhormannwc"), typeof(_d_barycentricfitfloaterhormannwc));
             _i_ser_barycentricfitfloaterhormann = (_d_barycentricfitfloaterhormann)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_barycentricfitfloaterhormann"), typeof(_d_barycentricfitfloaterhormann));
             _i_smp_barycentricfitfloaterhormann = (_d_barycentricfitfloaterhormann)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_barycentricfitfloaterhormann"), typeof(_d_barycentricfitfloaterhormann));
-            _i_ser_spline1dfitpenalized = (_d_spline1dfitpenalized)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfitpenalized"), typeof(_d_spline1dfitpenalized));
-            _i_smp_spline1dfitpenalized = (_d_spline1dfitpenalized)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_spline1dfitpenalized"), typeof(_d_spline1dfitpenalized));
-            _i_ser_spline1dfitpenalizedw = (_d_spline1dfitpenalizedw)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfitpenalizedw"), typeof(_d_spline1dfitpenalizedw));
-            _i_smp_spline1dfitpenalizedw = (_d_spline1dfitpenalizedw)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_spline1dfitpenalizedw"), typeof(_d_spline1dfitpenalizedw));
             _i_ser_spline1dfitcubicwc = (_d_spline1dfitcubicwc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfitcubicwc"), typeof(_d_spline1dfitcubicwc));
             _i_smp_spline1dfitcubicwc = (_d_spline1dfitcubicwc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_smp_spline1dfitcubicwc"), typeof(_d_spline1dfitcubicwc));
             _i_ser_spline1dfithermitewc = (_d_spline1dfithermitewc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_spline1dfithermitewc"), typeof(_d_spline1dfithermitewc));
