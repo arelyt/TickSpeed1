@@ -1,9 +1,9 @@
 using Altaxo.Calc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using Altaxo.Collections;
+using RusAlgo.Helper;
 using TSLab.Script.Handlers;
+
 namespace TickSpeed
 {
     // Инкрементальный SSA на фоне реала через квант времени.
@@ -86,7 +86,7 @@ namespace TickSpeed
             //Cf = myDoubles.Count - (myDoubles.Count % Counter);
             for (int i = 0; i < myDoubles.Count; i++)
             {
-                if (myDoubles[i].IsNaN())
+                if (RMath.IsNaN(myDoubles[i]))
                 {
                     myDoubles[i] = 0;
                 }
@@ -153,7 +153,7 @@ namespace TickSpeed
             if (Numfor > 0)
             {
                 
-                if (count % Counter ==0)
+                if (count % Counter == 0 || ctx.LoadObject("forecast").IsNull())
                 {
                     double[] fc;
                     //alglib.ssaforecastlast(analyzer3, Numfor, out fc);
