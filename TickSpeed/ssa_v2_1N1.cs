@@ -137,7 +137,7 @@ namespace TickSpeed
             for (int i = 0; i < count; i++)
                 last_result1[i] = result[i];
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            Context.Log("ssaV2_1 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            Context.Log("ssaV2_1 exec for !!!" + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
     }

@@ -125,10 +125,10 @@ namespace TickSpeed
                     vals[i] = myDoubles[i];
                 alglib.ssaaddsequence(worker3, vals, count);
                 alglib.ssaaddsequence(analyzer3, vals, count);
-                double[] _noise;
-                alglib.ssagetbasis(worker3, out new_basis, out sv, out dummy0, out dummy1);
-                alglib.ssasetalgoprecomputed(analyzer3, new_basis, window_size, k);
-                alglib.ssaanalyzelast(analyzer3, count, out last_result3, out _noise);
+                //double[] _noise;
+                //alglib.ssagetbasis(worker3, out new_basis, out sv, out dummy0, out dummy1);
+                //alglib.ssasetalgoprecomputed(analyzer3, new_basis, window_size, k);
+                //alglib.ssaanalyzelast(analyzer3, count, out last_result3, out _noise);
             }
             data_inside3 = count;
             alglib.ssagetbasis(worker3, out new_basis, out sv, out dummy0, out dummy1);
@@ -157,7 +157,7 @@ namespace TickSpeed
                 {
                     double[] fc;
                     //alglib.ssaforecastlast(analyzer3, Numfor, out fc);
-                    alglib.ssaforecastavglast(analyzer3, Numfor, Numfor, out fc);
+                    alglib.ssaforecastavglast(analyzer3, 5, Numfor, out fc);
                     count_last = count;
                     fc_last3 = fc;
                     ctx.StoreObject("forecast", fc_last3);

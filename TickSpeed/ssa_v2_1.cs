@@ -79,7 +79,7 @@ namespace TickSpeed
             int count = myDoubles.Count;
             if (count < Numdec + 2)
                 return myDoubles;
-
+            
             // нормализация параметров
             int window_size = Math.Max((int)Math.Round(Numdec), 1);
             int k = Math.Max((int)Math.Round(Numrec), 1);
@@ -107,10 +107,10 @@ namespace TickSpeed
                     vals[i] = myDoubles[i];
                 alglib.ssaaddsequence(worker, vals, count);
                 alglib.ssaaddsequence(analyzer, vals, count);
-                double[] _noise;
-                alglib.ssagetbasis(worker, out new_basis, out sv, out dummy0, out dummy1);
-                alglib.ssasetalgoprecomputed(analyzer, new_basis, window_size, k);
-                alglib.ssaanalyzelast(analyzer, count, out last_result, out _noise);
+                //double[] _noise;
+                //alglib.ssagetbasis(worker, out new_basis, out sv, out dummy0, out dummy1);
+                //alglib.ssasetalgoprecomputed(analyzer, new_basis, window_size, k);
+                //alglib.ssaanalyzelast(analyzer, count, out last_result, out _noise);
             }
             data_inside = count;
             alglib.ssagetbasis(worker, out new_basis, out sv, out dummy0, out dummy1);
@@ -134,7 +134,7 @@ namespace TickSpeed
             {
                 double[] fc;
                 //alglib.ssaforecastlast(analyzer, Numfor, out fc);
-                alglib.ssaforecastavglast(analyzer, Numfor, Numfor, out fc);
+                alglib.ssaforecastavglast(analyzer, 5, Numfor, out fc);
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
             }
@@ -144,7 +144,8 @@ namespace TickSpeed
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            Context.Log("ssaV2_1 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            Context.Log("ssaV2_1 exec for +++" + g + " msec", MessageType.Info, toMessageWindow: true);
+            //Context.Log("count =" + count, MessageType.Info, toMessageWindow: true);
             return result;
         }
     }
