@@ -1,6 +1,10 @@
 using Altaxo.Calc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Altaxo.Collections;
+using MoreLinq;
+using RusAlgo.Helper;
 using TSLab.Script.Handlers;
 namespace TickSpeed
 {
@@ -68,7 +72,7 @@ namespace TickSpeed
             var t = DateTime.Now;
             for (int i = 0; i < myDoubles.Count; i++)
             {
-                if (myDoubles[i].IsNaN())
+                if (RMath.IsNaN(myDoubles[i]))
                 {
                     myDoubles[i] = 0;
                 }
@@ -137,6 +141,27 @@ namespace TickSpeed
                 alglib.ssaforecastavglast(analyzer, 5, Numfor, out fc);
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
+
+                if (Context.LoadObject("fore1").IsNull())
+                {
+                    var tt = new double[count];
+                    for (int i = 0; i < count; i++)
+                    {
+                        tt[i] = 0;
+                    }
+                    tt.AddRange(fc);
+                    Context.StoreObject("fore1", tt);
+                }
+                else
+                {
+                    var vt = (IList<double>) Context.LoadObject("fore1");
+                    var vb = fc.Last();
+                    vt.Add(vb);
+                    vt.TakeLast(count + Numfor);
+                    Context.StoreObject("fore1", vt);
+                }
+
+                
             }
 
             // кэшировать сглаженный тренд, предсказание не кешируем

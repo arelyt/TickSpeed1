@@ -34,6 +34,7 @@ namespace TickSpeed
             if (count < 2)
                 return null;
             IList<double> values = new double[count];
+            IList<double> result = new double[count];
             var nbuy = new double[count];
             var nsell = new double[count];
             switch (Method)
@@ -94,7 +95,6 @@ namespace TickSpeed
                     break;
             }
             
-            values = Series.EMA(values, WinExp);
             for (int i = 0; i < count; i++)
             {
                 if (values[i].IsNaN())
@@ -102,7 +102,8 @@ namespace TickSpeed
                     values[i] = 0;
                 }
             }
-            return values;
+            result = Series.EMA(values, WinExp);
+            return result;
         }
     }
 }
