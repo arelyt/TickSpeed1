@@ -142,15 +142,17 @@ namespace TickSpeed
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
 
-                if (Context.LoadObject("fore1").IsNull())
+                var rt = (IList<double>)Context.LoadObject("fore1");
+                if (rt.IsNull() || rt.Count != count + Numfor)
                 {
                     var tt = new double[count];
                     for (int i = 0; i < count; i++)
                     {
                         tt[i] = 0;
                     }
-                    tt.AddRange(fc);
-                    Context.StoreObject("fore1", tt);
+                    var tr = tt.ToList();
+                    tr.AddRange(fc);
+                    Context.StoreObject("fore1", tr);
                 }
                 else
                 {

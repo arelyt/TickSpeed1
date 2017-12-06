@@ -24,9 +24,9 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity sec)
         {
             var ctx = Context;
-            var values = new double[ctx.BarsCount];
-            values = (double[])ctx.LoadObject("fore1");
-            return values.ToList();
+            //var values = new double[sec.Bars.Count];
+            var values = (IList<double>)ctx.LoadObject("fore1");
+            return values;
         }
 
         
