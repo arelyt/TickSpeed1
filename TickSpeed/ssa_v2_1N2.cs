@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
+using RusAlgo.Helper;
+using System.Linq;
 using Altaxo.Calc;
+using Altaxo.Collections;
+using MoreLinq;
 using TSLab.Script.Handlers;
 namespace TickSpeed
 {
@@ -61,19 +64,22 @@ namespace TickSpeed
         // количество последних окон, которые перезаписываются при анализе
         public int overwrite_windows2 { get; set; }
 
+        [HandlerParameter(true, "fore", Name = "ObjName", NotOptimized = false)]
+        public string Objname { get; set; }
+
         public IList<double> Execute(IList<double> myDoubles)
         {
             var t = DateTime.Now;
             for (int i = 0; i < myDoubles.Count; i++)
             {
-                if (myDoubles[i].IsNaN())
-                {
+                if (RMath.IsNaN(myDoubles[i]))
+                { 
                     myDoubles[i] = 0;
                 }
             }
             // вырожденные случаи
-            if (myDoubles == null)
-                return myDoubles;
+            //if (myDoubles == null)
+            //    return myDoubles;
             int count = myDoubles.Count;
             if (count < Numdec + 2)
                 return myDoubles;
@@ -127,9 +133,34 @@ namespace TickSpeed
             if (Numfor > 0)
             {
                 double[] fc;
-                alglib.ssaforecastlast(analyzer2, Numfor, out fc);
+                //alglib.ssaforecastlast(analyzer, Numfor, out fc);
+                alglib.ssaforecastavglast(analyzer2, 5, Numfor, out fc);
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
+
+                var rt = (IList<double>)Context.LoadObject(Objname);
+                if (rt.IsNull() || rt.Count < count)
+                {
+                    var tt = new double[count];
+                    for (int i = 0; i < count; i++)
+                    {
+                        tt[i] = 0;
+                    }
+                    var tr = tt.ToList();
+                    tr.AddRange(fc);
+                    Context.StoreObject(Objname, tr);
+                }
+                else
+                {
+                    var vt = (IList<double>)Context.LoadObject(Objname);
+                    var ct = vt.Count;
+                    var vb = fc.TakeLast(count + Numfor - ct);
+                    vt.AddRange(vb);
+                    //vt.TakeLast(vt.Count - 1);
+                    Context.StoreObject(Objname, vt);
+                }
+
+
             }
 
             // кэшировать сглаженный тренд, предсказание не кешируем

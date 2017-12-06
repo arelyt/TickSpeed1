@@ -6,12 +6,7 @@ using TSLab.Script.Handlers;
 
 namespace TickSpeed
 {
-    // Считываем из в глобальной переменной сигнал покупки
-    // от последнего минимума массива
-    // ---------------------------------------------------------
-    // Сделано для SiM7 - потом переделать на формирование
-    // имени сигнала по произвольному инструменту + идентификатор
-
+    // Считываем из локального кэша
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
     [HandlerName("LoadLocalDouble")]
@@ -21,11 +16,14 @@ namespace TickSpeed
                                         IDoubleReturns, IStreamHandler, IContextUses 
     { 
         public IContext Context { get; set; }
+        [HandlerParameter(true, "fore", Name = "ObjName", NotOptimized = false)]
+        public string Objname { get; set; }
+
         public IList<double> Execute(ISecurity sec)
         {
             var ctx = Context;
             //var values = new double[sec.Bars.Count];
-            var values = (IList<double>)ctx.LoadObject("fore1");
+            var values = (IList<double>)ctx.LoadObject(Objname);
             return values;
         }
 

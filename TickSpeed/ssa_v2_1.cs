@@ -65,7 +65,10 @@ namespace TickSpeed
         [HandlerParameter(true, "2", Name = "QWin", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         // количество последних окон, которые перезаписываются при анализе
         public int overwrite_windows { get; set; }
-    
+
+        [HandlerParameter(true, "fore", Name = "ObjName", NotOptimized = false)]
+        public string Objname { get; set; }
+
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -142,8 +145,8 @@ namespace TickSpeed
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
 
-                var rt = (IList<double>)Context.LoadObject("fore1");
-                if (rt.IsNull() || rt.Count != count + Numfor)
+                var rt = (IList<double>)Context.LoadObject(Objname);
+                if (rt.IsNull() || rt.Count < count)
                 {
                     var tt = new double[count];
                     for (int i = 0; i < count; i++)
@@ -152,15 +155,16 @@ namespace TickSpeed
                     }
                     var tr = tt.ToList();
                     tr.AddRange(fc);
-                    Context.StoreObject("fore1", tr);
+                    Context.StoreObject(Objname, tr);
                 }
                 else
                 {
-                    var vt = (IList<double>) Context.LoadObject("fore1");
-                    var vb = fc.Last();
-                    vt.Add(vb);
-                    vt.TakeLast(count + Numfor);
-                    Context.StoreObject("fore1", vt);
+                    var vt = (IList<double>) Context.LoadObject(Objname);
+                    var ct = vt.Count;
+                    var vb = fc.TakeLast(count+Numfor-ct);
+                    vt.AddRange(vb);
+                    //vt.TakeLast(vt.Count - 1);
+                    Context.StoreObject(Objname, vt);
                 }
 
                 
