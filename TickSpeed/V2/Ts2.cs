@@ -120,6 +120,13 @@ namespace TickSpeed.V2
         HalfBidAsk =3
     }
 
+    public enum OutputMethod
+    {
+        Simple = 0,
+        Osc = 1,
+        OscTanh = 2
+    }
+
     public enum CumDeltaType
     {
         Tick = 0,

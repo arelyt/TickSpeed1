@@ -1,7 +1,8 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Altaxo.Calc;
+using TickSpeed.V2;
 using TSLab.DataSource;
 using TSLab.Script;
 using TSLab.Script.Handlers;
@@ -22,6 +23,10 @@ namespace TickSpeed
         public int Win { get; set; }
         [HandlerParameter(true, "5", Name = "WinExp", NotOptimized = false)]
         public int WinExp{ get; set; }
+        [HandlerParameter(true, "0.01", Name = "K", NotOptimized = false)]
+        public double K { get; set; }
+        [HandlerParameter(Name = "Output", Default = "0", NotOptimized = true)]
+        public OutputMethod Method { get; set; }
 
         public IList<double> Execute(ISecurity security)
         {
@@ -29,26 +34,66 @@ namespace TickSpeed
             if (count < 2)
                 return null;
             IList<double> values = new double[count];
-            if (Direction!=TradeDirection.Unknown)
+            var nbuy = new double[count];
+            var nsell = new double[count];
+            switch (Method)
             {
-                for (var i = Win - 1; i < count; i++)
-                {
-                    var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                    values[i] = tradelastwin.Sum(selector: t => t.Direction == Direction ? 1 : 0) / (double) Win;
+                case OutputMethod.Simple:
+                        if (Direction != TradeDirection.Unknown)
+                        {
+                            for (var i = Win - 1; i < count; i++)
+                            {
+                                var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
+                                values[i] = tradelastwin.Sum(selector: t => t.Direction == Direction ? 1 : 0) / (double)Win;
 
-                }
-              
-            }
-            else
-            {
-                for (int i = Win - 1; i < count; i++)
-                {
-                    var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                    values[i] = tradelastwin.Count/(double)Win;
-                }
+                            }
 
-               
+                        }
+                        else
+                        {
+                            for (int i = Win - 1; i < count; i++)
+                            {
+                                var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
+                                values[i] = tradelastwin.Count / (double)Win;
+                            }
+
+
+                        }
+                        break;
+                case OutputMethod.Osc:
+
+                    for (var i = Win - 1; i < count; i++)
+                    {
+                        var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
+                        nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) / (double)Win;
+                        nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) / (double)Win;
+                    }
+                    nbuy = (double[])Series.EMA(nbuy, WinExp);
+                    nsell = (double[])Series.EMA(nsell, WinExp);
+                    for (int i = 0; i < count; i++)
+                    {
+                        values[i] = (nbuy[i] - nsell[i]) / (nbuy[i] + nsell[i]);
+                    }
+                    
+                    break;
+                case OutputMethod.OscTanh:
+                    
+                    for (var i = Win - 1; i < count; i++)
+                    {
+                        var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
+                        nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) / (double)Win;
+                        nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) / (double)Win;
+                    }
+                    nbuy = (double[])Series.EMA(nbuy, WinExp);
+                    nsell = (double[])Series.EMA(nsell, WinExp);
+                    for (int i = 0; i < count; i++)
+                    {
+                        values[i] = Math.Tanh(K * Math.Log(nbuy[i] + nsell[i]) * (nbuy[i] - nsell[i]));
+                    }
+                    
+                    break;
             }
+            
             values = Series.EMA(values, WinExp);
             for (int i = 0; i < count; i++)
             {
