@@ -10,13 +10,13 @@ using TSLab.Script.Helpers;
 
 namespace TickSpeed
 {
-    // Объемно-тиковый осциллятор.
+    // NARX MATLAB
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
     [HandlerName("NARXSiFun")]
 #pragma warning restore 612
     public class NarxSiFunClass : IStreamHandler, IThreeSourcesHandler, ISecurityInput0,
-                                 IDoubleInput1, IDoubleInput2, IDoubleReturns
+                                 IDoubleInput1, IDoubleInput2, IDoubleReturns, IContextUses
     {
         public interface INarxSiFun
         {
@@ -31,8 +31,13 @@ namespace TickSpeed
         public int WinExp { get; set; }
         [HandlerParameter(true, "600", Name = "WinMain", NotOptimized = false)]
         public int WinMain { get; set; }
+        [HandlerParameter(true, "0.01", Name = "K", NotOptimized = false)]
+        public double K { get; set; }
+        public IContext Context { get; set; }
+
         public IList<double> Execute(ISecurity sec, IList<double> halfspread, IList<double> glassosc)
         {
+            var ctx = Context;
             var count = sec.Bars.Count;
             if (count < 100)
                 return null;
@@ -47,6 +52,8 @@ namespace TickSpeed
             //var askp = new double[count];
             //var bidp = new double[count];
             var time = new double[count];
+            var ask = sec.GetSellQueue(0)[0].Price;
+            var bid = sec.GetBuyQueue(0)[0].Price;
             for (var i = 0; i < count; i++)
             {
                 price[i] = halfspread[i];
@@ -68,7 +75,7 @@ namespace TickSpeed
             {
                 if (Math.Abs(nSell[i]) > 0.0001)
                 {
-                    osc[i] = (nBuy[i] - nSell[i]) / (nSell[i] + nBuy[i]);
+                    osc[i] = Math.Tanh(K * Math.Log(nBuy[i] + nSell[i]) * (nBuy[i] - nSell[i]));
                 }
                 else
                 {
