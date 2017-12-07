@@ -63,11 +63,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\morelinq.2.8.0\lib\net40\MoreLinq.dll</HintPath>
     </Reference>
-    <Reference Include="RusAlgo.Handlers.Public">
-      <HintPath>..\..\..\..\Downloads\RusAlgo.Handlers.Public\RusAlgo.Handlers.Public.dll</HintPath>
+    <Reference Include="RusAlgo.Handlers.Public, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\RusAlgo.Handlers.Public.dll</HintPath>
     </Reference>
-    <Reference Include="RusAlgo.Helper">
-      <HintPath>..\..\..\..\Downloads\RusAlgo.Handlers.Public\RusAlgo.Helper.dll</HintPath>
+    <Reference Include="RusAlgo.Helper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\RusAlgo.Helper.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
