@@ -1,7 +1,7 @@
-﻿using System;
+﻿//using System;
 using System.Collections.Generic;
 using TSLab.Script.Handlers;
-using MathWorks.MATLAB.ProductionServer.Client;
+//using MathWorks.MATLAB.ProductionServer.Client;
 
 namespace TickSpeed
 {
@@ -16,10 +16,15 @@ namespace TickSpeed
         {
             double[] sgolay_auto(double[] in1, double in2, double in3);
         }
-        [HandlerParameter(Name = "Order", NotOptimized = false)]
-        public double Order { get; set; }
-        [HandlerParameter(Name = "Win", NotOptimized = false)]
-        public double Win { get; set; }
+        [HandlerParameter(true, "5", Name = "Order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        public int Order { get; set; }
+
+        [HandlerParameter(true, "33", Name = "Win", Max = "99", Min = "5", Step = "1", NotOptimized = false)]
+        public int Win { get; set; }
+
+        [HandlerParameter(true, "0", Name = "Deriv", Max = "3", Min = "0", Step = "1", NotOptimized = false)]
+        public int Deriv { get; set; }
+
         public IList<double> Execute(IList<double> myDoubles)
         {
             var count = myDoubles.Count;
@@ -31,23 +36,24 @@ namespace TickSpeed
             {
                 values[i] = myDoubles[i];
             }
-            // Начинаем Spline fitting process
-            
-            
-            MWClient client = new MWHttpClient();
-            try
-            {
-                ISgolay sigDen = client.CreateProxy<ISgolay>(new Uri("http://localhost:9910/sgolay_auto_dep"));
-                result = sigDen.sgolay_auto(values, Order, Win);
-            }
-            catch (MATLABException)
-            {
+            // Начинаем Savitzky-Golay process
 
-            }
-            finally
-            {
-                client.Dispose();
-            }
+            SavitzkyGolay sg = new SavitzkyGolay(Win, Deriv, Order);
+            sg.Apply(values, result);
+            //MWClient client = new MWHttpClient();
+            //try
+            //{
+            //    ISgolay sigDen = client.CreateProxy<ISgolay>(new Uri("http://localhost:9910/sgolay_auto_dep"));
+            //    result = sigDen.sgolay_auto(values, Order, Win);
+            //}
+            //catch (MATLABException)
+            //{
+
+            //}
+            //finally
+            //{
+            //    client.Dispose();
+            //}
             return result;
         }
     }

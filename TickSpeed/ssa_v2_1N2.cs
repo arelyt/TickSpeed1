@@ -64,6 +64,15 @@ namespace TickSpeed
         // количество последних окон, которые перезаписываются при анализе
         public int overwrite_windows2 { get; set; }
 
+        [HandlerParameter(true, "5", Name = "Order", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        public int Order { get; set; }
+
+        [HandlerParameter(true, "61", Name = "winSG", Max = "120", Min = "1", Step = "1", NotOptimized = false)]
+        public int WinSg { get; set; }
+
+        [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = true)]
+        public int Deriv { get; set; }
+
         [HandlerParameter(true, "fore", Name = "ObjName", NotOptimized = false)]
         public string Objname { get; set; }
 
@@ -124,6 +133,7 @@ namespace TickSpeed
             // результат
             int olen = overwrite_windows2 * window_size;
             double[] result = new double[count + Numfor];
+            double[] values = new double[count + Numfor];
             for (int i = 0; i < last_result2.Length; i++)
                 result[i] = last_result2[i];
             for (int i = last_result2.Length; i < count; i++)
@@ -167,9 +177,11 @@ namespace TickSpeed
             last_result2 = new double[count];
             for (int i = 0; i < count; i++)
                 last_result2[i] = result[i];
+            SavitzkyGolay sg = new SavitzkyGolay(WinSg, Deriv, Order);
+            sg.Apply(result, values);
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
             Context.Log("ssaV2_1 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
-            return result;
+            return values;
         }
     }
 }

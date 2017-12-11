@@ -38,6 +38,9 @@ namespace TickSpeed
         // инициализация моделей
         static IncrementalSSA1()
         {
+            //alglib.alloc_counter_activate();
+            //alglib.set_dbg_flag(1, 1);
+
             double[,] dummy_basis = new double[,] { { 1 } };
             data_inside = 0;
             last_result = new double[0];
@@ -49,7 +52,7 @@ namespace TickSpeed
             alglib.ssasetwindow(analyzer, current_window);
             alglib.ssasetalgotopkrealtime(worker, current_k);
             alglib.ssasetpoweruplength(worker, 5);
-            //alglib.ssasetalgotopkdirect(worker, current_k);
+            ////////////////////////////////alglib.ssasetalgotopkdirect(worker, current_k);
             alglib.ssasetalgoprecomputed(analyzer, dummy_basis, current_window, current_k);
         }
 
@@ -91,7 +94,7 @@ namespace TickSpeed
             int window_size = Math.Max((int)Math.Round(Numdec), 1);
             int k = Math.Max((int)Math.Round(Numrec), 1);
 
-            // обновление объектов worker и analyzer, обновление датасетов
+            //// обновление объектов worker и analyzer, обновление датасетов
             int dummy0, dummy1;
             double[,] new_basis;
             double[] sv;
@@ -102,12 +105,15 @@ namespace TickSpeed
                 // режим обновления
                 for (int i = data_inside; i < count; i++)
                 {
-                    alglib.ssaappendpointandupdate(worker, myDoubles[i], i == count - 1 ? update_freq : 0.0);
-                    alglib.ssaappendpointandupdate(analyzer, myDoubles[i], 0.0);
+                    //alglib.ssaappendpointandupdate(worker, myDoubles[i], i == count - 1 ? update_freq : 0.0);
+                    //alglib.ssaappendpointandupdate(analyzer, myDoubles[i], 0.0);
+                    alglib.ssaappendpointandupdate(worker, myDoubles[i], 0.0);
+                    alglib.ssaappendpointandupdate(analyzer, myDoubles[i], 1.0);
                 }
             }
             else
             {
+                Context.Log("CONSTRUCTOR", MessageType.Info, toMessageWindow: true);
                 // режим изначального создания
                 double[] vals = new double[count];
                 for (int i = 0; i < count; i++)
@@ -123,7 +129,7 @@ namespace TickSpeed
             alglib.ssagetbasis(worker, out new_basis, out sv, out dummy0, out dummy1);
             alglib.ssasetalgoprecomputed(analyzer, new_basis, window_size, k);
 
-            // анализ
+            //// анализ
             int alen = (overwrite_windows + 1) * window_size; // +1 позволяет сгладить шум в начале окна
             double[] last_trend, last_noise;
             alglib.ssaanalyzelast(analyzer, alen, out last_trend, out last_noise);
@@ -141,9 +147,11 @@ namespace TickSpeed
             {
                 double[] fc;
                 //alglib.ssaforecastlast(analyzer, Numfor, out fc);
-                alglib.ssaforecastavglast(analyzer, 5, Numfor, out fc);
+                //alglib.ssaforecastavglast(analyzer, 5, Numfor, out fc);
+                //for (int i = 0; i < Numfor; i++)
+                //    result[count + i] = fc[i];
                 for (int i = 0; i < Numfor; i++)
-                    result[count + i] = fc[i];
+                    result[count + i] = 0;
 
                 var rt = (IList<double>)Context.LoadObject(Objname);
                 if (rt.IsNull() || rt.Count < count)
@@ -154,15 +162,15 @@ namespace TickSpeed
                         tt[i] = 0;
                     }
                     var tr = tt.ToList();
-                    tr.AddRange(fc);
+                    //tr.AddRange(fc);
                     Context.StoreObject(Objname, tr);
                 }
                 else
                 {
                     var vt = (IList<double>) Context.LoadObject(Objname);
                     var ct = vt.Count;
-                    var vb = fc.TakeLast(count+Numfor-ct);
-                    vt.AddRange(vb);
+                    //var vb = fc.TakeLast(count+Numfor-ct);
+                    //vt.AddRange(vb);
                     //vt.TakeLast(vt.Count - 1);
                     Context.StoreObject(Objname, vt);
                 }
@@ -175,7 +183,12 @@ namespace TickSpeed
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            //System.GC.Collect();
+
+            //var res = alglib.alloc_counter();
+            //var asz = alglib.get_dbg_value(1);
             Context.Log("ssaV2_1 exec for +++" + g + " msec", MessageType.Info, toMessageWindow: true);
+            //Context.Log("ssaV2_1 exec for +++ c.alloc" + asz/1000 + "K", MessageType.Info, toMessageWindow: true);
             //Context.Log("count =" + count, MessageType.Info, toMessageWindow: true);
             return result;
         }
