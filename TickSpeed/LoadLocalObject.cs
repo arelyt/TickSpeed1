@@ -31,10 +31,10 @@ namespace TickSpeed
         {
             var ctx = Context;
             //var values = new double[sec.Bars.Count];
-            var values = (IList<double>)ctx.LoadObject(Objname);
-            var result = new double[values.Count];
+            var values = (double[])ctx.LoadObject(Objname);
+            var result = new double[values.Length];
             SavitzkyGolay sg = new SavitzkyGolay(WinSg, Deriv, Order);
-            sg.Apply(result, values.ToArray());
+            sg.Apply(values, result);
             return result;
         }
 
