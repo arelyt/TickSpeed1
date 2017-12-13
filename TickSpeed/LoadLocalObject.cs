@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MoreLinq;
 using TSLab.Script;
 using TSLab.Script.Handlers;
 
@@ -27,15 +28,19 @@ namespace TickSpeed
         [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = true)]
         public int Deriv { get; set; }
 
+        [HandlerParameter(true, "0", Name = "LShift", Max = "20", Min = "0", Step = "1", NotOptimized = true)]
+        public int ShiftL { get; set; }
+
         public IList<double> Execute(ISecurity sec)
         {
             var ctx = Context;
             //var values = new double[sec.Bars.Count];
-            var values = (double[])ctx.LoadObject(Objname);
-            var result = new double[values.Length];
+            var values = (IList<double>)ctx.LoadObject(Objname);
+            var result = new double[values.Count];
             SavitzkyGolay sg = new SavitzkyGolay(WinSg, Deriv, Order);
-            sg.Apply(values, result);
-            return result;
+            sg.Apply(values.ToArray(), result);
+            result.TakeLast(values.Count - ShiftL);
+            return result.ToList();
         }
 
         
