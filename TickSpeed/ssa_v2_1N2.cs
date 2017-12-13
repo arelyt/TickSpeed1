@@ -167,6 +167,8 @@ namespace TickSpeed
                     var vb = fc.TakeLast(count + Numfor - ct);
                     vt.AddRange(vb);
                     //vt.TakeLast(vt.Count - 1);
+                    SavitzkyGolay fg = new SavitzkyGolay(WinSg, Deriv, Order);
+                    sg.Apply(result, values);
                     Context.StoreObject(Objname, vt);
                 }
 
