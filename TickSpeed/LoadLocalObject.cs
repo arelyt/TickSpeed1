@@ -39,8 +39,8 @@ namespace TickSpeed
             var result = new double[values.Count];
             SavitzkyGolay sg = new SavitzkyGolay(WinSg, Deriv, Order);
             sg.Apply(values.ToArray(), result);
-            result.TakeLast(values.Count - ShiftL);
-            return result.ToList();
+            var result1 = result.TakeLast(values.Count - ShiftL);
+            return result1.ToList();
         }
 
         
