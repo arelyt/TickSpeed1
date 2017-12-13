@@ -25,10 +25,10 @@ namespace TickSpeed
         [HandlerParameter(true, "61", Name = "winSG", Max = "120", Min = "1", Step = "1", NotOptimized = false)]
         public int WinSg { get; set; }
 
-        [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = true)]
+        [HandlerParameter(true, "0", Name = "deriv", Max = "3", Min = "0", Step = "1", NotOptimized = false)]
         public int Deriv { get; set; }
 
-        [HandlerParameter(true, "0", Name = "LShift", Max = "20", Min = "0", Step = "1", NotOptimized = true)]
+        [HandlerParameter(true, "0", Name = "LShift", Max = "20", Min = "0", Step = "1", NotOptimized = false)]
         public int ShiftL { get; set; }
 
         public IList<double> Execute(ISecurity sec)
