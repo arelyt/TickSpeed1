@@ -38,8 +38,8 @@ namespace TickSpeed
         // инициализация моделей
         static IncrementalSSA1()
         {
-            //alglib.alloc_counter_activate();
-            //alglib.set_dbg_flag(1, 1);
+            alglib.alloc_counter_activate();
+            alglib.set_dbg_flag(1, 1);
 
             double[,] dummy_basis = new double[,] { { 1 } };
             data_inside = 0;
@@ -186,9 +186,9 @@ namespace TickSpeed
             //System.GC.Collect();
 
             //var res = alglib.alloc_counter();
-            //var asz = alglib.get_dbg_value(1);
+            var asz = alglib.get_dbg_value(1);
             Context.Log("ssaV2_1 exec for +++" + g + " msec", MessageType.Info, toMessageWindow: true);
-            //Context.Log("ssaV2_1 exec for +++ c.alloc" + asz/1000 + "K", MessageType.Info, toMessageWindow: true);
+            Context.Log("ssaV2_1 exec for +++ c.alloc" + asz/1000 + "K", MessageType.Info, toMessageWindow: true);
             //Context.Log("count =" + count, MessageType.Info, toMessageWindow: true);
             return result;
         }

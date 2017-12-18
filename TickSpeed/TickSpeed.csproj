@@ -47,10 +47,6 @@
     <Reference Include="Accord.Statistics, Version=3.8.0.0, Culture=neutral, PublicKeyToken=fa1a88e29555ccf7, processorArchitecture=MSIL">
       <HintPath>..\packages\Accord.Statistics.3.8.0\lib\net462\Accord.Statistics.dll</HintPath>
     </Reference>
-    <Reference Include="alglibnet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\AppData\Local\TSLab\TSLab 2.0\Handlers\alglibnet2.dll</HintPath>
-    </Reference>
     <Reference Include="AltaxoCore">
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Altaxo\bin\AltaxoCore.dll</HintPath>
     </Reference>
@@ -106,6 +102,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="alglib_hpc.cs" />
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
     <Compile Include="ShiftLeft.cs" />
@@ -132,6 +129,7 @@
     <Compile Include="FilterIir.cs" />
     <Compile Include="FilterFir.cs" />
     <Compile Include="NeuralGlassFitSi.cs" />
+    <Compile Include="spread.cs" />
     <Compile Include="ssa_v2_1FRec.cs" />
     <Compile Include="ssa_v2_1N2.cs" />
     <Compile Include="ssa_v2_1N1.cs" />
