@@ -19,6 +19,8 @@ namespace TickSpeed
     {
         [HandlerParameter(Name = "Направление", NotOptimized = true)]
         public TradeDirection Direction { get; set; }
+        [HandlerParameter(true, Name = "Объем", NotOptimized = false)]
+        public bool Volume { get; set; }
         [HandlerParameter(true, "2", Name = "Win", NotOptimized = false)]
         public int Win { get; set; }
         [HandlerParameter(true, "5", Name = "WinExp", NotOptimized = false)]
@@ -45,9 +47,17 @@ namespace TickSpeed
                             for (var i = Win - 1; i < count; i++)
                             {
                                 var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                                values[i] = tradelastwin.Sum(selector: t => t.Direction == Direction ? 1 : 0) / (double)Win;
-
-                            }
+                                if (Volume)
+                                {
+                                    values[i] = tradelastwin.Sum(selector: t =>
+                                                    t.Direction == Direction ? t.Quantity : 0) / (double) Win;
+                                }
+                                else
+                                {
+                                    values[i] = tradelastwin.Sum(selector: t => t.Direction == Direction ? 1 : 0) / (double)Win;
+                                }
+                        }
+    
 
                         }
                         else
@@ -66,8 +76,20 @@ namespace TickSpeed
                     for (var i = Win - 1; i < count; i++)
                     {
                         var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                        nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) / (double)Win;
-                        nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) / (double)Win;
+                        if (Volume)
+                        {
+                            nbuy[i] = tradelastwin.Sum(selector: t =>
+                                          t.Direction == TradeDirection.Buy ? t.Quantity : 0) / (double) Win;
+                            nsell[i] = tradelastwin.Sum(selector: t =>
+                                           t.Direction == TradeDirection.Sell ? t.Quantity : 0) / (double) Win;
+                        }
+                        else
+                        {
+                            nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) /
+                                      (double) Win;
+                            nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) /
+                                       (double) Win;
+                        }
                     }
                     nbuy = (double[])Series.EMA(nbuy, WinExp);
                     nsell = (double[])Series.EMA(nsell, WinExp);
@@ -78,12 +100,24 @@ namespace TickSpeed
                     
                     break;
                 case OutputMethod.OscTanh:
-                    
+
                     for (var i = Win - 1; i < count; i++)
                     {
                         var tradelastwin = security.GetTrades(firstBarIndex: i - Win + 1, lastBarIndex: i);
-                        nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) / (double)Win;
-                        nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) / (double)Win;
+                        if (Volume)
+                        {
+                            nbuy[i] = tradelastwin.Sum(selector: t =>
+                                          t.Direction == TradeDirection.Buy ? t.Quantity : 0) / (double)Win;
+                            nsell[i] = tradelastwin.Sum(selector: t =>
+                                           t.Direction == TradeDirection.Sell ? t.Quantity : 0) / (double)Win;
+                        }
+                        else
+                        {
+                            nbuy[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Buy ? 1 : 0) /
+                                      (double)Win;
+                            nsell[i] = tradelastwin.Sum(selector: t => t.Direction == TradeDirection.Sell ? 1 : 0) /
+                                       (double)Win;
+                        }
                     }
                     nbuy = (double[])Series.EMA(nbuy, WinExp);
                     nsell = (double[])Series.EMA(nsell, WinExp);
