@@ -1,5 +1,5 @@
 /**************************************************************************
-ALGLIB dev (source code generated 2017-12-15)
+ALGLIB dev (source code generated 2017-12-22)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
@@ -1873,6 +1873,7 @@ public partial class alglib
                     if( hTemporaryAlglibDL==IntPtr.Zero )
                         throw new System.Exception("ALGLIB: unable to load binaries");
                     LoadALGLIBFunctions(hTemporaryAlglibDL);
+                    x_activate_core();
                     hAlglibDL = hTemporaryAlglibDL;
                 }
             }
@@ -2057,26 +2058,28 @@ public partial class alglib
 
     public unsafe class kdtreerequestbuffer : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public kdtreerequestbuffer(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~kdtreerequestbuffer()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new kdtreerequestbuffer(null);
-            return new kdtreerequestbuffer(_i_x_obj_copy_kdtreerequestbuffer(ptr));
+            return new kdtreerequestbuffer(_i_x_obj_copy_kdtreerequestbuffer(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_kdtreerequestbuffer(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_kdtreerequestbuffer(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -2088,26 +2091,28 @@ public partial class alglib
 
     public unsafe class kdtree : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public kdtree(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~kdtree()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new kdtree(null);
-            return new kdtree(_i_x_obj_copy_kdtree(ptr));
+            return new kdtree(_i_x_obj_copy_kdtree(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_kdtree(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_kdtree(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -2218,8 +2223,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_kdtreebuild(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_ny, &_d_normtype, &_d_kdt);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_kdtreebuild(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_ny, &_d_normtype, &_d_kdt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2274,9 +2281,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_tags, tags, X_CREATE);
-            _error_code = _i_ser_kdtreebuildtagged(&_s_errormsg, &_d_xy, &_d_tags, &_d_n, &_d_nx, &_d_ny, &_d_normtype, &_d_kdt);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_from_array(ref _d_tags, tags, X_CREATE);
+                _error_code = _i_ser_kdtreebuildtagged(&_s_errormsg, &_d_xy, &_d_tags, &_d_n, &_d_nx, &_d_ny, &_d_normtype, &_d_kdt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2372,8 +2381,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreequeryknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_k, &_d_selfmatch);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreequeryknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_k, &_d_selfmatch);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2426,8 +2437,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_k, &_d_selfmatch);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreetsqueryknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_k, &_d_selfmatch);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2480,8 +2493,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreequeryrnn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_r, &_d_selfmatch);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreequeryrnn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_r, &_d_selfmatch);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2534,8 +2549,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryrnn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_r, &_d_selfmatch);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreetsqueryrnn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_r, &_d_selfmatch);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2589,8 +2606,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreequeryaknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_k, &_d_selfmatch, &_d_eps);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreequeryaknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_x, &_d_k, &_d_selfmatch, &_d_eps);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2644,8 +2663,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryaknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_k, &_d_selfmatch, &_d_eps);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_kdtreetsqueryaknn(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_x, &_d_k, &_d_selfmatch, &_d_eps);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2697,9 +2718,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_boxmin, boxmin, X_CREATE);
-            x_vector_from_array(ref _d_boxmax, boxmax, X_CREATE);
-            _error_code = _i_ser_kdtreequerybox(&_s_errormsg, &_d_result, &_d_kdt, &_d_boxmin, &_d_boxmax);
+            fixed(double* _fp_boxmin = boxmin, _fp_boxmax = boxmax){
+                x_vector_attach_to_array(ref _d_boxmin, _fp_boxmin, ap.len(boxmin));
+                x_vector_attach_to_array(ref _d_boxmax, _fp_boxmax, ap.len(boxmax));
+                _error_code = _i_ser_kdtreequerybox(&_s_errormsg, &_d_result, &_d_kdt, &_d_boxmin, &_d_boxmax);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2741,9 +2764,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_boxmin, boxmin, X_CREATE);
-            x_vector_from_array(ref _d_boxmax, boxmax, X_CREATE);
-            _error_code = _i_ser_kdtreetsquerybox(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_boxmin, &_d_boxmax);
+            fixed(double* _fp_boxmin = boxmin, _fp_boxmax = boxmax){
+                x_vector_attach_to_array(ref _d_boxmin, _fp_boxmin, ap.len(boxmin));
+                x_vector_attach_to_array(ref _d_boxmax, _fp_boxmax, ap.len(boxmax));
+                _error_code = _i_ser_kdtreetsquerybox(&_s_errormsg, &_d_result, &_d_kdt, &_d_buf, &_d_boxmin, &_d_boxmax);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2782,8 +2807,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreequeryresultsx(&_s_errormsg, &_d_kdt, &_d_x);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                _error_code = _i_ser_kdtreequeryresultsx(&_s_errormsg, &_d_kdt, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2792,7 +2819,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsx' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -2820,8 +2850,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_kdtreequeryresultsxy(&_s_errormsg, &_d_kdt, &_d_xy);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_kdtreequeryresultsxy(&_s_errormsg, &_d_kdt, &_d_xy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2830,7 +2862,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsxy' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_xy, ref xy);
+            if( _d_xy.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xy, ref xy);
+            if( xy == null )
+                xy = new double[0,0];
         }
         finally
         {
@@ -2896,8 +2931,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_r, r, X_CREATE);
-            _error_code = _i_ser_kdtreequeryresultsdistances(&_s_errormsg, &_d_kdt, &_d_r);
+            fixed(double* _fp_r = r){
+                x_vector_attach_to_array(ref _d_r, _fp_r, ap.len(r));
+                _error_code = _i_ser_kdtreequeryresultsdistances(&_s_errormsg, &_d_kdt, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2906,7 +2943,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsdistances' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -2935,8 +2975,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryresultsx(&_s_errormsg, &_d_kdt, &_d_buf, &_d_x);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                _error_code = _i_ser_kdtreetsqueryresultsx(&_s_errormsg, &_d_kdt, &_d_buf, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2946,7 +2988,10 @@ public partial class alglib
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(buf.ptr==_d_buf, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -2975,8 +3020,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryresultsxy(&_s_errormsg, &_d_kdt, &_d_buf, &_d_xy);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_kdtreetsqueryresultsxy(&_s_errormsg, &_d_kdt, &_d_buf, &_d_xy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -2986,7 +3033,10 @@ public partial class alglib
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(buf.ptr==_d_buf, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_xy, ref xy);
+            if( _d_xy.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xy, ref xy);
+            if( xy == null )
+                xy = new double[0,0];
         }
         finally
         {
@@ -3055,8 +3105,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_r, r, X_CREATE);
-            _error_code = _i_ser_kdtreetsqueryresultsdistances(&_s_errormsg, &_d_kdt, &_d_buf, &_d_r);
+            fixed(double* _fp_r = r){
+                x_vector_attach_to_array(ref _d_r, _fp_r, ap.len(r));
+                _error_code = _i_ser_kdtreetsqueryresultsdistances(&_s_errormsg, &_d_kdt, &_d_buf, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3066,7 +3118,10 @@ public partial class alglib
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(buf.ptr==_d_buf, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -3105,7 +3160,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsxi' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -3144,7 +3202,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsxyi' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_xy, ref xy);
+            if( _d_xy.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xy, ref xy);
+            if( xy == null )
+                xy = new double[0,0];
         }
         finally
         {
@@ -3222,7 +3283,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kdtreequeryresultsdistancesi' call");
             }
             ap.assert(kdt.ptr==_d_kdt, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -3244,26 +3308,28 @@ public partial class alglib
 
     public unsafe class hqrndstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public hqrndstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~hqrndstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new hqrndstate(null);
-            return new hqrndstate(_i_x_obj_copy_hqrndstate(ptr));
+            return new hqrndstate(_i_x_obj_copy_hqrndstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_hqrndstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_hqrndstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -3606,8 +3672,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_hqrnddiscrete(&_s_errormsg, &_d_result, &_d_state, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_hqrnddiscrete(&_s_errormsg, &_d_result, &_d_state, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3647,8 +3715,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_hqrndcontinuous(&_s_errormsg, &_d_result, &_d_state, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_hqrndcontinuous(&_s_errormsg, &_d_result, &_d_state, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3790,8 +3860,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb1count(&_s_errormsg, &_d_result, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugb1count(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3826,8 +3898,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb1not(&_s_errormsg, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugb1not(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3835,7 +3909,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb1not' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0];
         }
         finally
         {
@@ -3862,8 +3939,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb1appendcopy(&_s_errormsg, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugb1appendcopy(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -3871,7 +3950,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb1appendcopy' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0];
         }
         finally
         {
@@ -3909,7 +3991,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb1outeven' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0];
         }
         finally
         {
@@ -4086,8 +4171,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr1sum(&_s_errormsg, &_d_result, &_d_a);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugr1sum(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4122,8 +4209,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr1neg(&_s_errormsg, &_d_a);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugr1neg(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4131,7 +4220,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr1neg' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -4158,8 +4250,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr1appendcopy(&_s_errormsg, &_d_a);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugr1appendcopy(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4167,7 +4261,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr1appendcopy' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -4205,7 +4302,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr1outeven' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -4234,10 +4334,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            _d_result.x = 0;
-            _d_result.y = 0;
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc1sum(&_s_errormsg, &_d_result, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                _d_result.x = 0;
+                _d_result.y = 0;
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugc1sum(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4273,8 +4375,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc1neg(&_s_errormsg, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugc1neg(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4282,7 +4386,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc1neg' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0];
         }
         finally
         {
@@ -4309,8 +4416,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc1appendcopy(&_s_errormsg, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_xdebugc1appendcopy(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4318,7 +4427,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc1appendcopy' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0];
         }
         finally
         {
@@ -4356,7 +4468,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc1outeven' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0];
         }
         finally
         {
@@ -4385,8 +4500,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb2count(&_s_errormsg, &_d_result, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugb2count(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4421,8 +4538,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb2not(&_s_errormsg, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugb2not(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4430,7 +4549,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb2not' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0,0];
         }
         finally
         {
@@ -4457,8 +4579,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugb2transpose(&_s_errormsg, &_d_a);
+            fixed(bool* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugb2transpose(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4466,7 +4590,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb2transpose' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0,0];
         }
         finally
         {
@@ -4505,7 +4632,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugb2outsin' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new bool[0,0];
         }
         finally
         {
@@ -4683,8 +4813,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr2sum(&_s_errormsg, &_d_result, &_d_a);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugr2sum(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4719,8 +4851,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr2neg(&_s_errormsg, &_d_a);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugr2neg(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4728,7 +4862,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr2neg' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -4755,8 +4892,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugr2transpose(&_s_errormsg, &_d_a);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugr2transpose(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4764,7 +4903,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr2transpose' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -4803,7 +4945,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugr2outsin' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -4832,10 +4977,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            _d_result.x = 0;
-            _d_result.y = 0;
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc2sum(&_s_errormsg, &_d_result, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                _d_result.x = 0;
+                _d_result.y = 0;
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugc2sum(&_s_errormsg, &_d_result, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4871,8 +5018,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc2neg(&_s_errormsg, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugc2neg(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4880,7 +5029,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc2neg' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -4907,8 +5059,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_xdebugc2transpose(&_s_errormsg, &_d_a);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_xdebugc2transpose(&_s_errormsg, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -4916,7 +5070,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc2transpose' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -4955,7 +5112,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'xdebugc2outsincos' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -4988,10 +5148,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_xdebugmaskedbiasedproductsum(&_s_errormsg, &_d_result, &_d_m, &_d_n, &_d_a, &_d_b, &_d_c);
+            fixed(double* _fp_a = a, _fp_b = b){fixed(bool* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                _error_code = _i_ser_xdebugmaskedbiasedproductsum(&_s_errormsg, &_d_result, &_d_m, &_d_n, &_d_a, &_d_b, &_d_c);
+            }}
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -5023,26 +5185,28 @@ public partial class alglib
 
     public unsafe class odesolverstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public odesolverstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~odesolverstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new odesolverstate(null);
-            return new odesolverstate(_i_x_obj_copy_odesolverstate(ptr));
+            return new odesolverstate(_i_x_obj_copy_odesolverstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_odesolverstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_odesolverstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -5142,9 +5306,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_odesolverrkck(&_s_errormsg, &_d_y, &_d_n, &_d_x, &_d_m, &_d_eps, &_d_h, &_d_state);
+            fixed(double* _fp_y = y, _fp_x = x){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_odesolverrkck(&_s_errormsg, &_d_y, &_d_n, &_d_x, &_d_m, &_d_eps, &_d_h, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -5317,8 +5483,14 @@ public partial class alglib
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
             m = _d_m.intval;
-            x_vector_to_array(ref _d_xtbl, ref xtbl);
-            x_matrix_to_array(ref _d_ytbl, ref ytbl);
+            if( _d_xtbl.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_xtbl, ref xtbl);
+            if( xtbl == null )
+                xtbl = new double[0];
+            if( _d_ytbl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_ytbl, ref ytbl);
+            if( ytbl == null )
+                ytbl = new double[0,0];
             rep = null;
             x_odesolverreport_to_record(ref _d_rep, ref rep);
         }
@@ -5344,26 +5516,28 @@ public partial class alglib
 
     public unsafe class sparsematrix : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public sparsematrix(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~sparsematrix()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new sparsematrix(null);
-            return new sparsematrix(_i_x_obj_copy_sparsematrix(ptr));
+            return new sparsematrix(_i_x_obj_copy_sparsematrix(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_sparsematrix(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_sparsematrix(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -5375,26 +5549,28 @@ public partial class alglib
 
     public unsafe class sparsebuffers : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public sparsebuffers(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~sparsebuffers()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new sparsebuffers(null);
-            return new sparsebuffers(_i_x_obj_copy_sparsebuffers(ptr));
+            return new sparsebuffers(_i_x_obj_copy_sparsebuffers(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_sparsebuffers(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_sparsebuffers(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -5964,9 +6140,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_sparsemv(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_sparsemv(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -5975,7 +6153,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemv' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -6005,9 +6186,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_sparsemtv(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_sparsemtv(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6016,7 +6199,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemtv' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -6047,10 +6233,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y0, y0, X_CREATE);
-            x_vector_from_array(ref _d_y1, y1, X_CREATE);
-            _error_code = _i_ser_sparsemv2(&_s_errormsg, &_d_s, &_d_x, &_d_y0, &_d_y1);
+            fixed(double* _fp_x = x, _fp_y0 = y0, _fp_y1 = y1){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y0, _fp_y0, ap.len(y0));
+                x_vector_attach_to_array(ref _d_y1, _fp_y1, ap.len(y1));
+                _error_code = _i_ser_sparsemv2(&_s_errormsg, &_d_s, &_d_x, &_d_y0, &_d_y1);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6059,8 +6247,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemv2' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y0, ref y0);
-            x_vector_to_array(ref _d_y1, ref y1);
+            if( _d_y0.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y0, ref y0);
+            if( y0 == null )
+                y0 = new double[0];
+            if( _d_y1.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y1, ref y1);
+            if( y1 == null )
+                y1 = new double[0];
         }
         finally
         {
@@ -6092,9 +6286,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_sparsesmv(&_s_errormsg, &_d_s, &_d_isupper, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_sparsesmv(&_s_errormsg, &_d_s, &_d_isupper, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6103,7 +6299,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsesmv' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -6135,8 +6334,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_sparsevsmv(&_s_errormsg, &_d_result, &_d_s, &_d_isupper, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_sparsevsmv(&_s_errormsg, &_d_result, &_d_s, &_d_isupper, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6175,9 +6376,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_sparsemm(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_sparsemm(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6186,7 +6389,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemm' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -6217,9 +6423,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_sparsemtm(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_sparsemtm(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6228,7 +6436,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemtm' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -6260,10 +6471,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b0, b0, X_CREATE);
-            x_matrix_from_array(ref _d_b1, b1, X_CREATE);
-            _error_code = _i_ser_sparsemm2(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b0, &_d_b1);
+            fixed(double* _fp_a = a, _fp_b0 = b0, _fp_b1 = b1){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b0, _fp_b0, ap.rows(b0), ap.cols(b0));
+                x_matrix_attach_to_array(ref _d_b1, _fp_b1, ap.rows(b1), ap.cols(b1));
+                _error_code = _i_ser_sparsemm2(&_s_errormsg, &_d_s, &_d_a, &_d_k, &_d_b0, &_d_b1);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6272,8 +6485,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsemm2' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_b0, ref b0);
-            x_matrix_to_array(ref _d_b1, ref b1);
+            if( _d_b0.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b0, ref b0);
+            if( b0 == null )
+                b0 = new double[0,0];
+            if( _d_b1.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b1, ref b1);
+            if( b1 == null )
+                b1 = new double[0,0];
         }
         finally
         {
@@ -6306,9 +6525,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_sparsesmm(&_s_errormsg, &_d_s, &_d_isupper, &_d_a, &_d_k, &_d_b);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_sparsesmm(&_s_errormsg, &_d_s, &_d_isupper, &_d_a, &_d_k, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6317,7 +6538,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsesmm' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -6350,9 +6574,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_sparsetrmv(&_s_errormsg, &_d_s, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_sparsetrmv(&_s_errormsg, &_d_s, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6361,8 +6587,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsetrmv' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -6394,8 +6626,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_sparsetrsv(&_s_errormsg, &_d_s, &_d_isupper, &_d_isunit, &_d_optype, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_sparsetrsv(&_s_errormsg, &_d_s, &_d_isupper, &_d_isunit, &_d_optype, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6404,7 +6638,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsetrsv' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -6560,8 +6797,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_irow, irow, X_CREATE);
-            _error_code = _i_ser_sparsegetrow(&_s_errormsg, &_d_s, &_d_i, &_d_irow);
+            fixed(double* _fp_irow = irow){
+                x_vector_attach_to_array(ref _d_irow, _fp_irow, ap.len(irow));
+                _error_code = _i_ser_sparsegetrow(&_s_errormsg, &_d_s, &_d_i, &_d_irow);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6570,7 +6809,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'sparsegetrow' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_irow, ref irow);
+            if( _d_irow.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_irow, ref irow);
+            if( irow == null )
+                irow = new double[0];
         }
         finally
         {
@@ -6601,9 +6843,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_colidx, colidx, X_CREATE);
-            x_vector_from_array(ref _d_vals, vals, X_CREATE);
-            _error_code = _i_ser_sparsegetcompressedrow(&_s_errormsg, &_d_s, &_d_i, &_d_colidx, &_d_vals, &_d_nzcnt);
+            fixed(double* _fp_vals = vals){
+                x_vector_from_array(ref _d_colidx, colidx, X_CREATE);
+                x_vector_attach_to_array(ref _d_vals, _fp_vals, ap.len(vals));
+                _error_code = _i_ser_sparsegetcompressedrow(&_s_errormsg, &_d_s, &_d_i, &_d_colidx, &_d_vals, &_d_nzcnt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -6613,7 +6857,10 @@ public partial class alglib
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
             x_vector_to_array(ref _d_colidx, ref colidx);
-            x_vector_to_array(ref _d_vals, ref vals);
+            if( _d_vals.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_vals, ref vals);
+            if( vals == null )
+                vals = new double[0];
             nzcnt = _d_nzcnt.intval;
         }
         finally
@@ -7459,9 +7706,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_cmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_cmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7469,7 +7718,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixtranspose' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
         }
         finally
         {
@@ -7504,9 +7756,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_rmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_rmatrixtranspose(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7514,7 +7768,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixtranspose' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -7544,8 +7801,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixenforcesymmetricity(&_s_errormsg, &_d_a, &_d_n, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixenforcesymmetricity(&_s_errormsg, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7553,7 +7812,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixenforcesymmetricity' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -7587,9 +7849,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_cmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_cmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7597,7 +7861,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixcopy' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
         }
         finally
         {
@@ -7632,9 +7899,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_rmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _error_code = _i_ser_rmatrixcopy(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_b, &_d_ib, &_d_jb);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7642,7 +7911,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixcopy' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -7679,10 +7951,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_rmatrixger(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_alpha, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            fixed(double* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixger(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_alpha, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7690,7 +7964,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixger' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -7727,10 +8004,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_cmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            fixed(alglib.complex* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_cmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7738,9 +8017,18 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrank1' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_u, ref u);
-            x_vector_to_array(ref _d_v, ref v);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new alglib.complex[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new alglib.complex[0];
         }
         finally
         {
@@ -7777,10 +8065,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_rmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            fixed(double* _fp_a = a, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixrank1(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_u, &_d_iu, &_d_v, &_d_iv);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7788,9 +8078,18 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrank1' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_u, ref u);
-            x_vector_to_array(ref _d_v, ref v);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new double[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0];
         }
         finally
         {
@@ -7830,10 +8129,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_rmatrixgemv(&_s_errormsg, &_d_m, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixgemv(&_s_errormsg, &_d_m, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7841,7 +8142,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixgemv' call");
             }
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -7879,10 +8183,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_cmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            fixed(alglib.complex* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_cmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7890,7 +8196,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixmv' call");
             }
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new alglib.complex[0];
         }
         finally
         {
@@ -7928,10 +8237,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_rmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixmv(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_opa, &_d_x, &_d_ix, &_d_y, &_d_iy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7939,7 +8250,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixmv' call");
             }
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -7978,10 +8292,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_rmatrixsymv(&_s_errormsg, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            fixed(double* _fp_a = a, _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rmatrixsymv(&_s_errormsg, &_d_n, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_beta, &_d_y, &_d_iy);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -7989,7 +8305,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsymv' call");
             }
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -8027,10 +8346,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_tmp, tmp, X_CREATE);
-            _error_code = _i_ser_rmatrixsyvmv(&_s_errormsg, &_d_result, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_tmp);
+            fixed(double* _fp_a = a, _fp_x = x, _fp_tmp = tmp){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_tmp, _fp_tmp, ap.len(tmp));
+                _error_code = _i_ser_rmatrixsyvmv(&_s_errormsg, &_d_result, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_x, &_d_ix, &_d_tmp);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8039,7 +8360,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsyvmv' call");
             }
             result = _d_result;
-            x_vector_to_array(ref _d_tmp, ref tmp);
+            if( _d_tmp.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tmp, ref tmp);
+            if( tmp == null )
+                tmp = new double[0];
         }
         finally
         {
@@ -8076,9 +8400,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_rmatrixtrsv(&_s_errormsg, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_ix);
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_rmatrixtrsv(&_s_errormsg, &_d_n, &_d_a, &_d_ia, &_d_ja, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_ix);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8086,7 +8412,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixtrsv' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -8124,11 +8453,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            else    _error_code = _i_smp_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            fixed(alglib.complex* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_cmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8136,7 +8467,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrighttrsm' call");
             }
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -8179,11 +8513,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            else    _error_code = _i_smp_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            fixed(alglib.complex* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_cmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8191,7 +8527,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlefttrsm' call");
             }
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -8234,11 +8573,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            else    _error_code = _i_smp_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_rmatrixrighttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8246,7 +8587,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrighttrsm' call");
             }
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -8289,11 +8633,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
-            else    _error_code = _i_smp_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            fixed(double* _fp_a = a, _fp_x = x){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+                else    _error_code = _i_smp_rmatrixlefttrsm(&_s_errormsg, &_d_m, &_d_n, &_d_a, &_d_i1, &_d_j1, &_d_isupper, &_d_isunit, &_d_optype, &_d_x, &_d_i2, &_d_j2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8301,7 +8647,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlefttrsm' call");
             }
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -8345,11 +8694,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            else    _error_code = _i_smp_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            fixed(alglib.complex* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_cmatrixherk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8357,7 +8708,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixherk' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
         }
         finally
         {
@@ -8401,11 +8755,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            else    _error_code = _i_smp_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            fixed(double* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_rmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8413,7 +8769,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsyrk' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -8461,16 +8820,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            _d_alpha.x = alpha.x;
-            _d_alpha.y = alpha.y;
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            _d_beta.x = beta.x;
-            _d_beta.y = beta.y;
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-            else    _error_code = _i_smp_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b, _fp_c = c){
+                _d_alpha.x = alpha.x;
+                _d_alpha.y = alpha.y;
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                _d_beta.x = beta.x;
+                _d_beta.y = beta.y;
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+                else    _error_code = _i_smp_cmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8478,7 +8839,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixgemm' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
         }
         finally
         {
@@ -8527,12 +8891,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
-            else    _error_code = _i_smp_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            fixed(double* _fp_a = a, _fp_b = b, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+                else    _error_code = _i_smp_rmatrixgemm(&_s_errormsg, &_d_m, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_b, &_d_ib, &_d_jb, &_d_optypeb, &_d_beta, &_d_c, &_d_ic, &_d_jc);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8540,7 +8906,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixgemm' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -8585,11 +8954,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
-            else    _error_code = _i_smp_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            fixed(alglib.complex* _fp_a = a, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+                else    _error_code = _i_smp_cmatrixsyrk(&_s_errormsg, &_d_n, &_d_k, &_d_alpha, &_d_a, &_d_ia, &_d_ja, &_d_optypea, &_d_beta, &_d_c, &_d_ic, &_d_jc, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8597,7 +8968,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixsyrk' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0,0];
         }
         finally
         {
@@ -8647,7 +9021,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrndorthogonal' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -8686,7 +9063,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -8724,7 +9104,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrndorthogonal' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -8763,7 +9146,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -8802,7 +9188,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -8841,7 +9230,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -8880,7 +9272,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -8919,7 +9314,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixrndcond' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -8948,8 +9346,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixrndorthogonalfromtheright(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixrndorthogonalfromtheright(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8957,7 +9357,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrndorthogonalfromtheright' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -8986,8 +9389,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixrndorthogonalfromtheleft(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixrndorthogonalfromtheleft(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -8995,7 +9400,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixrndorthogonalfromtheleft' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -9024,8 +9432,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixrndorthogonalfromtheright(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixrndorthogonalfromtheright(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9033,7 +9443,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrndorthogonalfromtheright' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -9062,8 +9475,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixrndorthogonalfromtheleft(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixrndorthogonalfromtheleft(&_s_errormsg, &_d_a, &_d_m, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9071,7 +9486,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixrndorthogonalfromtheleft' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -9099,8 +9517,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_smatrixrndmultiply(&_s_errormsg, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_smatrixrndmultiply(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9108,7 +9528,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixrndmultiply' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -9136,8 +9559,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_hmatrixrndmultiply(&_s_errormsg, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_hmatrixrndmultiply(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9145,7 +9570,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixrndmultiply' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -9181,12 +9609,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_pivots, DT_INT);
-            pivots = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
-            else    _error_code = _i_smp_rmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_pivots, DT_INT);
+                pivots = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+                else    _error_code = _i_smp_rmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9194,7 +9624,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlu' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             x_vector_to_array(ref _d_pivots, ref pivots);
         }
         finally
@@ -9231,12 +9664,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_pivots, DT_INT);
-            pivots = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
-            else    _error_code = _i_smp_cmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_pivots, DT_INT);
+                pivots = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+                else    _error_code = _i_smp_cmatrixlu(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_pivots);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9244,7 +9679,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlu' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             x_vector_to_array(ref _d_pivots, ref pivots);
         }
         finally
@@ -9282,10 +9720,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
-            else    _error_code = _i_smp_hpdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+                else    _error_code = _i_smp_hpdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9294,7 +9734,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixcholesky' call");
             }
             result = _d_result!=0;
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
         }
         finally
         {
@@ -9330,10 +9773,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
-            else    _error_code = _i_smp_spdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+                else    _error_code = _i_smp_spdmatrixcholesky(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9342,7 +9787,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholesky' call");
             }
             result = _d_result!=0;
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -9377,9 +9825,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskyupdateadd1(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_u);
+            fixed(double* _fp_a = a, _fp_u = u){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                _error_code = _i_ser_spdmatrixcholeskyupdateadd1(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_u);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9387,7 +9837,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskyupdateadd1' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -9418,9 +9871,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_fix, fix, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskyupdatefix(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_fix);
+            fixed(double* _fp_a = a){fixed(bool* _fp_fix = fix){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_fix, _fp_fix, ap.len(fix));
+                _error_code = _i_ser_spdmatrixcholeskyupdatefix(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_fix);
+            }}
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9428,7 +9883,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskyupdatefix' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
         }
         finally
         {
@@ -9460,10 +9918,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            x_vector_from_array(ref _d_bufr, bufr, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskyupdateadd1buf(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_u, &_d_bufr);
+            fixed(double* _fp_a = a, _fp_u = u, _fp_bufr = bufr){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_bufr, _fp_bufr, ap.len(bufr));
+                _error_code = _i_ser_spdmatrixcholeskyupdateadd1buf(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_u, &_d_bufr);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9471,8 +9931,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskyupdateadd1buf' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_bufr, ref bufr);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_bufr.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_bufr, ref bufr);
+            if( bufr == null )
+                bufr = new double[0];
         }
         finally
         {
@@ -9505,10 +9971,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_fix, fix, X_CREATE);
-            x_vector_from_array(ref _d_bufr, bufr, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskyupdatefixbuf(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_fix, &_d_bufr);
+            fixed(double* _fp_a = a, _fp_bufr = bufr){fixed(bool* _fp_fix = fix){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_fix, _fp_fix, ap.len(fix));
+                x_vector_attach_to_array(ref _d_bufr, _fp_bufr, ap.len(bufr));
+                _error_code = _i_ser_spdmatrixcholeskyupdatefixbuf(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_fix, &_d_bufr);
+            }}
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9516,8 +9984,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskyupdatefixbuf' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_bufr, ref bufr);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_bufr.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_bufr, ref bufr);
+            if( bufr == null )
+                bufr = new double[0];
         }
         finally
         {
@@ -9596,8 +10070,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9635,8 +10111,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9675,8 +10153,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_spdmatrixrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_spdmatrixrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9716,8 +10196,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixtrrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixtrrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9757,8 +10239,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixtrrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixtrrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9797,8 +10281,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_hpdmatrixrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_hpdmatrixrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9836,8 +10322,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9875,8 +10363,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9914,8 +10404,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            _error_code = _i_ser_rmatrixlurcond1(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            fixed(double* _fp_lua = lua){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                _error_code = _i_ser_rmatrixlurcond1(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9953,8 +10445,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            _error_code = _i_ser_rmatrixlurcondinf(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            fixed(double* _fp_lua = lua){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                _error_code = _i_ser_rmatrixlurcondinf(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -9993,8 +10487,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskyrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_spdmatrixcholeskyrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10033,8 +10529,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_hpdmatrixcholeskyrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_hpdmatrixcholeskyrcond(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10072,8 +10570,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            _error_code = _i_ser_cmatrixlurcond1(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            fixed(alglib.complex* _fp_lua = lua){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                _error_code = _i_ser_cmatrixlurcond1(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10111,8 +10611,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            _error_code = _i_ser_cmatrixlurcondinf(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            fixed(alglib.complex* _fp_lua = lua){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                _error_code = _i_ser_cmatrixlurcondinf(&_s_errormsg, &_d_result, &_d_lua, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10152,8 +10654,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixtrrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixtrrcond1(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10193,8 +10697,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixtrrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixtrrcondinf(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper, &_d_isunit);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10291,12 +10797,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_rmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_rmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10304,7 +10812,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixluinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10370,11 +10881,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_rmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_rmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10382,7 +10895,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10448,12 +10964,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_cmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_cmatrixluinverse(&_s_errormsg, &_d_a, &_d_pivots, &_d_n, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10461,7 +10979,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixluinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10527,11 +11048,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_cmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_cmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10539,7 +11062,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10605,11 +11131,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_spdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_spdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10617,7 +11145,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskyinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10687,11 +11218,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_spdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_spdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10699,7 +11232,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10777,11 +11313,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_hpdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_hpdmatrixcholeskyinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10789,7 +11327,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixcholeskyinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10859,11 +11400,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_hpdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_hpdmatrixinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10871,7 +11414,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -10950,11 +11496,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_rmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_rmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -10962,7 +11510,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixtrinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -11033,11 +11584,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matinvreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
-            else    _error_code = _i_smp_cmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matinvreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+                else    _error_code = _i_smp_cmatrixtrinverse(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_isunit, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11045,7 +11598,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixtrinverse' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
             info = _d_info.intval;
             rep = null;
             x_matinvreport_to_record(ref _d_rep, ref rep);
@@ -11120,12 +11676,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_REAL);
-            tau = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
-            else    _error_code = _i_smp_rmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_REAL);
+                tau = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+                else    _error_code = _i_smp_rmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11133,8 +11691,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixqr' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new double[0];
         }
         finally
         {
@@ -11170,12 +11734,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_REAL);
-            tau = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
-            else    _error_code = _i_smp_rmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_REAL);
+                tau = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+                else    _error_code = _i_smp_rmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11183,8 +11749,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlq' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new double[0];
         }
         finally
         {
@@ -11220,12 +11792,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_COMPLEX);
-            tau = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
-            else    _error_code = _i_smp_cmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_COMPLEX);
+                tau = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+                else    _error_code = _i_smp_cmatrixqr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11233,8 +11807,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixqr' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new alglib.complex[0];
         }
         finally
         {
@@ -11270,12 +11850,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_COMPLEX);
-            tau = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
-            else    _error_code = _i_smp_cmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_COMPLEX);
+                tau = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+                else    _error_code = _i_smp_cmatrixlq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11283,8 +11865,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlq' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new alglib.complex[0];
         }
         finally
         {
@@ -11322,13 +11910,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_REAL);
-            q = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
-            else    _error_code = _i_smp_rmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+            fixed(double* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_REAL);
+                q = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+                else    _error_code = _i_smp_rmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11336,7 +11926,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixqrunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new double[0,0];
         }
         finally
         {
@@ -11373,10 +11966,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_rmatrixqrunpackr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_r);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_rmatrixqrunpackr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11384,7 +11979,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixqrunpackr' call");
             }
-            x_matrix_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0,0];
         }
         finally
         {
@@ -11417,13 +12015,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_REAL);
-            q = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
-            else    _error_code = _i_smp_rmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+            fixed(double* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_REAL);
+                q = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+                else    _error_code = _i_smp_rmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11431,7 +12031,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlqunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new double[0,0];
         }
         finally
         {
@@ -11468,10 +12071,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_l, DT_REAL);
-            l = null;
-            _error_code = _i_ser_rmatrixlqunpackl(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_l);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_l, DT_REAL);
+                l = null;
+                _error_code = _i_ser_rmatrixlqunpackl(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_l);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11479,7 +12084,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlqunpackl' call");
             }
-            x_matrix_to_array(ref _d_l, ref l);
+            if( _d_l.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_l, ref l);
+            if( l == null )
+                l = new double[0,0];
         }
         finally
         {
@@ -11512,13 +12120,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_COMPLEX);
-            q = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
-            else    _error_code = _i_smp_cmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+            fixed(alglib.complex* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_COMPLEX);
+                q = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+                else    _error_code = _i_smp_cmatrixqrunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qcolumns, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11526,7 +12136,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixqrunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new alglib.complex[0,0];
         }
         finally
         {
@@ -11563,10 +12176,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_r, DT_COMPLEX);
-            r = null;
-            _error_code = _i_ser_cmatrixqrunpackr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_r);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_r, DT_COMPLEX);
+                r = null;
+                _error_code = _i_ser_cmatrixqrunpackr(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11574,7 +12189,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixqrunpackr' call");
             }
-            x_matrix_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new alglib.complex[0,0];
         }
         finally
         {
@@ -11607,13 +12225,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_COMPLEX);
-            q = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
-            else    _error_code = _i_smp_cmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+            fixed(alglib.complex* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_COMPLEX);
+                q = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+                else    _error_code = _i_smp_cmatrixlqunpackq(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tau, &_d_qrows, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11621,7 +12241,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlqunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new alglib.complex[0,0];
         }
         finally
         {
@@ -11658,10 +12281,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_l, DT_COMPLEX);
-            l = null;
-            _error_code = _i_ser_cmatrixlqunpackl(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_l);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_l, DT_COMPLEX);
+                l = null;
+                _error_code = _i_ser_cmatrixlqunpackl(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_l);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11669,7 +12294,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlqunpackl' call");
             }
-            x_matrix_to_array(ref _d_l, ref l);
+            if( _d_l.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_l, ref l);
+            if( l == null )
+                l = new alglib.complex[0,0];
         }
         finally
         {
@@ -11701,12 +12329,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tauq, DT_REAL);
-            tauq = null;
-            x_vector_create_empty(ref _d_taup, DT_REAL);
-            taup = null;
-            _error_code = _i_ser_rmatrixbd(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tauq, &_d_taup);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tauq, DT_REAL);
+                tauq = null;
+                x_vector_create_empty(ref _d_taup, DT_REAL);
+                taup = null;
+                _error_code = _i_ser_rmatrixbd(&_s_errormsg, &_d_a, &_d_m, &_d_n, &_d_tauq, &_d_taup);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11714,9 +12344,18 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbd' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tauq, ref tauq);
-            x_vector_to_array(ref _d_taup, ref taup);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_tauq.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tauq, ref tauq);
+            if( tauq == null )
+                tauq = new double[0];
+            if( _d_taup.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_taup, ref taup);
+            if( taup == null )
+                taup = new double[0];
         }
         finally
         {
@@ -11750,11 +12389,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_qp, qp, X_CREATE);
-            x_vector_from_array(ref _d_tauq, tauq, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_REAL);
-            q = null;
-            _error_code = _i_ser_rmatrixbdunpackq(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_tauq, &_d_qcolumns, &_d_q);
+            fixed(double* _fp_qp = qp, _fp_tauq = tauq){
+                x_matrix_attach_to_array(ref _d_qp, _fp_qp, ap.rows(qp), ap.cols(qp));
+                x_vector_attach_to_array(ref _d_tauq, _fp_tauq, ap.len(tauq));
+                x_matrix_create_empty(ref _d_q, DT_REAL);
+                q = null;
+                _error_code = _i_ser_rmatrixbdunpackq(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_tauq, &_d_qcolumns, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11762,7 +12403,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new double[0,0];
         }
         finally
         {
@@ -11799,10 +12443,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_qp, qp, X_CREATE);
-            x_vector_from_array(ref _d_tauq, tauq, X_CREATE);
-            x_matrix_from_array(ref _d_z, z, X_CREATE);
-            _error_code = _i_ser_rmatrixbdmultiplybyq(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_tauq, &_d_z, &_d_zrows, &_d_zcolumns, &_d_fromtheright, &_d_dotranspose);
+            fixed(double* _fp_qp = qp, _fp_tauq = tauq, _fp_z = z){
+                x_matrix_attach_to_array(ref _d_qp, _fp_qp, ap.rows(qp), ap.cols(qp));
+                x_vector_attach_to_array(ref _d_tauq, _fp_tauq, ap.len(tauq));
+                x_matrix_attach_to_array(ref _d_z, _fp_z, ap.rows(z), ap.cols(z));
+                _error_code = _i_ser_rmatrixbdmultiplybyq(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_tauq, &_d_z, &_d_zrows, &_d_zcolumns, &_d_fromtheright, &_d_dotranspose);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11810,7 +12456,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdmultiplybyq' call");
             }
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -11844,11 +12493,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_qp, qp, X_CREATE);
-            x_vector_from_array(ref _d_taup, taup, X_CREATE);
-            x_matrix_create_empty(ref _d_pt, DT_REAL);
-            pt = null;
-            _error_code = _i_ser_rmatrixbdunpackpt(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_taup, &_d_ptrows, &_d_pt);
+            fixed(double* _fp_qp = qp, _fp_taup = taup){
+                x_matrix_attach_to_array(ref _d_qp, _fp_qp, ap.rows(qp), ap.cols(qp));
+                x_vector_attach_to_array(ref _d_taup, _fp_taup, ap.len(taup));
+                x_matrix_create_empty(ref _d_pt, DT_REAL);
+                pt = null;
+                _error_code = _i_ser_rmatrixbdunpackpt(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_taup, &_d_ptrows, &_d_pt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11856,7 +12507,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdunpackpt' call");
             }
-            x_matrix_to_array(ref _d_pt, ref pt);
+            if( _d_pt.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_pt, ref pt);
+            if( pt == null )
+                pt = new double[0,0];
         }
         finally
         {
@@ -11893,10 +12547,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_qp, qp, X_CREATE);
-            x_vector_from_array(ref _d_taup, taup, X_CREATE);
-            x_matrix_from_array(ref _d_z, z, X_CREATE);
-            _error_code = _i_ser_rmatrixbdmultiplybyp(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_taup, &_d_z, &_d_zrows, &_d_zcolumns, &_d_fromtheright, &_d_dotranspose);
+            fixed(double* _fp_qp = qp, _fp_taup = taup, _fp_z = z){
+                x_matrix_attach_to_array(ref _d_qp, _fp_qp, ap.rows(qp), ap.cols(qp));
+                x_vector_attach_to_array(ref _d_taup, _fp_taup, ap.len(taup));
+                x_matrix_attach_to_array(ref _d_z, _fp_z, ap.rows(z), ap.cols(z));
+                _error_code = _i_ser_rmatrixbdmultiplybyp(&_s_errormsg, &_d_qp, &_d_m, &_d_n, &_d_taup, &_d_z, &_d_zrows, &_d_zcolumns, &_d_fromtheright, &_d_dotranspose);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11904,7 +12560,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdmultiplybyp' call");
             }
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -11938,12 +12597,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_vector_create_empty(ref _d_e, DT_REAL);
-            e = null;
-            _error_code = _i_ser_rmatrixbdunpackdiagonals(&_s_errormsg, &_d_b, &_d_m, &_d_n, &_d_isupper, &_d_d, &_d_e);
+            fixed(double* _fp_b = b){
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_vector_create_empty(ref _d_e, DT_REAL);
+                e = null;
+                _error_code = _i_ser_rmatrixbdunpackdiagonals(&_s_errormsg, &_d_b, &_d_m, &_d_n, &_d_isupper, &_d_d, &_d_e);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11952,8 +12613,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdunpackdiagonals' call");
             }
             isupper = _d_isupper!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_vector_to_array(ref _d_e, ref e);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_e.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_e, ref e);
+            if( e == null )
+                e = new double[0];
         }
         finally
         {
@@ -11984,10 +12651,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_REAL);
-            tau = null;
-            _error_code = _i_ser_rmatrixhessenberg(&_s_errormsg, &_d_a, &_d_n, &_d_tau);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_REAL);
+                tau = null;
+                _error_code = _i_ser_rmatrixhessenberg(&_s_errormsg, &_d_a, &_d_n, &_d_tau);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -11995,8 +12664,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixhessenberg' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new double[0];
         }
         finally
         {
@@ -12027,11 +12702,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_REAL);
-            q = null;
-            _error_code = _i_ser_rmatrixhessenbergunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_tau, &_d_q);
+            fixed(double* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_REAL);
+                q = null;
+                _error_code = _i_ser_rmatrixhessenbergunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_tau, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12039,7 +12716,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixhessenbergunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new double[0,0];
         }
         finally
         {
@@ -12070,10 +12750,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_h, DT_REAL);
-            h = null;
-            _error_code = _i_ser_rmatrixhessenbergunpackh(&_s_errormsg, &_d_a, &_d_n, &_d_h);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_h, DT_REAL);
+                h = null;
+                _error_code = _i_ser_rmatrixhessenbergunpackh(&_s_errormsg, &_d_a, &_d_n, &_d_h);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12081,7 +12763,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixhessenbergunpackh' call");
             }
-            x_matrix_to_array(ref _d_h, ref h);
+            if( _d_h.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_h, ref h);
+            if( h == null )
+                h = new double[0,0];
         }
         finally
         {
@@ -12114,14 +12799,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_REAL);
-            tau = null;
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_vector_create_empty(ref _d_e, DT_REAL);
-            e = null;
-            _error_code = _i_ser_smatrixtd(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_d, &_d_e);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_REAL);
+                tau = null;
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_vector_create_empty(ref _d_e, DT_REAL);
+                e = null;
+                _error_code = _i_ser_smatrixtd(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_d, &_d_e);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12129,10 +12816,22 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixtd' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
-            x_vector_to_array(ref _d_d, ref d);
-            x_vector_to_array(ref _d_e, ref e);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new double[0];
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_e.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_e, ref e);
+            if( e == null )
+                e = new double[0];
         }
         finally
         {
@@ -12166,11 +12865,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_REAL);
-            q = null;
-            _error_code = _i_ser_smatrixtdunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_q);
+            fixed(double* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_REAL);
+                q = null;
+                _error_code = _i_ser_smatrixtdunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12178,7 +12879,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixtdunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new double[0,0];
         }
         finally
         {
@@ -12212,14 +12916,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_tau, DT_COMPLEX);
-            tau = null;
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_vector_create_empty(ref _d_e, DT_REAL);
-            e = null;
-            _error_code = _i_ser_hmatrixtd(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_d, &_d_e);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_tau, DT_COMPLEX);
+                tau = null;
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_vector_create_empty(ref _d_e, DT_REAL);
+                e = null;
+                _error_code = _i_ser_hmatrixtd(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_d, &_d_e);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12227,10 +12933,22 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixtd' call");
             }
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_tau, ref tau);
-            x_vector_to_array(ref _d_d, ref d);
-            x_vector_to_array(ref _d_e, ref e);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0,0];
+            if( _d_tau.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_tau, ref tau);
+            if( tau == null )
+                tau = new alglib.complex[0];
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_e.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_e, ref e);
+            if( e == null )
+                e = new double[0];
         }
         finally
         {
@@ -12264,11 +12982,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_tau, tau, X_CREATE);
-            x_matrix_create_empty(ref _d_q, DT_COMPLEX);
-            q = null;
-            _error_code = _i_ser_hmatrixtdunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_q);
+            fixed(alglib.complex* _fp_a = a, _fp_tau = tau){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_tau, _fp_tau, ap.len(tau));
+                x_matrix_create_empty(ref _d_q, DT_COMPLEX);
+                q = null;
+                _error_code = _i_ser_hmatrixtdunpackq(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_tau, &_d_q);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12276,7 +12996,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixtdunpackq' call");
             }
-            x_matrix_to_array(ref _d_q, ref q);
+            if( _d_q.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_q, ref q);
+            if( q == null )
+                q = new alglib.complex[0,0];
         }
         finally
         {
@@ -12335,12 +13058,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            x_vector_from_array(ref _d_e, e, X_CREATE);
-            x_matrix_from_array(ref _d_u, u, X_CREATE);
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_matrix_from_array(ref _d_vt, vt, X_CREATE);
-            _error_code = _i_ser_rmatrixbdsvd(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_isupper, &_d_isfractionalaccuracyrequired, &_d_u, &_d_nru, &_d_c, &_d_ncc, &_d_vt, &_d_ncvt);
+            fixed(double* _fp_d = d, _fp_e = e, _fp_u = u, _fp_c = c, _fp_vt = vt){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                x_vector_attach_to_array(ref _d_e, _fp_e, ap.len(e));
+                x_matrix_attach_to_array(ref _d_u, _fp_u, ap.rows(u), ap.cols(u));
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_matrix_attach_to_array(ref _d_vt, _fp_vt, ap.rows(vt), ap.cols(vt));
+                _error_code = _i_ser_rmatrixbdsvd(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_isupper, &_d_isfractionalaccuracyrequired, &_d_u, &_d_nru, &_d_c, &_d_ncc, &_d_vt, &_d_ncvt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12349,10 +13074,22 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixbdsvd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_u, ref u);
-            x_matrix_to_array(ref _d_c, ref c);
-            x_matrix_to_array(ref _d_vt, ref vt);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new double[0,0];
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
+            if( _d_vt.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_vt, ref vt);
+            if( vt == null )
+                vt = new double[0,0];
         }
         finally
         {
@@ -12399,16 +13136,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_u, DT_REAL);
-            u = null;
-            x_matrix_create_empty(ref _d_vt, DT_REAL);
-            vt = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsvd(&_s_errormsg, &_d_result, &_d_a, &_d_m, &_d_n, &_d_uneeded, &_d_vtneeded, &_d_additionalmemory, &_d_w, &_d_u, &_d_vt);
-            else    _error_code = _i_smp_rmatrixsvd(&_s_errormsg, &_d_result, &_d_a, &_d_m, &_d_n, &_d_uneeded, &_d_vtneeded, &_d_additionalmemory, &_d_w, &_d_u, &_d_vt);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_u, DT_REAL);
+                u = null;
+                x_matrix_create_empty(ref _d_vt, DT_REAL);
+                vt = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsvd(&_s_errormsg, &_d_result, &_d_a, &_d_m, &_d_n, &_d_uneeded, &_d_vtneeded, &_d_additionalmemory, &_d_w, &_d_u, &_d_vt);
+                else    _error_code = _i_smp_rmatrixsvd(&_s_errormsg, &_d_result, &_d_a, &_d_m, &_d_n, &_d_uneeded, &_d_vtneeded, &_d_additionalmemory, &_d_w, &_d_u, &_d_vt);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12417,9 +13156,18 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsvd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_u, ref u);
-            x_matrix_to_array(ref _d_vt, ref vt);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_u.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_u, ref u);
+            if( u == null )
+                u = new double[0,0];
+            if( _d_vt.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_vt, ref vt);
+            if( vt == null )
+                vt = new double[0,0];
         }
         finally
         {
@@ -12473,26 +13221,28 @@ public partial class alglib
 
     public unsafe class minlbfgsstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minlbfgsstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minlbfgsstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minlbfgsstate(null);
-            return new minlbfgsstate(_i_x_obj_copy_minlbfgsstate(ptr));
+            return new minlbfgsstate(_i_x_obj_copy_minlbfgsstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minlbfgsstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minlbfgsstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -12613,8 +13363,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlbfgscreate(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlbfgscreate(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12667,8 +13419,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlbfgscreatef(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlbfgscreatef(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12831,8 +13585,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minlbfgssetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minlbfgssetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12905,8 +13661,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_p, p, X_CREATE);
-            _error_code = _i_ser_minlbfgssetpreccholesky(&_s_errormsg, &_d_state, &_d_p, &_d_isupper);
+            fixed(double* _fp_p = p){
+                x_matrix_attach_to_array(ref _d_p, _fp_p, ap.rows(p), ap.cols(p));
+                _error_code = _i_ser_minlbfgssetpreccholesky(&_s_errormsg, &_d_state, &_d_p, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -12942,8 +13700,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_minlbfgssetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            fixed(double* _fp_d = d){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                _error_code = _i_ser_minlbfgssetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13213,7 +13973,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minlbfgsresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minlbfgsreport_to_record(ref _d_rep, ref rep);
         }
@@ -13245,9 +14008,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minlbfgsreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minlbfgsresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minlbfgsreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minlbfgsresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13256,7 +14021,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minlbfgsresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minlbfgsreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -13286,8 +14054,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlbfgsrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlbfgsrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13522,14 +14292,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_rmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_rmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13540,7 +14312,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -13578,11 +14353,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
-            else    _error_code = _i_smp_rmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+                else    _error_code = _i_smp_rmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13590,7 +14367,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
             info = _d_info.intval;
         }
         finally
@@ -13631,14 +14411,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_rmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_rmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13649,7 +14431,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -13688,11 +14473,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_rmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_rmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13700,7 +14487,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixsolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
             info = _d_info.intval;
         }
         finally
@@ -13740,13 +14530,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            _error_code = _i_ser_rmatrixlusolve(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_rmatrixlusolve(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13757,7 +14549,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -13792,10 +14587,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_rmatrixlusolvefast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info);
+            fixed(double* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_rmatrixlusolvefast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13803,7 +14600,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlusolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
             info = _d_info.intval;
         }
         finally
@@ -13840,15 +14640,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_rmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_rmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13859,7 +14661,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -13900,12 +14705,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_rmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+            fixed(double* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_rmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13913,7 +14720,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixlusolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
             info = _d_info.intval;
         }
         finally
@@ -13955,14 +14765,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            _error_code = _i_ser_rmatrixmixedsolve(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_rmatrixmixedsolve(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -13973,7 +14785,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -14013,14 +14828,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            _error_code = _i_ser_rmatrixmixedsolvem(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_rmatrixmixedsolvem(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14031,7 +14848,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -14070,14 +14890,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_cmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_cmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_rfs, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14088,7 +14910,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -14127,11 +14952,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_cmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_cmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14139,7 +14966,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixsolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
             info = _d_info.intval;
         }
         finally
@@ -14178,14 +15008,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_cmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_cmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14196,7 +15028,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
         }
         finally
         {
@@ -14234,11 +15069,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
-            else    _error_code = _i_smp_cmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+                else    _error_code = _i_smp_cmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14246,7 +15083,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixsolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0];
             info = _d_info.intval;
         }
         finally
@@ -14287,15 +15127,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_cmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_cmatrixlusolvem(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14306,7 +15148,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -14347,12 +15192,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_cmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_cmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+            fixed(alglib.complex* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_cmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_cmatrixlusolvemfast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14360,7 +15207,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlusolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
             info = _d_info.intval;
         }
         finally
@@ -14401,13 +15251,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            _error_code = _i_ser_cmatrixlusolve(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                _error_code = _i_ser_cmatrixlusolve(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14418,7 +15270,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
         }
         finally
         {
@@ -14453,10 +15308,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_cmatrixlusolvefast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info);
+            fixed(alglib.complex* _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_cmatrixlusolvefast(&_s_errormsg, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14464,7 +15321,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'cmatrixlusolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0];
             info = _d_info.intval;
         }
         finally
@@ -14502,14 +15362,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            _error_code = _i_ser_cmatrixmixedsolvem(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                _error_code = _i_ser_cmatrixmixedsolvem(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14520,7 +15382,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -14559,14 +15424,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_lua, lua, X_CREATE);
-            x_vector_from_array(ref _d_p, p, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            _error_code = _i_ser_cmatrixmixedsolve(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_lua = lua, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_lua, _fp_lua, ap.rows(lua), ap.cols(lua));
+                x_vector_from_array(ref _d_p, p, X_CREATE);
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                _error_code = _i_ser_cmatrixmixedsolve(&_s_errormsg, &_d_a, &_d_lua, &_d_p, &_d_n, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14577,7 +15444,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
         }
         finally
         {
@@ -14616,14 +15486,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_spdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_spdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14634,7 +15506,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -14674,11 +15549,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_spdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_spdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14686,7 +15563,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixsolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
             info = _d_info.intval;
         }
         finally
@@ -14726,14 +15606,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_spdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_spdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14744,7 +15626,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -14783,11 +15668,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
-            else    _error_code = _i_smp_spdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+                else    _error_code = _i_smp_spdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14795,7 +15682,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixsolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
             info = _d_info.intval;
         }
         finally
@@ -14836,14 +15726,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_spdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_spdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14854,7 +15746,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -14894,11 +15789,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_spdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            fixed(double* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_spdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14906,7 +15803,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskysolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
             info = _d_info.intval;
         }
         finally
@@ -14946,12 +15846,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            _error_code = _i_ser_spdmatrixcholeskysolve(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_spdmatrixcholeskysolve(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -14962,7 +15864,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -14996,9 +15901,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskysolvefast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            fixed(double* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_spdmatrixcholeskysolvefast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15006,7 +15913,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spdmatrixcholeskysolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
             info = _d_info.intval;
         }
         finally
@@ -15042,14 +15952,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_hpdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_hpdmatrixsolvem(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15060,7 +15972,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -15100,11 +16015,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_hpdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_hpdmatrixsolvemfast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15112,7 +16029,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixsolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
             info = _d_info.intval;
         }
         finally
@@ -15152,14 +16072,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_hpdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_hpdmatrixsolve(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15170,7 +16092,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
         }
         finally
         {
@@ -15209,11 +16134,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
-            else    _error_code = _i_smp_hpdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+                else    _error_code = _i_smp_hpdmatrixsolvefast(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15221,7 +16148,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixsolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0];
             info = _d_info.intval;
         }
         finally
@@ -15262,14 +16192,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_matrix_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_hpdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_matrix_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_hpdmatrixcholeskysolvem(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15280,7 +16212,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0,0];
         }
         finally
         {
@@ -15320,11 +16255,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_hpdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
-            else    _error_code = _i_smp_hpdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            fixed(alglib.complex* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_hpdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+                else    _error_code = _i_smp_hpdmatrixcholeskysolvemfast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_m, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15332,7 +16269,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixcholeskysolvemfast' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0,0];
             info = _d_info.intval;
         }
         finally
@@ -15372,12 +16312,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            _error_code = _i_ser_hpdmatrixcholeskysolve(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            fixed(alglib.complex* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                _error_code = _i_ser_hpdmatrixcholeskysolve(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15388,7 +16330,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
         }
         finally
         {
@@ -15422,9 +16367,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_cha, cha, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_hpdmatrixcholeskysolvefast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            fixed(alglib.complex* _fp_cha = cha, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_cha, _fp_cha, ap.rows(cha), ap.cols(cha));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_hpdmatrixcholeskysolvefast(&_s_errormsg, &_d_cha, &_d_n, &_d_isupper, &_d_b, &_d_info);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15432,7 +16379,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hpdmatrixcholeskysolvefast' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new alglib.complex[0];
             info = _d_info.intval;
         }
         finally
@@ -15468,14 +16418,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_densesolverlsreport_init(ref _d_rep);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rmatrixsolvels(&_s_errormsg, &_d_a, &_d_nrows, &_d_ncols, &_d_b, &_d_threshold, &_d_info, &_d_rep, &_d_x);
-            else    _error_code = _i_smp_rmatrixsolvels(&_s_errormsg, &_d_a, &_d_nrows, &_d_ncols, &_d_b, &_d_threshold, &_d_info, &_d_rep, &_d_x);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_densesolverlsreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rmatrixsolvels(&_s_errormsg, &_d_a, &_d_nrows, &_d_ncols, &_d_b, &_d_threshold, &_d_info, &_d_rep, &_d_x);
+                else    _error_code = _i_smp_rmatrixsolvels(&_s_errormsg, &_d_a, &_d_nrows, &_d_ncols, &_d_b, &_d_threshold, &_d_info, &_d_rep, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -15486,7 +16438,10 @@ public partial class alglib
             info = _d_info.intval;
             rep = null;
             x_densesolverlsreport_to_record(ref _d_rep, ref rep);
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -15516,26 +16471,28 @@ public partial class alglib
 
     public unsafe class normestimatorstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public normestimatorstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~normestimatorstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new normestimatorstate(null);
-            return new normestimatorstate(_i_x_obj_copy_normestimatorstate(ptr));
+            return new normestimatorstate(_i_x_obj_copy_normestimatorstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_normestimatorstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_normestimatorstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -15708,26 +16665,28 @@ public partial class alglib
 
     public unsafe class linlsqrstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public linlsqrstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~linlsqrstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new linlsqrstate(null);
-            return new linlsqrstate(_i_x_obj_copy_linlsqrstate(ptr));
+            return new linlsqrstate(_i_x_obj_copy_linlsqrstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_linlsqrstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_linlsqrstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -15959,8 +16918,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_linlsqrsolvesparse(&_s_errormsg, &_d_state, &_d_a, &_d_b);
+            fixed(double* _fp_b = b){
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_linlsqrsolvesparse(&_s_errormsg, &_d_state, &_d_a, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16049,7 +17010,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'linlsqrresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_linlsqrreport_to_record(ref _d_rep, ref rep);
         }
@@ -16123,26 +17087,28 @@ public partial class alglib
 
     public unsafe class mincgstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public mincgstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~mincgstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new mincgstate(null);
-            return new mincgstate(_i_x_obj_copy_mincgstate(ptr));
+            return new mincgstate(_i_x_obj_copy_mincgstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_mincgstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_mincgstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -16262,8 +17228,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_mincgcreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_mincgcreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16315,8 +17283,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_mincgcreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_mincgcreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16405,8 +17375,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_mincgsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_mincgsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16626,8 +17598,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_mincgsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            fixed(double* _fp_d = d){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                _error_code = _i_ser_mincgsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16897,7 +17871,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mincgresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_mincgreport_to_record(ref _d_rep, ref rep);
         }
@@ -16929,9 +17906,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_mincgreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_mincgresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_mincgreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_mincgresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -16940,7 +17919,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mincgresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_mincgreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -16970,8 +17952,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_mincgrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_mincgrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17074,26 +18058,28 @@ public partial class alglib
 
     public unsafe class minbleicstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minbleicstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minbleicstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minbleicstate(null);
-            return new minbleicstate(_i_x_obj_copy_minbleicstate(ptr));
+            return new minbleicstate(_i_x_obj_copy_minbleicstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minbleicstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minbleicstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -17261,8 +18247,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbleiccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbleiccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17314,8 +18302,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbleiccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbleiccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17365,9 +18355,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minbleicsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minbleicsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17406,9 +18398,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_minbleicsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_minbleicsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17498,8 +18492,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minbleicsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minbleicsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17571,8 +18567,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_minbleicsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            fixed(double* _fp_d = d){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                _error_code = _i_ser_minbleicsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17916,7 +18914,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minbleicresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minbleicreport_to_record(ref _d_rep, ref rep);
         }
@@ -17948,9 +18949,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minbleicreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minbleicresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minbleicreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minbleicresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -17959,7 +18962,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minbleicresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minbleicreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -17989,8 +18995,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbleicrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbleicrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18099,26 +19107,28 @@ public partial class alglib
 
     public unsafe class minqpstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minqpstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minqpstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minqpstate(null);
-            return new minqpstate(_i_x_obj_copy_minqpstate(ptr));
+            return new minqpstate(_i_x_obj_copy_minqpstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minqpstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minqpstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -18251,8 +19261,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_minqpsetlinearterm(&_s_errormsg, &_d_state, &_d_b);
+            fixed(double* _fp_b = b){
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_minqpsetlinearterm(&_s_errormsg, &_d_state, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18289,8 +19301,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_minqpsetquadraticterm(&_s_errormsg, &_d_state, &_d_a, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_minqpsetquadraticterm(&_s_errormsg, &_d_state, &_d_a, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18378,8 +19392,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minqpsetstartingpoint(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minqpsetstartingpoint(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18415,8 +19431,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_xorigin, xorigin, X_CREATE);
-            _error_code = _i_ser_minqpsetorigin(&_s_errormsg, &_d_state, &_d_xorigin);
+            fixed(double* _fp_xorigin = xorigin){
+                x_vector_attach_to_array(ref _d_xorigin, _fp_xorigin, ap.len(xorigin));
+                _error_code = _i_ser_minqpsetorigin(&_s_errormsg, &_d_state, &_d_xorigin);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18452,8 +19470,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minqpsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minqpsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18646,9 +19666,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minqpsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minqpsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18687,9 +19709,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_minqpsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_minqpsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18784,10 +19808,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_densec, densec, X_CREATE);
-            x_vector_from_array(ref _d_densect, densect, X_CREATE);
-            x_vector_from_array(ref _d_sparsect, sparsect, X_CREATE);
-            _error_code = _i_ser_minqpsetlcmixed(&_s_errormsg, &_d_state, &_d_densec, &_d_densect, &_d_densek, &_d_sparsec, &_d_sparsect, &_d_sparsek);
+            fixed(double* _fp_densec = densec){
+                x_matrix_attach_to_array(ref _d_densec, _fp_densec, ap.rows(densec), ap.cols(densec));
+                x_vector_from_array(ref _d_densect, densect, X_CREATE);
+                x_vector_from_array(ref _d_sparsect, sparsect, X_CREATE);
+                _error_code = _i_ser_minqpsetlcmixed(&_s_errormsg, &_d_state, &_d_densec, &_d_densect, &_d_densek, &_d_sparsec, &_d_sparsect, &_d_sparsek);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18875,7 +19901,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minqpresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minqpreport_to_record(ref _d_rep, ref rep);
         }
@@ -18907,9 +19936,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minqpreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minqpresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minqpreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minqpresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -18918,7 +19949,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minqpresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minqpreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -18942,26 +19976,28 @@ public partial class alglib
 
     public unsafe class minnlcstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minnlcstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minnlcstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minnlcstate(null);
-            return new minnlcstate(_i_x_obj_copy_minnlcstate(ptr));
+            return new minnlcstate(_i_x_obj_copy_minnlcstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minnlcstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minnlcstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -19096,8 +20132,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnlccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnlccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19149,8 +20187,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnlccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnlccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19200,9 +20240,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minnlcsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minnlcsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19241,9 +20283,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_minnlcsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_minnlcsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19371,8 +20415,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minnlcsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minnlcsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19872,7 +20918,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minnlcresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minnlcreport_to_record(ref _d_rep, ref rep);
         }
@@ -19904,9 +20953,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minnlcreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minnlcresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minnlcreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minnlcresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -19915,7 +20966,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minnlcresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minnlcreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -19945,8 +20999,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnlcrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnlcrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20013,26 +21069,28 @@ public partial class alglib
 
     public unsafe class minbcstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minbcstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minbcstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minbcstate(null);
-            return new minbcstate(_i_x_obj_copy_minbcstate(ptr));
+            return new minbcstate(_i_x_obj_copy_minbcstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minbcstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minbcstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -20152,8 +21210,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbccreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20205,8 +21265,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbccreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20256,9 +21318,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minbcsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minbcsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20335,8 +21399,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minbcsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minbcsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20408,8 +21474,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_minbcsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            fixed(double* _fp_d = d){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                _error_code = _i_ser_minbcsetprecdiag(&_s_errormsg, &_d_state, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20753,7 +21821,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minbcresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minbcreport_to_record(ref _d_rep, ref rep);
         }
@@ -20785,9 +21856,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minbcreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minbcresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minbcreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minbcresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20796,7 +21869,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minbcresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minbcreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -20826,8 +21902,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minbcrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minbcrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -20930,26 +22008,28 @@ public partial class alglib
 
     public unsafe class minnsstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minnsstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minnsstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minnsstate(null);
-            return new minnsstate(_i_x_obj_copy_minnsstate(ptr));
+            return new minnsstate(_i_x_obj_copy_minnsstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minnsstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minnsstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -21096,8 +22176,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnscreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnscreate(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21149,8 +22231,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnscreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnscreatef(&_s_errormsg, &_d_n, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21200,9 +22284,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minnssetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minnssetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21241,9 +22327,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_minnssetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_minnssetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21369,8 +22457,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minnssetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minnssetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21723,7 +22813,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minnsresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minnsreport_to_record(ref _d_rep, ref rep);
         }
@@ -21755,9 +22848,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minnsreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minnsresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minnsreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minnsresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21766,7 +22861,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minnsresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minnsreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -21796,8 +22894,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minnsrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minnsrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -21827,26 +22927,28 @@ public partial class alglib
 
     public unsafe class minasastate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minasastate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minasastate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minasastate(null);
-            return new minasastate(_i_x_obj_copy_minasastate(ptr));
+            return new minasastate(_i_x_obj_copy_minasastate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minasastate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minasastate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -21995,8 +23097,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_p, p, X_CREATE);
-            _error_code = _i_ser_minlbfgssetcholeskypreconditioner(&_s_errormsg, &_d_state, &_d_p, &_d_isupper);
+            fixed(double* _fp_p = p){
+                x_matrix_attach_to_array(ref _d_p, _fp_p, ap.rows(p), ap.cols(p));
+                _error_code = _i_ser_minlbfgssetcholeskypreconditioner(&_s_errormsg, &_d_state, &_d_p, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22110,10 +23214,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minasacreate(&_s_errormsg, &_d_n, &_d_x, &_d_bndl, &_d_bndu, &_d_state);
+            fixed(double* _fp_x = x, _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minasacreate(&_s_errormsg, &_d_n, &_d_x, &_d_bndl, &_d_bndu, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22445,7 +23551,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minasaresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minasareport_to_record(ref _d_rep, ref rep);
         }
@@ -22477,9 +23586,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minasareport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minasaresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minasareport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minasaresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22488,7 +23599,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minasaresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minasareport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -22520,10 +23634,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minasarestartfrom(&_s_errormsg, &_d_state, &_d_x, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_x = x, _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minasarestartfrom(&_s_errormsg, &_d_state, &_d_x, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22555,26 +23671,28 @@ public partial class alglib
 
     public unsafe class minlmstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public minlmstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~minlmstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new minlmstate(null);
-            return new minlmstate(_i_x_obj_copy_minlmstate(ptr));
+            return new minlmstate(_i_x_obj_copy_minlmstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_minlmstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_minlmstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -22752,8 +23870,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatevj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatevj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22806,8 +23926,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatev(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatev(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -22858,8 +23980,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatefgh(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatefgh(&_s_errormsg, &_d_n, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23020,8 +24144,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_minlmsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_minlmsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23058,9 +24184,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_minlmsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_minlmsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23099,9 +24227,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_minlmsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_minlmsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23705,7 +24835,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minlmresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_minlmreport_to_record(ref _d_rep, ref rep);
         }
@@ -23737,9 +24870,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_minlmreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_minlmresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_minlmreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_minlmresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23748,7 +24883,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'minlmresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_minlmreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -23778,8 +24916,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23854,8 +24994,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatevgj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatevgj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23907,8 +25049,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatefgj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatefgj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -23960,8 +25104,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_minlmcreatefj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_minlmcreatefj(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24047,26 +25193,28 @@ public partial class alglib
 
     public unsafe class eigsubspacestate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public eigsubspacestate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~eigsubspacestate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new eigsubspacestate(null);
-            return new eigsubspacestate(_i_x_obj_copy_eigsubspacestate(ptr));
+            return new eigsubspacestate(_i_x_obj_copy_eigsubspacestate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_eigsubspacestate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_eigsubspacestate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -24405,8 +25553,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_eigsubspaceoocgetrequestdata(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                _error_code = _i_ser_eigsubspaceoocgetrequestdata(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24415,7 +25565,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'eigsubspaceoocgetrequestdata' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0,0];
         }
         finally
         {
@@ -24443,8 +25596,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_ax, ax, X_CREATE);
-            _error_code = _i_ser_eigsubspaceoocsendresult(&_s_errormsg, &_d_state, &_d_ax);
+            fixed(double* _fp_ax = ax){
+                x_matrix_attach_to_array(ref _d_ax, _fp_ax, ap.rows(ax), ap.cols(ax));
+                _error_code = _i_ser_eigsubspaceoocsendresult(&_s_errormsg, &_d_state, &_d_ax);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24496,8 +25651,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'eigsubspaceoocstop' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
             rep = null;
             x_eigsubspacereport_to_record(ref _d_rep, ref rep);
         }
@@ -24533,15 +25694,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_z, DT_REAL);
-            z = null;
-            x_eigsubspacereport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_eigsubspacesolvedenses(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_w, &_d_z, &_d_rep);
-            else    _error_code = _i_smp_eigsubspacesolvedenses(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_w, &_d_z, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_z, DT_REAL);
+                z = null;
+                x_eigsubspacereport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_eigsubspacesolvedenses(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_w, &_d_z, &_d_rep);
+                else    _error_code = _i_smp_eigsubspacesolvedenses(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_w, &_d_z, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24550,8 +25713,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'eigsubspacesolvedenses' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
             rep = null;
             x_eigsubspacereport_to_record(ref _d_rep, ref rep);
         }
@@ -24608,8 +25777,14 @@ public partial class alglib
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(a.ptr==_d_a, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
             rep = null;
             x_eigsubspacereport_to_record(ref _d_rep, ref rep);
         }
@@ -24647,12 +25822,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_matrix_create_empty(ref _d_z, DT_REAL);
-            z = null;
-            _error_code = _i_ser_smatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_d, &_d_z);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_matrix_create_empty(ref _d_z, DT_REAL);
+                z = null;
+                _error_code = _i_ser_smatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_d, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24661,8 +25838,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixevd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -24701,12 +25884,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_z, DT_REAL);
-            z = null;
-            _error_code = _i_ser_smatrixevdr(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_b1, &_d_b2, &_d_m, &_d_w, &_d_z);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_z, DT_REAL);
+                z = null;
+                _error_code = _i_ser_smatrixevdr(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_b1, &_d_b2, &_d_m, &_d_w, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24716,8 +25901,14 @@ public partial class alglib
             }
             result = _d_result!=0;
             m = _d_m.intval;
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -24755,12 +25946,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_z, DT_REAL);
-            z = null;
-            _error_code = _i_ser_smatrixevdi(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_i1, &_d_i2, &_d_w, &_d_z);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_z, DT_REAL);
+                z = null;
+                _error_code = _i_ser_smatrixevdi(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_i1, &_d_i2, &_d_w, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24769,8 +25962,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixevdi' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -24806,12 +26005,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_matrix_create_empty(ref _d_z, DT_COMPLEX);
-            z = null;
-            _error_code = _i_ser_hmatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_d, &_d_z);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_matrix_create_empty(ref _d_z, DT_COMPLEX);
+                z = null;
+                _error_code = _i_ser_hmatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_d, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24820,8 +26021,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixevd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new alglib.complex[0,0];
         }
         finally
         {
@@ -24860,12 +26067,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_z, DT_COMPLEX);
-            z = null;
-            _error_code = _i_ser_hmatrixevdr(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_b1, &_d_b2, &_d_m, &_d_w, &_d_z);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_z, DT_COMPLEX);
+                z = null;
+                _error_code = _i_ser_hmatrixevdr(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_b1, &_d_b2, &_d_m, &_d_w, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24875,8 +26084,14 @@ public partial class alglib
             }
             result = _d_result!=0;
             m = _d_m.intval;
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new alglib.complex[0,0];
         }
         finally
         {
@@ -24914,12 +26129,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            x_matrix_create_empty(ref _d_z, DT_COMPLEX);
-            z = null;
-            _error_code = _i_ser_hmatrixevdi(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_i1, &_d_i2, &_d_w, &_d_z);
+            fixed(alglib.complex* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                x_matrix_create_empty(ref _d_z, DT_COMPLEX);
+                z = null;
+                _error_code = _i_ser_hmatrixevdi(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_zneeded, &_d_isupper, &_d_i1, &_d_i2, &_d_w, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24928,8 +26145,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'hmatrixevdi' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_w, ref w);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new alglib.complex[0,0];
         }
         finally
         {
@@ -24964,10 +26187,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            x_vector_from_array(ref _d_e, e, X_CREATE);
-            x_matrix_from_array(ref _d_z, z, X_CREATE);
-            _error_code = _i_ser_smatrixtdevd(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_z);
+            fixed(double* _fp_d = d, _fp_e = e, _fp_z = z){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                x_vector_attach_to_array(ref _d_e, _fp_e, ap.len(e));
+                x_matrix_attach_to_array(ref _d_z, _fp_z, ap.rows(z), ap.cols(z));
+                _error_code = _i_ser_smatrixtdevd(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -24976,8 +26201,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixtdevd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -25015,10 +26246,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            x_vector_from_array(ref _d_e, e, X_CREATE);
-            x_matrix_from_array(ref _d_z, z, X_CREATE);
-            _error_code = _i_ser_smatrixtdevdr(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_a, &_d_b, &_d_m, &_d_z);
+            fixed(double* _fp_d = d, _fp_e = e, _fp_z = z){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                x_vector_attach_to_array(ref _d_e, _fp_e, ap.len(e));
+                x_matrix_attach_to_array(ref _d_z, _fp_z, ap.rows(z), ap.cols(z));
+                _error_code = _i_ser_smatrixtdevdr(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_a, &_d_b, &_d_m, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25027,9 +26260,15 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixtdevdr' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
             m = _d_m.intval;
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -25066,10 +26305,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            x_vector_from_array(ref _d_e, e, X_CREATE);
-            x_matrix_from_array(ref _d_z, z, X_CREATE);
-            _error_code = _i_ser_smatrixtdevdi(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_i1, &_d_i2, &_d_z);
+            fixed(double* _fp_d = d, _fp_e = e, _fp_z = z){
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                x_vector_attach_to_array(ref _d_e, _fp_e, ap.len(e));
+                x_matrix_attach_to_array(ref _d_z, _fp_z, ap.rows(z), ap.cols(z));
+                _error_code = _i_ser_smatrixtdevdi(&_s_errormsg, &_d_result, &_d_d, &_d_e, &_d_n, &_d_zneeded, &_d_i1, &_d_i2, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25078,8 +26319,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixtdevdi' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -25116,16 +26363,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_wr, DT_REAL);
-            wr = null;
-            x_vector_create_empty(ref _d_wi, DT_REAL);
-            wi = null;
-            x_matrix_create_empty(ref _d_vl, DT_REAL);
-            vl = null;
-            x_matrix_create_empty(ref _d_vr, DT_REAL);
-            vr = null;
-            _error_code = _i_ser_rmatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_vneeded, &_d_wr, &_d_wi, &_d_vl, &_d_vr);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_create_empty(ref _d_wr, DT_REAL);
+                wr = null;
+                x_vector_create_empty(ref _d_wi, DT_REAL);
+                wi = null;
+                x_matrix_create_empty(ref _d_vl, DT_REAL);
+                vl = null;
+                x_matrix_create_empty(ref _d_vr, DT_REAL);
+                vr = null;
+                _error_code = _i_ser_rmatrixevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_vneeded, &_d_wr, &_d_wi, &_d_vl, &_d_vr);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25134,10 +26383,22 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixevd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_wr, ref wr);
-            x_vector_to_array(ref _d_wi, ref wi);
-            x_matrix_to_array(ref _d_vl, ref vl);
-            x_matrix_to_array(ref _d_vr, ref vr);
+            if( _d_wr.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wr, ref wr);
+            if( wr == null )
+                wr = new double[0];
+            if( _d_wi.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wi, ref wi);
+            if( wi == null )
+                wi = new double[0];
+            if( _d_vl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_vl, ref vl);
+            if( vl == null )
+                vl = new double[0,0];
+            if( _d_vr.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_vr, ref vr);
+            if( vr == null )
+                vr = new double[0,0];
         }
         finally
         {
@@ -25179,8 +26440,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplemoments(&_s_errormsg, &_d_x, &_d_n, &_d_mean, &_d_variance, &_d_skewness, &_d_kurtosis);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplemoments(&_s_errormsg, &_d_x, &_d_n, &_d_mean, &_d_variance, &_d_skewness, &_d_kurtosis);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25232,8 +26495,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplemean(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplemean(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25282,8 +26547,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplevariance(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplevariance(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25332,8 +26599,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_sampleskewness(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_sampleskewness(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25382,8 +26651,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplekurtosis(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplekurtosis(&_s_errormsg, &_d_result, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25431,8 +26702,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_sampleadev(&_s_errormsg, &_d_x, &_d_n, &_d_adev);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_sampleadev(&_s_errormsg, &_d_x, &_d_n, &_d_adev);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25480,8 +26753,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplemedian(&_s_errormsg, &_d_x, &_d_n, &_d_median);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplemedian(&_s_errormsg, &_d_x, &_d_n, &_d_median);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25530,8 +26805,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_samplepercentile(&_s_errormsg, &_d_x, &_d_n, &_d_p, &_d_v);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_samplepercentile(&_s_errormsg, &_d_x, &_d_n, &_d_p, &_d_v);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25581,9 +26858,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_cov2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_cov2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25636,9 +26915,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_pearsoncorr2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_pearsoncorr2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25691,9 +26972,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spearmancorr2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spearmancorr2(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25745,12 +27028,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_covm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
-            else    _error_code = _i_smp_covm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_covm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+                else    _error_code = _i_smp_covm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25758,7 +27043,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'covm' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -25820,12 +27108,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_pearsoncorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
-            else    _error_code = _i_smp_pearsoncorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_pearsoncorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+                else    _error_code = _i_smp_pearsoncorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25833,7 +27123,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'pearsoncorrm' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -25895,12 +27188,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spearmancorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
-            else    _error_code = _i_smp_spearmancorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spearmancorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+                else    _error_code = _i_smp_spearmancorrm(&_s_errormsg, &_d_x, &_d_n, &_d_m, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25908,7 +27203,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spearmancorrm' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -25972,13 +27270,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_covm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
-            else    _error_code = _i_smp_covm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_attach_to_array(ref _d_y, _fp_y, ap.rows(y), ap.cols(y));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_covm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+                else    _error_code = _i_smp_covm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -25986,7 +27286,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'covm2' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -26059,13 +27362,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_pearsoncorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
-            else    _error_code = _i_smp_pearsoncorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_attach_to_array(ref _d_y, _fp_y, ap.rows(y), ap.cols(y));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_pearsoncorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+                else    _error_code = _i_smp_pearsoncorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26073,7 +27378,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'pearsoncorrm2' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -26146,13 +27454,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spearmancorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
-            else    _error_code = _i_smp_spearmancorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_attach_to_array(ref _d_y, _fp_y, ap.rows(y), ap.cols(y));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spearmancorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+                else    _error_code = _i_smp_spearmancorrm2(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m1, &_d_m2, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26160,7 +27470,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spearmancorrm2' call");
             }
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
         }
         finally
         {
@@ -26230,10 +27543,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rankdata(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
-            else    _error_code = _i_smp_rankdata(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rankdata(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+                else    _error_code = _i_smp_rankdata(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26241,7 +27556,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rankdata' call");
             }
-            x_matrix_to_array(ref _d_xy, ref xy);
+            if( _d_xy.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xy, ref xy);
+            if( xy == null )
+                xy = new double[0,0];
         }
         finally
         {
@@ -26301,10 +27619,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rankdatacentered(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
-            else    _error_code = _i_smp_rankdatacentered(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rankdatacentered(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+                else    _error_code = _i_smp_rankdatacentered(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26312,7 +27632,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rankdatacentered' call");
             }
-            x_matrix_to_array(ref _d_xy, ref xy);
+            if( _d_xy.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xy, ref xy);
+            if( xy == null )
+                xy = new double[0,0];
         }
         finally
         {
@@ -26374,9 +27697,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_pearsoncorrelation(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_pearsoncorrelation(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26416,9 +27741,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spearmanrankcorrelation(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spearmanrankcorrelation(&_s_errormsg, &_d_result, &_d_x, &_d_y, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26465,14 +27792,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_s2, DT_REAL);
-            s2 = null;
-            x_matrix_create_empty(ref _d_v, DT_REAL);
-            v = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_pcabuildbasis(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_info, &_d_s2, &_d_v);
-            else    _error_code = _i_smp_pcabuildbasis(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_info, &_d_s2, &_d_v);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_create_empty(ref _d_s2, DT_REAL);
+                s2 = null;
+                x_matrix_create_empty(ref _d_v, DT_REAL);
+                v = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_pcabuildbasis(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_info, &_d_s2, &_d_v);
+                else    _error_code = _i_smp_pcabuildbasis(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_info, &_d_s2, &_d_v);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26481,8 +27810,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'pcabuildbasis' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_s2, ref s2);
-            x_matrix_to_array(ref _d_v, ref v);
+            if( _d_s2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_s2, ref s2);
+            if( s2 == null )
+                s2 = new double[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0,0];
         }
         finally
         {
@@ -26523,14 +27858,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_s2, DT_REAL);
-            s2 = null;
-            x_matrix_create_empty(ref _d_v, DT_REAL);
-            v = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_pcatruncatedsubspace(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_nneeded, &_d_eps, &_d_maxits, &_d_s2, &_d_v);
-            else    _error_code = _i_smp_pcatruncatedsubspace(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_nneeded, &_d_eps, &_d_maxits, &_d_s2, &_d_v);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_create_empty(ref _d_s2, DT_REAL);
+                s2 = null;
+                x_matrix_create_empty(ref _d_v, DT_REAL);
+                v = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_pcatruncatedsubspace(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_nneeded, &_d_eps, &_d_maxits, &_d_s2, &_d_v);
+                else    _error_code = _i_smp_pcatruncatedsubspace(&_s_errormsg, &_d_x, &_d_npoints, &_d_nvars, &_d_nneeded, &_d_eps, &_d_maxits, &_d_s2, &_d_v);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26538,8 +27875,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'pcatruncatedsubspace' call");
             }
-            x_vector_to_array(ref _d_s2, ref s2);
-            x_matrix_to_array(ref _d_v, ref v);
+            if( _d_s2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_s2, ref s2);
+            if( s2 == null )
+                s2 = new double[0];
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0,0];
         }
         finally
         {
@@ -26588,9 +27931,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_dsoptimalsplit2(&_s_errormsg, &_d_a, &_d_c, &_d_n, &_d_info, &_d_threshold, &_d_pal, &_d_pbl, &_d_par, &_d_pbr, &_d_cve);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_from_array(ref _d_c, c, X_CREATE);
+                _error_code = _i_ser_dsoptimalsplit2(&_s_errormsg, &_d_a, &_d_c, &_d_n, &_d_info, &_d_threshold, &_d_pal, &_d_pbl, &_d_par, &_d_pbr, &_d_cve);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26644,13 +27989,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_tiesbuf, tiesbuf, X_CREATE);
-            x_vector_from_array(ref _d_cntbuf, cntbuf, X_CREATE);
-            x_vector_from_array(ref _d_bufr, bufr, X_CREATE);
-            x_vector_from_array(ref _d_bufi, bufi, X_CREATE);
-            _error_code = _i_ser_dsoptimalsplit2fast(&_s_errormsg, &_d_a, &_d_c, &_d_tiesbuf, &_d_cntbuf, &_d_bufr, &_d_bufi, &_d_n, &_d_nc, &_d_alpha, &_d_info, &_d_threshold, &_d_rms, &_d_cvrms);
+            fixed(double* _fp_a = a, _fp_bufr = bufr){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_from_array(ref _d_c, c, X_CREATE);
+                x_vector_from_array(ref _d_tiesbuf, tiesbuf, X_CREATE);
+                x_vector_from_array(ref _d_cntbuf, cntbuf, X_CREATE);
+                x_vector_attach_to_array(ref _d_bufr, _fp_bufr, ap.len(bufr));
+                x_vector_from_array(ref _d_bufi, bufi, X_CREATE);
+                _error_code = _i_ser_dsoptimalsplit2fast(&_s_errormsg, &_d_a, &_d_c, &_d_tiesbuf, &_d_cntbuf, &_d_bufr, &_d_bufi, &_d_n, &_d_nc, &_d_alpha, &_d_info, &_d_threshold, &_d_rms, &_d_cvrms);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -26658,11 +28005,17 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'dsoptimalsplit2fast' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
             x_vector_to_array(ref _d_c, ref c);
             x_vector_to_array(ref _d_tiesbuf, ref tiesbuf);
             x_vector_to_array(ref _d_cntbuf, ref cntbuf);
-            x_vector_to_array(ref _d_bufr, ref bufr);
+            if( _d_bufr.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_bufr, ref bufr);
+            if( bufr == null )
+                bufr = new double[0];
             x_vector_to_array(ref _d_bufi, ref bufi);
             info = _d_info.intval;
             threshold = _d_threshold;
@@ -26764,26 +28117,28 @@ public partial class alglib
 
     public unsafe class multilayerperceptron : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public multilayerperceptron(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~multilayerperceptron()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new multilayerperceptron(null);
-            return new multilayerperceptron(_i_x_obj_copy_multilayerperceptron(ptr));
+            return new multilayerperceptron(_i_x_obj_copy_multilayerperceptron(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_multilayerperceptron(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_multilayerperceptron(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -27544,8 +28899,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpinitpreprocessor(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpinitpreprocessor(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28227,9 +29584,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_mlpprocess(&_s_errormsg, &_d_network, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_mlpprocess(&_s_errormsg, &_d_network, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28238,7 +29597,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mlpprocess' call");
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -28268,10 +29630,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_mlpprocessi(&_s_errormsg, &_d_network, &_d_x, &_d_y);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_mlpprocessi(&_s_errormsg, &_d_network, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28280,7 +29644,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mlpprocessi' call");
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -28312,10 +29679,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlperror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlperror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlperror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlperror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28409,8 +29778,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlperrorn(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_ssize);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlperrorn(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_ssize);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28450,10 +29821,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlpclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlpclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28498,10 +29871,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlprelclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlprelclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlprelclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlprelclserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28595,10 +29970,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpavgce(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlpavgce(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpavgce(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlpavgce(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28692,10 +30069,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlprmserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlprmserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlprmserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlprmserror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28789,10 +30168,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpavgerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlpavgerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpavgerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlpavgerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28886,10 +30267,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpavgrelerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
-            else    _error_code = _i_smp_mlpavgrelerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpavgrelerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+                else    _error_code = _i_smp_mlpavgrelerror(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28983,10 +30366,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_desiredy, desiredy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            _error_code = _i_ser_mlpgrad(&_s_errormsg, &_d_network, &_d_x, &_d_desiredy, &_d_e, &_d_grad);
+            fixed(double* _fp_x = x, _fp_desiredy = desiredy, _fp_grad = grad){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_desiredy, _fp_desiredy, ap.len(desiredy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                _error_code = _i_ser_mlpgrad(&_s_errormsg, &_d_network, &_d_x, &_d_desiredy, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -28996,7 +30381,10 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29029,10 +30417,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_desiredy, desiredy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            _error_code = _i_ser_mlpgradn(&_s_errormsg, &_d_network, &_d_x, &_d_desiredy, &_d_e, &_d_grad);
+            fixed(double* _fp_x = x, _fp_desiredy = desiredy, _fp_grad = grad){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_desiredy, _fp_desiredy, ap.len(desiredy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                _error_code = _i_ser_mlpgradn(&_s_errormsg, &_d_network, &_d_x, &_d_desiredy, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29042,7 +30432,10 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29075,11 +30468,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpgradbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
-            else    _error_code = _i_smp_mlpgradbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            fixed(double* _fp_xy = xy, _fp_grad = grad){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpgradbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+                else    _error_code = _i_smp_mlpgradbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29089,7 +30484,10 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29126,10 +30524,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpgradbatchsparse(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
-            else    _error_code = _i_smp_mlpgradbatchsparse(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            fixed(double* _fp_grad = grad){
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpgradbatchsparse(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+                else    _error_code = _i_smp_mlpgradbatchsparse(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29140,7 +30540,10 @@ public partial class alglib
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(xy.ptr==_d_xy, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29178,12 +30581,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_idx, idx, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpgradbatchsubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
-            else    _error_code = _i_smp_mlpgradbatchsubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+            fixed(double* _fp_xy = xy, _fp_grad = grad){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_from_array(ref _d_idx, idx, X_CREATE);
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpgradbatchsubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+                else    _error_code = _i_smp_mlpgradbatchsubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29193,7 +30598,10 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29233,11 +30641,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_idx, idx, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpgradbatchsparsesubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
-            else    _error_code = _i_smp_mlpgradbatchsparsesubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+            fixed(double* _fp_grad = grad){
+                x_vector_from_array(ref _d_idx, idx, X_CREATE);
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpgradbatchsparsesubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+                else    _error_code = _i_smp_mlpgradbatchsparsesubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_idx, &_d_subsetsize, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29248,7 +30658,10 @@ public partial class alglib
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(xy.ptr==_d_xy, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29285,9 +30698,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            _error_code = _i_ser_mlpgradnbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            fixed(double* _fp_xy = xy, _fp_grad = grad){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                _error_code = _i_ser_mlpgradnbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29297,7 +30712,10 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
         }
         finally
         {
@@ -29330,10 +30748,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            x_matrix_from_array(ref _d_h, h, X_CREATE);
-            _error_code = _i_ser_mlphessiannbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad, &_d_h);
+            fixed(double* _fp_xy = xy, _fp_grad = grad, _fp_h = h){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                x_matrix_attach_to_array(ref _d_h, _fp_h, ap.rows(h), ap.cols(h));
+                _error_code = _i_ser_mlphessiannbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad, &_d_h);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29343,8 +30763,14 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
-            x_matrix_to_array(ref _d_h, ref h);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
+            if( _d_h.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_h, ref h);
+            if( h == null )
+                h = new double[0,0];
         }
         finally
         {
@@ -29378,10 +30804,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_grad, grad, X_CREATE);
-            x_matrix_from_array(ref _d_h, h, X_CREATE);
-            _error_code = _i_ser_mlphessianbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad, &_d_h);
+            fixed(double* _fp_xy = xy, _fp_grad = grad, _fp_h = h){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_grad, _fp_grad, ap.len(grad));
+                x_matrix_attach_to_array(ref _d_h, _fp_h, ap.rows(h), ap.cols(h));
+                _error_code = _i_ser_mlphessianbatch(&_s_errormsg, &_d_network, &_d_xy, &_d_ssize, &_d_e, &_d_grad, &_d_h);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29391,8 +30819,14 @@ public partial class alglib
             }
             ap.assert(network.ptr==_d_network, "ALGLIB: internal error (reference changed for non-out X-object)");
             e = _d_e;
-            x_vector_to_array(ref _d_grad, ref grad);
-            x_matrix_to_array(ref _d_h, ref h);
+            if( _d_grad.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_grad, ref grad);
+            if( grad == null )
+                grad = new double[0];
+            if( _d_h.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_h, ref h);
+            if( h == null )
+                h = new double[0,0];
         }
         finally
         {
@@ -29426,12 +30860,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_subset, subset, X_CREATE);
-            x_modelerrors_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlpallerrorssubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize, &_d_rep);
-            else    _error_code = _i_smp_mlpallerrorssubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_from_array(ref _d_subset, subset, X_CREATE);
+                x_modelerrors_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlpallerrorssubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize, &_d_rep);
+                else    _error_code = _i_smp_mlpallerrorssubset(&_s_errormsg, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29534,11 +30970,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_subset, subset, X_CREATE);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_mlperrorsubset(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize);
-            else    _error_code = _i_smp_mlperrorsubset(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_from_array(ref _d_subset, subset, X_CREATE);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_mlperrorsubset(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize);
+                else    _error_code = _i_smp_mlperrorsubset(&_s_errormsg, &_d_result, &_d_network, &_d_xy, &_d_setsize, &_d_subset, &_d_subsetsize);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29642,10 +31080,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            _error_code = _i_ser_fisherlda(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                _error_code = _i_ser_fisherlda(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29654,7 +31094,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'fisherlda' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -29687,12 +31130,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_matrix_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_fisherldan(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
-            else    _error_code = _i_smp_fisherldan(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_matrix_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_fisherldan(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
+                else    _error_code = _i_smp_fisherldan(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_w);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -29701,7 +31146,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'fisherldan' call");
             }
             info = _d_info.intval;
-            x_matrix_to_array(ref _d_w, ref w);
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0,0];
         }
         finally
         {
@@ -29729,26 +31177,28 @@ public partial class alglib
 
     public unsafe class ssamodel : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public ssamodel(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~ssamodel()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new ssamodel(null);
-            return new ssamodel(_i_x_obj_copy_ssamodel(ptr));
+            return new ssamodel(_i_x_obj_copy_ssamodel(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_ssamodel(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_ssamodel(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -29906,6 +31356,43 @@ public partial class alglib
     _core_ssasetpoweruplength( s,  pwlen, alglibmode.serial);
     return;
     }
+    private static unsafe void _core_ssasetmemorylimit(ssamodel s, int memlimit, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_s = s.ptr;
+        x_int _d_memlimit = new x_int(memlimit);
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_ssasetmemorylimit(&_s_errormsg, &_d_s, &_d_memlimit);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'ssasetmemorylimit' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void ssasetmemorylimit(ssamodel s, int memlimit)
+    {
+    _core_ssasetmemorylimit( s,  memlimit, alglibmode.serial);
+    return;
+    }
     private static unsafe void _core_ssaaddsequence(ssamodel s, double[] x, int n, alglibmode _alglib_mode)
     {
         // primary initialization
@@ -29922,8 +31409,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_ssaaddsequence(&_s_errormsg, &_d_s, &_d_x, &_d_n);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_ssaaddsequence(&_s_errormsg, &_d_s, &_d_x, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30010,8 +31499,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_ssaappendsequenceandupdate(&_s_errormsg, &_d_s, &_d_x, &_d_nticks, &_d_updateits);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_ssaappendsequenceandupdate(&_s_errormsg, &_d_s, &_d_x, &_d_nticks, &_d_updateits);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30060,8 +31551,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_ssasetalgoprecomputed(&_s_errormsg, &_d_s, &_d_a, &_d_windowwidth, &_d_nbasis);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_ssasetalgoprecomputed(&_s_errormsg, &_d_s, &_d_a, &_d_windowwidth, &_d_nbasis);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30236,8 +31729,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssagetbasis' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_a, ref a);
-            x_vector_to_array(ref _d_sv, ref sv);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_sv.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_sv, ref sv);
+            if( sv == null )
+                sv = new double[0];
             windowwidth = _d_windowwidth.intval;
             nbasis = _d_nbasis.intval;
         }
@@ -30280,7 +31779,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssagetlrr' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
             windowwidth = _d_windowwidth.intval;
         }
         finally
@@ -30324,8 +31826,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzelastwindow' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
-            x_vector_to_array(ref _d_noise, ref noise);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
             nticks = _d_nticks.intval;
         }
         finally
@@ -30370,8 +31878,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzelast' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
-            x_vector_to_array(ref _d_noise, ref noise);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
         }
         finally
         {
@@ -30403,12 +31917,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_data, data, X_CREATE);
-            x_vector_create_empty(ref _d_trend, DT_REAL);
-            trend = null;
-            x_vector_create_empty(ref _d_noise, DT_REAL);
-            noise = null;
-            _error_code = _i_ser_ssaanalyzesequence(&_s_errormsg, &_d_s, &_d_data, &_d_nticks, &_d_trend, &_d_noise);
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                x_vector_create_empty(ref _d_noise, DT_REAL);
+                noise = null;
+                _error_code = _i_ser_ssaanalyzesequence(&_s_errormsg, &_d_s, &_d_data, &_d_nticks, &_d_trend, &_d_noise);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30417,8 +31933,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaanalyzesequence' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
-            x_vector_to_array(ref _d_noise, ref noise);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
+            if( _d_noise.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_noise, ref noise);
+            if( noise == null )
+                noise = new double[0];
         }
         finally
         {
@@ -30471,7 +31993,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaforecastlast' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
         }
         finally
         {
@@ -30503,10 +32028,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_data, data, X_CREATE);
-            x_vector_create_empty(ref _d_trend, DT_REAL);
-            trend = null;
-            _error_code = _i_ser_ssaforecastsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_forecastlen, &_d_applysmoothing, &_d_trend);
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                _error_code = _i_ser_ssaforecastsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_forecastlen, &_d_applysmoothing, &_d_trend);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30515,7 +32042,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaforecastsequence' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
         }
         finally
         {
@@ -30570,7 +32100,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaforecastavglast' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
         }
         finally
         {
@@ -30603,10 +32136,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_data, data, X_CREATE);
-            x_vector_create_empty(ref _d_trend, DT_REAL);
-            trend = null;
-            _error_code = _i_ser_ssaforecastavgsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_m, &_d_forecastlen, &_d_applysmoothing, &_d_trend);
+            fixed(double* _fp_data = data){
+                x_vector_attach_to_array(ref _d_data, _fp_data, ap.len(data));
+                x_vector_create_empty(ref _d_trend, DT_REAL);
+                trend = null;
+                _error_code = _i_ser_ssaforecastavgsequence(&_s_errormsg, &_d_s, &_d_data, &_d_datalen, &_d_m, &_d_forecastlen, &_d_applysmoothing, &_d_trend);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -30615,7 +32150,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'ssaforecastavgsequence' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_trend, ref trend);
+            if( _d_trend.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_trend, ref trend);
+            if( trend == null )
+                trend = new double[0];
         }
         finally
         {
@@ -31054,26 +32592,28 @@ public partial class alglib
 
     public unsafe class linearmodel : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public linearmodel(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~linearmodel()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new linearmodel(null);
-            return new linearmodel(_i_x_obj_copy_linearmodel(ptr));
+            return new linearmodel(_i_x_obj_copy_linearmodel(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_linearmodel(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_linearmodel(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -31196,9 +32736,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_lrreport_init(ref _d_ar);
-            _error_code = _i_ser_lrbuild(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_lrreport_init(ref _d_ar);
+                _error_code = _i_ser_lrbuild(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31246,10 +32788,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            x_lrreport_init(ref _d_ar);
-            _error_code = _i_ser_lrbuilds(&_s_errormsg, &_d_xy, &_d_s, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            fixed(double* _fp_xy = xy, _fp_s = s){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                x_lrreport_init(ref _d_ar);
+                _error_code = _i_ser_lrbuilds(&_s_errormsg, &_d_xy, &_d_s, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31298,10 +32842,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            x_lrreport_init(ref _d_ar);
-            _error_code = _i_ser_lrbuildzs(&_s_errormsg, &_d_xy, &_d_s, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            fixed(double* _fp_xy = xy, _fp_s = s){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                x_lrreport_init(ref _d_ar);
+                _error_code = _i_ser_lrbuildzs(&_s_errormsg, &_d_xy, &_d_s, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31349,9 +32895,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_lrreport_init(ref _d_ar);
-            _error_code = _i_ser_lrbuildz(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_lrreport_init(ref _d_ar);
+                _error_code = _i_ser_lrbuildz(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_info, &_d_lm, &_d_ar);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31405,7 +32953,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lrunpack' call");
             }
             ap.assert(lm.ptr==_d_lm, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_v, ref v);
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0];
             nvars = _d_nvars.intval;
         }
         finally
@@ -31436,8 +32987,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_lrpack(&_s_errormsg, &_d_v, &_d_nvars, &_d_lm);
+            fixed(double* _fp_v = v){
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_lrpack(&_s_errormsg, &_d_v, &_d_nvars, &_d_lm);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31477,8 +33030,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_lrprocess(&_s_errormsg, &_d_result, &_d_lm, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_lrprocess(&_s_errormsg, &_d_result, &_d_lm, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31518,8 +33073,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_lrrmserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_lrrmserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31559,8 +33116,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_lravgerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_lravgerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31600,8 +33159,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_lravgrelerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_lravgrelerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31645,8 +33206,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_filtersma(&_s_errormsg, &_d_x, &_d_n, &_d_k);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_filtersma(&_s_errormsg, &_d_x, &_d_n, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31654,7 +33217,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'filtersma' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -31694,8 +33260,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_filterema(&_s_errormsg, &_d_x, &_d_n, &_d_alpha);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_filterema(&_s_errormsg, &_d_x, &_d_n, &_d_alpha);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31703,7 +33271,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'filterema' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -31743,8 +33314,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_filterlrma(&_s_errormsg, &_d_x, &_d_n, &_d_k);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_filterlrma(&_s_errormsg, &_d_x, &_d_n, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31752,7 +33325,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'filterlrma' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
         }
         finally
         {
@@ -31785,26 +33361,28 @@ public partial class alglib
 
     public unsafe class logitmodel : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public logitmodel(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~logitmodel()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new logitmodel(null);
-            return new logitmodel(_i_x_obj_copy_logitmodel(ptr));
+            return new logitmodel(_i_x_obj_copy_logitmodel(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_logitmodel(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_logitmodel(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -31886,9 +33464,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mnlreport_init(ref _d_rep);
-            _error_code = _i_ser_mnltrainh(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_lm, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mnlreport_init(ref _d_rep);
+                _error_code = _i_ser_mnltrainh(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_info, &_d_lm, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31931,9 +33511,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_mnlprocess(&_s_errormsg, &_d_lm, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_mnlprocess(&_s_errormsg, &_d_lm, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31942,7 +33524,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mnlprocess' call");
             }
             ap.assert(lm.ptr==_d_lm, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -31972,10 +33557,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_mnlprocessi(&_s_errormsg, &_d_lm, &_d_x, &_d_y);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_mnlprocessi(&_s_errormsg, &_d_lm, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -31984,7 +33571,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mnlprocessi' call");
             }
             ap.assert(lm.ptr==_d_lm, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -32026,7 +33616,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mnlunpack' call");
             }
             ap.assert(lm.ptr==_d_lm, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
             nvars = _d_nvars.intval;
             nclasses = _d_nclasses.intval;
         }
@@ -32059,8 +33652,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_mnlpack(&_s_errormsg, &_d_a, &_d_nvars, &_d_nclasses, &_d_lm);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_mnlpack(&_s_errormsg, &_d_a, &_d_nvars, &_d_nclasses, &_d_lm);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32101,8 +33696,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlavgce(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlavgce(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32142,8 +33739,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlrelclserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlrelclserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32183,8 +33782,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlrmserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlrmserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32224,8 +33825,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlavgerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlavgerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32265,8 +33868,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlavgrelerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_ssize);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlavgrelerror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_ssize);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32306,8 +33911,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mnlclserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mnlclserror(&_s_errormsg, &_d_result, &_d_lm, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32338,26 +33945,28 @@ public partial class alglib
 
     public unsafe class mcpdstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public mcpdstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~mcpdstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new mcpdstate(null);
-            return new mcpdstate(_i_x_obj_copy_mcpdstate(ptr));
+            return new mcpdstate(_i_x_obj_copy_mcpdstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_mcpdstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_mcpdstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -32606,8 +34215,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mcpdaddtrack(&_s_errormsg, &_d_s, &_d_xy, &_d_k);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mcpdaddtrack(&_s_errormsg, &_d_s, &_d_xy, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32654,8 +34265,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_ec, ec, X_CREATE);
-            _error_code = _i_ser_mcpdsetec(&_s_errormsg, &_d_s, &_d_ec);
+            fixed(double* _fp_ec = ec){
+                x_matrix_attach_to_array(ref _d_ec, _fp_ec, ap.rows(ec), ap.cols(ec));
+                _error_code = _i_ser_mcpdsetec(&_s_errormsg, &_d_s, &_d_ec);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32731,9 +34344,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_matrix_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_mcpdsetbc(&_s_errormsg, &_d_s, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_matrix_attach_to_array(ref _d_bndl, _fp_bndl, ap.rows(bndl), ap.cols(bndl));
+                x_matrix_attach_to_array(ref _d_bndu, _fp_bndu, ap.rows(bndu), ap.cols(bndu));
+                _error_code = _i_ser_mcpdsetbc(&_s_errormsg, &_d_s, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32812,9 +34427,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_mcpdsetlc(&_s_errormsg, &_d_s, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_mcpdsetlc(&_s_errormsg, &_d_s, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32901,8 +34518,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_pp, pp, X_CREATE);
-            _error_code = _i_ser_mcpdsetprior(&_s_errormsg, &_d_s, &_d_pp);
+            fixed(double* _fp_pp = pp){
+                x_matrix_attach_to_array(ref _d_pp, _fp_pp, ap.rows(pp), ap.cols(pp));
+                _error_code = _i_ser_mcpdsetprior(&_s_errormsg, &_d_s, &_d_pp);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -32938,8 +34557,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_pw, pw, X_CREATE);
-            _error_code = _i_ser_mcpdsetpredictionweights(&_s_errormsg, &_d_s, &_d_pw);
+            fixed(double* _fp_pw = pw){
+                x_vector_attach_to_array(ref _d_pw, _fp_pw, ap.len(pw));
+                _error_code = _i_ser_mcpdsetpredictionweights(&_s_errormsg, &_d_s, &_d_pw);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -33024,7 +34645,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mcpdresults' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_p, ref p);
+            if( _d_p.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_p, ref p);
+            if( p == null )
+                p = new double[0,0];
             rep = null;
             x_mcpdreport_to_record(ref _d_rep, ref rep);
         }
@@ -33049,26 +34673,28 @@ public partial class alglib
 
     public unsafe class mlpensemble : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public mlpensemble(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~mlpensemble()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new mlpensemble(null);
-            return new mlpensemble(_i_x_obj_copy_mlpensemble(ptr));
+            return new mlpensemble(_i_x_obj_copy_mlpensemble(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_mlpensemble(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_mlpensemble(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -33847,9 +35473,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_mlpeprocess(&_s_errormsg, &_d_ensemble, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_mlpeprocess(&_s_errormsg, &_d_ensemble, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -33858,7 +35486,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mlpeprocess' call");
             }
             ap.assert(ensemble.ptr==_d_ensemble, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -33888,10 +35519,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_mlpeprocessi(&_s_errormsg, &_d_ensemble, &_d_x, &_d_y);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_mlpeprocessi(&_s_errormsg, &_d_ensemble, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -33900,7 +35533,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'mlpeprocessi' call");
             }
             ap.assert(ensemble.ptr==_d_ensemble, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -33932,8 +35568,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlperelclserror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlperelclserror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -33973,8 +35611,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpeavgce(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpeavgce(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34014,8 +35654,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpermserror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpermserror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34055,8 +35697,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpeavgerror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpeavgerror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34096,8 +35740,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpeavgrelerror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpeavgrelerror(&_s_errormsg, &_d_result, &_d_ensemble, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34286,26 +35932,28 @@ public partial class alglib
 
     public unsafe class mlptrainer : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public mlptrainer(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~mlptrainer()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new mlptrainer(null);
-            return new mlptrainer(_i_x_obj_copy_mlptrainer(ptr));
+            return new mlptrainer(_i_x_obj_copy_mlptrainer(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_mlptrainer(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_mlptrainer(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -34334,9 +35982,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            _error_code = _i_ser_mlptrainlm(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                _error_code = _i_ser_mlptrainlm(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34383,9 +36033,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            _error_code = _i_ser_mlptrainlbfgs(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_info, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                _error_code = _i_ser_mlptrainlbfgs(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34432,10 +36084,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_trnxy, trnxy, X_CREATE);
-            x_matrix_from_array(ref _d_valxy, valxy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            _error_code = _i_ser_mlptraines(&_s_errormsg, &_d_network, &_d_trnxy, &_d_trnsize, &_d_valxy, &_d_valsize, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            fixed(double* _fp_trnxy = trnxy, _fp_valxy = valxy){
+                x_matrix_attach_to_array(ref _d_trnxy, _fp_trnxy, ap.rows(trnxy), ap.cols(trnxy));
+                x_matrix_attach_to_array(ref _d_valxy, _fp_valxy, ap.rows(valxy), ap.cols(valxy));
+                x_mlpreport_init(ref _d_rep);
+                _error_code = _i_ser_mlptraines(&_s_errormsg, &_d_network, &_d_trnxy, &_d_trnsize, &_d_valxy, &_d_valsize, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34485,10 +36139,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            x_mlpcvreport_init(ref _d_cvrep);
-            _error_code = _i_ser_mlpkfoldcvlbfgs(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_foldscount, &_d_info, &_d_rep, &_d_cvrep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                x_mlpcvreport_init(ref _d_cvrep);
+                _error_code = _i_ser_mlpkfoldcvlbfgs(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_foldscount, &_d_info, &_d_rep, &_d_cvrep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34538,10 +36194,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            x_mlpcvreport_init(ref _d_cvrep);
-            _error_code = _i_ser_mlpkfoldcvlm(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_foldscount, &_d_info, &_d_rep, &_d_cvrep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                x_mlpcvreport_init(ref _d_cvrep);
+                _error_code = _i_ser_mlpkfoldcvlm(&_s_errormsg, &_d_network, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_foldscount, &_d_info, &_d_rep, &_d_cvrep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -34715,8 +36373,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_mlpsetdataset(&_s_errormsg, &_d_s, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_mlpsetdataset(&_s_errormsg, &_d_s, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35044,10 +36704,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            x_mlpcvreport_init(ref _d_ooberrors);
-            _error_code = _i_ser_mlpebagginglm(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep, &_d_ooberrors);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                x_mlpcvreport_init(ref _d_ooberrors);
+                _error_code = _i_ser_mlpebagginglm(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep, &_d_ooberrors);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35098,10 +36760,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            x_mlpcvreport_init(ref _d_ooberrors);
-            _error_code = _i_ser_mlpebagginglbfgs(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_info, &_d_rep, &_d_ooberrors);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                x_mlpcvreport_init(ref _d_ooberrors);
+                _error_code = _i_ser_mlpebagginglbfgs(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_wstep, &_d_maxits, &_d_info, &_d_rep, &_d_ooberrors);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35149,9 +36813,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_mlpreport_init(ref _d_rep);
-            _error_code = _i_ser_mlpetraines(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_mlpreport_init(ref _d_rep);
+                _error_code = _i_ser_mlpetraines(&_s_errormsg, &_d_ensemble, &_d_xy, &_d_npoints, &_d_decay, &_d_restarts, &_d_info, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35234,26 +36900,28 @@ public partial class alglib
 
     public unsafe class clusterizerstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public clusterizerstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~clusterizerstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new clusterizerstate(null);
-            return new clusterizerstate(_i_x_obj_copy_clusterizerstate(ptr));
+            return new clusterizerstate(_i_x_obj_copy_clusterizerstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_clusterizerstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_clusterizerstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -35488,8 +37156,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_clusterizersetpoints(&_s_errormsg, &_d_s, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_clusterizersetpoints(&_s_errormsg, &_d_s, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35540,8 +37210,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_clusterizersetdistances(&_s_errormsg, &_d_s, &_d_d, &_d_npoints, &_d_isupper);
+            fixed(double* _fp_d = d){
+                x_matrix_attach_to_array(ref _d_d, _fp_d, ap.rows(d), ap.cols(d));
+                _error_code = _i_ser_clusterizersetdistances(&_s_errormsg, &_d_s, &_d_d, &_d_npoints, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35835,12 +37507,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_matrix_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_clusterizergetdistances(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype, &_d_d);
-            else    _error_code = _i_smp_clusterizergetdistances(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype, &_d_d);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_matrix_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_clusterizergetdistances(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype, &_d_d);
+                else    _error_code = _i_smp_clusterizergetdistances(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nfeatures, &_d_disttype, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -35848,7 +37522,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'clusterizergetdistances' call");
             }
-            x_matrix_to_array(ref _d_d, ref d);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0,0];
         }
         finally
         {
@@ -36018,26 +37695,28 @@ public partial class alglib
 
     public unsafe class decisionforest : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public decisionforest(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~decisionforest()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new decisionforest(null);
-            return new decisionforest(_i_x_obj_copy_decisionforest(ptr));
+            return new decisionforest(_i_x_obj_copy_decisionforest(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_decisionforest(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_decisionforest(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -36251,9 +37930,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_dfreport_init(ref _d_rep);
-            _error_code = _i_ser_dfbuildrandomdecisionforest(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_ntrees, &_d_r, &_d_info, &_d_df, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_dfreport_init(ref _d_rep);
+                _error_code = _i_ser_dfbuildrandomdecisionforest(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_ntrees, &_d_r, &_d_info, &_d_df, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36304,9 +37985,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_dfreport_init(ref _d_rep);
-            _error_code = _i_ser_dfbuildrandomdecisionforestx1(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_ntrees, &_d_nrndvars, &_d_r, &_d_info, &_d_df, &_d_rep);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_dfreport_init(ref _d_rep);
+                _error_code = _i_ser_dfbuildrandomdecisionforestx1(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_nclasses, &_d_ntrees, &_d_nrndvars, &_d_r, &_d_info, &_d_df, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36349,9 +38032,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_dfprocess(&_s_errormsg, &_d_df, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_dfprocess(&_s_errormsg, &_d_df, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36360,7 +38045,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'dfprocess' call");
             }
             ap.assert(df.ptr==_d_df, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -36390,10 +38078,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_dfprocessi(&_s_errormsg, &_d_df, &_d_x, &_d_y);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_dfprocessi(&_s_errormsg, &_d_df, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36402,7 +38092,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'dfprocessi' call");
             }
             ap.assert(df.ptr==_d_df, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -36434,8 +38127,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_dfrelclserror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_dfrelclserror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36475,8 +38170,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_dfavgce(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_dfavgce(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36516,8 +38213,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_dfrmserror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_dfrmserror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36557,8 +38256,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_dfavgerror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_dfavgerror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36598,8 +38299,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_dfavgrelerror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_dfavgrelerror(&_s_errormsg, &_d_result, &_d_df, &_d_xy, &_d_npoints);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36648,12 +38351,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_matrix_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            x_vector_create_empty(ref _d_xyc, DT_INT);
-            xyc = null;
-            _error_code = _i_ser_kmeansgenerate(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_k, &_d_restarts, &_d_info, &_d_c, &_d_xyc);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_matrix_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                x_vector_create_empty(ref _d_xyc, DT_INT);
+                xyc = null;
+                _error_code = _i_ser_kmeansgenerate(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nvars, &_d_k, &_d_restarts, &_d_info, &_d_c, &_d_xyc);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36662,7 +38367,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'kmeansgenerate' call");
             }
             info = _d_info.intval;
-            x_matrix_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0,0];
             x_vector_to_array(ref _d_xyc, ref xyc);
         }
         finally
@@ -36704,13 +38412,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_alpha, alpha, X_CREATE);
-            x_vector_from_array(ref _d_beta, beta, X_CREATE);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            _error_code = _i_ser_gqgeneraterec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_n, &_d_info, &_d_x, &_d_w);
+            fixed(double* _fp_alpha = alpha, _fp_beta = beta){
+                x_vector_attach_to_array(ref _d_alpha, _fp_alpha, ap.len(alpha));
+                x_vector_attach_to_array(ref _d_beta, _fp_beta, ap.len(beta));
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                _error_code = _i_ser_gqgeneraterec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_n, &_d_info, &_d_x, &_d_w);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36719,8 +38429,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgeneraterec' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -36758,13 +38474,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_alpha, alpha, X_CREATE);
-            x_vector_from_array(ref _d_beta, beta, X_CREATE);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            _error_code = _i_ser_gqgenerategausslobattorec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_a, &_d_b, &_d_n, &_d_info, &_d_x, &_d_w);
+            fixed(double* _fp_alpha = alpha, _fp_beta = beta){
+                x_vector_attach_to_array(ref _d_alpha, _fp_alpha, ap.len(alpha));
+                x_vector_attach_to_array(ref _d_beta, _fp_beta, ap.len(beta));
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                _error_code = _i_ser_gqgenerategausslobattorec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_a, &_d_b, &_d_n, &_d_info, &_d_x, &_d_w);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36773,8 +38491,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategausslobattorec' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -36811,13 +38535,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_alpha, alpha, X_CREATE);
-            x_vector_from_array(ref _d_beta, beta, X_CREATE);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            x_vector_create_empty(ref _d_w, DT_REAL);
-            w = null;
-            _error_code = _i_ser_gqgenerategaussradaurec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_a, &_d_n, &_d_info, &_d_x, &_d_w);
+            fixed(double* _fp_alpha = alpha, _fp_beta = beta){
+                x_vector_attach_to_array(ref _d_alpha, _fp_alpha, ap.len(alpha));
+                x_vector_attach_to_array(ref _d_beta, _fp_beta, ap.len(beta));
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                x_vector_create_empty(ref _d_w, DT_REAL);
+                w = null;
+                _error_code = _i_ser_gqgenerategaussradaurec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_a, &_d_n, &_d_info, &_d_x, &_d_w);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -36826,8 +38552,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategaussradaurec' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -36873,8 +38605,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategausslegendre' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -36920,8 +38658,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategaussjacobi' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -36966,8 +38710,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategausslaguerre' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -37011,8 +38761,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gqgenerategausshermite' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -37053,15 +38809,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_alpha, alpha, X_CREATE);
-            x_vector_from_array(ref _d_beta, beta, X_CREATE);
-            x_vector_create_empty(ref _d_x, DT_REAL);
-            x = null;
-            x_vector_create_empty(ref _d_wkronrod, DT_REAL);
-            wkronrod = null;
-            x_vector_create_empty(ref _d_wgauss, DT_REAL);
-            wgauss = null;
-            _error_code = _i_ser_gkqgeneraterec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_n, &_d_info, &_d_x, &_d_wkronrod, &_d_wgauss);
+            fixed(double* _fp_alpha = alpha, _fp_beta = beta){
+                x_vector_attach_to_array(ref _d_alpha, _fp_alpha, ap.len(alpha));
+                x_vector_attach_to_array(ref _d_beta, _fp_beta, ap.len(beta));
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                x_vector_create_empty(ref _d_wkronrod, DT_REAL);
+                wkronrod = null;
+                x_vector_create_empty(ref _d_wgauss, DT_REAL);
+                wgauss = null;
+                _error_code = _i_ser_gkqgeneraterec(&_s_errormsg, &_d_alpha, &_d_beta, &_d_mu0, &_d_n, &_d_info, &_d_x, &_d_wkronrod, &_d_wgauss);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37070,9 +38828,18 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gkqgeneraterec' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_wkronrod, ref wkronrod);
-            x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_wkronrod.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wkronrod, ref wkronrod);
+            if( wkronrod == null )
+                wkronrod = new double[0];
+            if( _d_wgauss.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( wgauss == null )
+                wgauss = new double[0];
         }
         finally
         {
@@ -37122,9 +38889,18 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gkqgenerategausslegendre' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_wkronrod, ref wkronrod);
-            x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_wkronrod.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wkronrod, ref wkronrod);
+            if( wkronrod == null )
+                wkronrod = new double[0];
+            if( _d_wgauss.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( wgauss == null )
+                wgauss = new double[0];
         }
         finally
         {
@@ -37174,9 +38950,18 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gkqgenerategaussjacobi' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_wkronrod, ref wkronrod);
-            x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_wkronrod.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wkronrod, ref wkronrod);
+            if( wkronrod == null )
+                wkronrod = new double[0];
+            if( _d_wgauss.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( wgauss == null )
+                wgauss = new double[0];
         }
         finally
         {
@@ -37224,9 +39009,18 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'gkqlegendrecalc' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_wkronrod, ref wkronrod);
-            x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_wkronrod.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wkronrod, ref wkronrod);
+            if( wkronrod == null )
+                wkronrod = new double[0];
+            if( _d_wgauss.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( wgauss == null )
+                wgauss = new double[0];
         }
         finally
         {
@@ -37273,9 +39067,18 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'gkqlegendretbl' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_wkronrod, ref wkronrod);
-            x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_wkronrod.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wkronrod, ref wkronrod);
+            if( wkronrod == null )
+                wkronrod = new double[0];
+            if( _d_wgauss.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_wgauss, ref wgauss);
+            if( wgauss == null )
+                wgauss = new double[0];
             eps = _d_eps;
         }
         finally
@@ -37358,26 +39161,28 @@ public partial class alglib
 
     public unsafe class autogkstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public autogkstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~autogkstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new autogkstate(null);
-            return new autogkstate(_i_x_obj_copy_autogkstate(ptr));
+            return new autogkstate(_i_x_obj_copy_autogkstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_autogkstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_autogkstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -37694,8 +39499,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_fftc1d(&_s_errormsg, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_fftc1d(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37703,7 +39510,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fftc1d' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0];
         }
         finally
         {
@@ -37742,8 +39552,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_fftc1dinv(&_s_errormsg, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_fftc1dinv(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37751,7 +39563,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fftc1dinv' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new alglib.complex[0];
         }
         finally
         {
@@ -37791,10 +39606,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_f, DT_COMPLEX);
-            f = null;
-            _error_code = _i_ser_fftr1d(&_s_errormsg, &_d_a, &_d_n, &_d_f);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_create_empty(ref _d_f, DT_COMPLEX);
+                f = null;
+                _error_code = _i_ser_fftr1d(&_s_errormsg, &_d_a, &_d_n, &_d_f);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37802,7 +39619,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fftr1d' call");
             }
-            x_vector_to_array(ref _d_f, ref f);
+            if( _d_f.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_f, ref f);
+            if( f == null )
+                f = new alglib.complex[0];
         }
         finally
         {
@@ -37843,10 +39663,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            x_vector_create_empty(ref _d_a, DT_REAL);
-            a = null;
-            _error_code = _i_ser_fftr1dinv(&_s_errormsg, &_d_f, &_d_n, &_d_a);
+            fixed(alglib.complex* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                x_vector_create_empty(ref _d_a, DT_REAL);
+                a = null;
+                _error_code = _i_ser_fftr1dinv(&_s_errormsg, &_d_f, &_d_n, &_d_a);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37854,7 +39676,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fftr1dinv' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -37900,8 +39725,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_fhtr1d(&_s_errormsg, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_fhtr1d(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37909,7 +39736,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fhtr1d' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -37937,8 +39767,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_fhtr1dinv(&_s_errormsg, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_fhtr1dinv(&_s_errormsg, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37946,7 +39778,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fhtr1dinv' call");
             }
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -37983,11 +39818,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_COMPLEX);
-            r = null;
-            _error_code = _i_ser_convc1d(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_COMPLEX);
+                r = null;
+                _error_code = _i_ser_convc1d(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -37995,7 +39832,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convc1d' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new alglib.complex[0];
         }
         finally
         {
@@ -38028,11 +39868,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_COMPLEX);
-            r = null;
-            _error_code = _i_ser_convc1dinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_COMPLEX);
+                r = null;
+                _error_code = _i_ser_convc1dinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38040,7 +39882,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convc1dinv' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new alglib.complex[0];
         }
         finally
         {
@@ -38073,11 +39918,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            x_vector_from_array(ref _d_r, r, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_COMPLEX);
-            c = null;
-            _error_code = _i_ser_convc1dcircular(&_s_errormsg, &_d_s, &_d_m, &_d_r, &_d_n, &_d_c);
+            fixed(alglib.complex* _fp_s = s, _fp_r = r){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                x_vector_attach_to_array(ref _d_r, _fp_r, ap.len(r));
+                x_vector_create_empty(ref _d_c, DT_COMPLEX);
+                c = null;
+                _error_code = _i_ser_convc1dcircular(&_s_errormsg, &_d_s, &_d_m, &_d_r, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38085,7 +39932,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convc1dcircular' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0];
         }
         finally
         {
@@ -38118,11 +39968,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_COMPLEX);
-            r = null;
-            _error_code = _i_ser_convc1dcircularinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(alglib.complex* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_COMPLEX);
+                r = null;
+                _error_code = _i_ser_convc1dcircularinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38130,7 +39982,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convc1dcircularinv' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new alglib.complex[0];
         }
         finally
         {
@@ -38163,11 +40018,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_convr1d(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_convr1d(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38175,7 +40032,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convr1d' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -38208,11 +40068,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_convr1dinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_convr1dinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38220,7 +40082,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convr1dinv' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -38253,11 +40118,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            x_vector_from_array(ref _d_r, r, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            _error_code = _i_ser_convr1dcircular(&_s_errormsg, &_d_s, &_d_m, &_d_r, &_d_n, &_d_c);
+            fixed(double* _fp_s = s, _fp_r = r){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                x_vector_attach_to_array(ref _d_r, _fp_r, ap.len(r));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                _error_code = _i_ser_convr1dcircular(&_s_errormsg, &_d_s, &_d_m, &_d_r, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38265,7 +40132,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convr1dcircular' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -38298,11 +40168,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_convr1dcircularinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_vector_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_convr1dcircularinv(&_s_errormsg, &_d_a, &_d_m, &_d_b, &_d_n, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38310,7 +40182,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'convr1dcircularinv' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -38349,11 +40224,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_signal, signal, X_CREATE);
-            x_vector_from_array(ref _d_pattern, pattern, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_COMPLEX);
-            r = null;
-            _error_code = _i_ser_corrc1d(&_s_errormsg, &_d_signal, &_d_n, &_d_pattern, &_d_m, &_d_r);
+            fixed(alglib.complex* _fp_signal = signal, _fp_pattern = pattern){
+                x_vector_attach_to_array(ref _d_signal, _fp_signal, ap.len(signal));
+                x_vector_attach_to_array(ref _d_pattern, _fp_pattern, ap.len(pattern));
+                x_vector_create_empty(ref _d_r, DT_COMPLEX);
+                r = null;
+                _error_code = _i_ser_corrc1d(&_s_errormsg, &_d_signal, &_d_n, &_d_pattern, &_d_m, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38361,7 +40238,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'corrc1d' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new alglib.complex[0];
         }
         finally
         {
@@ -38394,11 +40274,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_signal, signal, X_CREATE);
-            x_vector_from_array(ref _d_pattern, pattern, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_COMPLEX);
-            c = null;
-            _error_code = _i_ser_corrc1dcircular(&_s_errormsg, &_d_signal, &_d_m, &_d_pattern, &_d_n, &_d_c);
+            fixed(alglib.complex* _fp_signal = signal, _fp_pattern = pattern){
+                x_vector_attach_to_array(ref _d_signal, _fp_signal, ap.len(signal));
+                x_vector_attach_to_array(ref _d_pattern, _fp_pattern, ap.len(pattern));
+                x_vector_create_empty(ref _d_c, DT_COMPLEX);
+                c = null;
+                _error_code = _i_ser_corrc1dcircular(&_s_errormsg, &_d_signal, &_d_m, &_d_pattern, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38406,7 +40288,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'corrc1dcircular' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new alglib.complex[0];
         }
         finally
         {
@@ -38439,11 +40324,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_signal, signal, X_CREATE);
-            x_vector_from_array(ref _d_pattern, pattern, X_CREATE);
-            x_vector_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_corrr1d(&_s_errormsg, &_d_signal, &_d_n, &_d_pattern, &_d_m, &_d_r);
+            fixed(double* _fp_signal = signal, _fp_pattern = pattern){
+                x_vector_attach_to_array(ref _d_signal, _fp_signal, ap.len(signal));
+                x_vector_attach_to_array(ref _d_pattern, _fp_pattern, ap.len(pattern));
+                x_vector_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_corrr1d(&_s_errormsg, &_d_signal, &_d_n, &_d_pattern, &_d_m, &_d_r);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38451,7 +40338,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'corrr1d' call");
             }
-            x_vector_to_array(ref _d_r, ref r);
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0];
         }
         finally
         {
@@ -38484,11 +40374,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_signal, signal, X_CREATE);
-            x_vector_from_array(ref _d_pattern, pattern, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            _error_code = _i_ser_corrr1dcircular(&_s_errormsg, &_d_signal, &_d_m, &_d_pattern, &_d_n, &_d_c);
+            fixed(double* _fp_signal = signal, _fp_pattern = pattern){
+                x_vector_attach_to_array(ref _d_signal, _fp_signal, ap.len(signal));
+                x_vector_attach_to_array(ref _d_pattern, _fp_pattern, ap.len(pattern));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                _error_code = _i_ser_corrr1dcircular(&_s_errormsg, &_d_signal, &_d_m, &_d_pattern, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38496,7 +40388,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'corrr1dcircular' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -38520,26 +40415,28 @@ public partial class alglib
 
     public unsafe class idwinterpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public idwinterpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~idwinterpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new idwinterpolant(null);
-            return new idwinterpolant(_i_x_obj_copy_idwinterpolant(ptr));
+            return new idwinterpolant(_i_x_obj_copy_idwinterpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_idwinterpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_idwinterpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -38565,8 +40462,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_idwcalc(&_s_errormsg, &_d_result, &_d_z, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_idwcalc(&_s_errormsg, &_d_result, &_d_z, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38609,8 +40508,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_idwbuildmodifiedshepard(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_d, &_d_nq, &_d_nw, &_d_z);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_idwbuildmodifiedshepard(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_d, &_d_nq, &_d_nw, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38652,8 +40553,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_idwbuildmodifiedshepardr(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_r, &_d_z);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_idwbuildmodifiedshepardr(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_r, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38697,8 +40600,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_idwbuildnoisy(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_d, &_d_nq, &_d_nw, &_d_z);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_idwbuildnoisy(&_s_errormsg, &_d_xy, &_d_n, &_d_nx, &_d_d, &_d_nq, &_d_nw, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -38730,26 +40635,28 @@ public partial class alglib
 
     public unsafe class barycentricinterpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public barycentricinterpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~barycentricinterpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new barycentricinterpolant(null);
-            return new barycentricinterpolant(_i_x_obj_copy_barycentricinterpolant(ptr));
+            return new barycentricinterpolant(_i_x_obj_copy_barycentricinterpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_barycentricinterpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_barycentricinterpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -38992,9 +40899,18 @@ public partial class alglib
             }
             ap.assert(b.ptr==_d_b, "ALGLIB: internal error (reference changed for non-out X-object)");
             n = _d_n.intval;
-            x_vector_to_array(ref _d_x, ref x);
-            x_vector_to_array(ref _d_y, ref y);
-            x_vector_to_array(ref _d_w, ref w);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
+            if( _d_w.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_w, ref w);
+            if( w == null )
+                w = new double[0];
         }
         finally
         {
@@ -39028,10 +40944,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            _error_code = _i_ser_barycentricbuildxyw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_b);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                _error_code = _i_ser_barycentricbuildxyw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39075,9 +40993,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_barycentricbuildfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_d, &_d_b);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_barycentricbuildfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_d, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39116,26 +41036,28 @@ public partial class alglib
 
     public unsafe class spline1dinterpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public spline1dinterpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~spline1dinterpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new spline1dinterpolant(null);
-            return new spline1dinterpolant(_i_x_obj_copy_spline1dinterpolant(ptr));
+            return new spline1dinterpolant(_i_x_obj_copy_spline1dinterpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_spline1dinterpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_spline1dinterpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -39232,9 +41154,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spline1dbuildlinear(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spline1dbuildlinear(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39293,9 +41217,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spline1dbuildcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spline1dbuildcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39361,11 +41287,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            _error_code = _i_ser_spline1dgriddiffcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_d);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                _error_code = _i_ser_spline1dgriddiffcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_d);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39373,7 +41301,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline1dgriddiffcubic' call");
             }
-            x_vector_to_array(ref _d_d, ref d);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
         }
         finally
         {
@@ -39431,13 +41362,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_create_empty(ref _d_d1, DT_REAL);
-            d1 = null;
-            x_vector_create_empty(ref _d_d2, DT_REAL);
-            d2 = null;
-            _error_code = _i_ser_spline1dgriddiff2cubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_d1, &_d_d2);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_create_empty(ref _d_d1, DT_REAL);
+                d1 = null;
+                x_vector_create_empty(ref _d_d2, DT_REAL);
+                d2 = null;
+                _error_code = _i_ser_spline1dgriddiff2cubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_d1, &_d_d2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39445,8 +41378,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline1dgriddiff2cubic' call");
             }
-            x_vector_to_array(ref _d_d1, ref d1);
-            x_vector_to_array(ref _d_d2, ref d2);
+            if( _d_d1.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d1, ref d1);
+            if( d1 == null )
+                d1 = new double[0];
+            if( _d_d2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d2, ref d2);
+            if( d2 == null )
+                d2 = new double[0];
         }
         finally
         {
@@ -39506,12 +41445,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_x2, x2, X_CREATE);
-            x_vector_create_empty(ref _d_y2, DT_REAL);
-            y2 = null;
-            _error_code = _i_ser_spline1dconvcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_x2 = x2){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_x2, _fp_x2, ap.len(x2));
+                x_vector_create_empty(ref _d_y2, DT_REAL);
+                y2 = null;
+                _error_code = _i_ser_spline1dconvcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39519,7 +41460,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline1dconvcubic' call");
             }
-            x_vector_to_array(ref _d_y2, ref y2);
+            if( _d_y2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y2, ref y2);
+            if( y2 == null )
+                y2 = new double[0];
         }
         finally
         {
@@ -39582,14 +41526,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_x2, x2, X_CREATE);
-            x_vector_create_empty(ref _d_y2, DT_REAL);
-            y2 = null;
-            x_vector_create_empty(ref _d_d2, DT_REAL);
-            d2 = null;
-            _error_code = _i_ser_spline1dconvdiffcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2, &_d_d2);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_x2 = x2){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_x2, _fp_x2, ap.len(x2));
+                x_vector_create_empty(ref _d_y2, DT_REAL);
+                y2 = null;
+                x_vector_create_empty(ref _d_d2, DT_REAL);
+                d2 = null;
+                _error_code = _i_ser_spline1dconvdiffcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2, &_d_d2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39597,8 +41543,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline1dconvdiffcubic' call");
             }
-            x_vector_to_array(ref _d_y2, ref y2);
-            x_vector_to_array(ref _d_d2, ref d2);
+            if( _d_y2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y2, ref y2);
+            if( y2 == null )
+                y2 = new double[0];
+            if( _d_d2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d2, ref d2);
+            if( d2 == null )
+                d2 = new double[0];
         }
         finally
         {
@@ -39663,16 +41615,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_x2, x2, X_CREATE);
-            x_vector_create_empty(ref _d_y2, DT_REAL);
-            y2 = null;
-            x_vector_create_empty(ref _d_d2, DT_REAL);
-            d2 = null;
-            x_vector_create_empty(ref _d_dd2, DT_REAL);
-            dd2 = null;
-            _error_code = _i_ser_spline1dconvdiff2cubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2, &_d_d2, &_d_dd2);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_x2 = x2){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_x2, _fp_x2, ap.len(x2));
+                x_vector_create_empty(ref _d_y2, DT_REAL);
+                y2 = null;
+                x_vector_create_empty(ref _d_d2, DT_REAL);
+                d2 = null;
+                x_vector_create_empty(ref _d_dd2, DT_REAL);
+                dd2 = null;
+                _error_code = _i_ser_spline1dconvdiff2cubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundltype, &_d_boundl, &_d_boundrtype, &_d_boundr, &_d_x2, &_d_n2, &_d_y2, &_d_d2, &_d_dd2);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39680,9 +41634,18 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline1dconvdiff2cubic' call");
             }
-            x_vector_to_array(ref _d_y2, ref y2);
-            x_vector_to_array(ref _d_d2, ref d2);
-            x_vector_to_array(ref _d_dd2, ref dd2);
+            if( _d_y2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y2, ref y2);
+            if( y2 == null )
+                y2 = new double[0];
+            if( _d_d2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d2, ref d2);
+            if( d2 == null )
+                d2 = new double[0];
+            if( _d_dd2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_dd2, ref dd2);
+            if( dd2 == null )
+                dd2 = new double[0];
         }
         finally
         {
@@ -39743,9 +41706,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spline1dbuildcatmullrom(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundtype, &_d_tension, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spline1dbuildcatmullrom(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_boundtype, &_d_tension, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39805,10 +41770,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_d, d, X_CREATE);
-            _error_code = _i_ser_spline1dbuildhermite(&_s_errormsg, &_d_x, &_d_y, &_d_d, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_d = d){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_d, _fp_d, ap.len(d));
+                _error_code = _i_ser_spline1dbuildhermite(&_s_errormsg, &_d_x, &_d_y, &_d_d, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -39864,9 +41831,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spline1dbuildakima(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spline1dbuildakima(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40014,7 +41983,10 @@ public partial class alglib
             }
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
             n = _d_n.intval;
-            x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( _d_tbl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( tbl == null )
+                tbl = new double[0,0];
         }
         finally
         {
@@ -40165,12 +42137,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitpenalized(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40252,13 +42226,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitpenalizedw(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_m, &_d_rho, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40336,9 +42312,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_spline1dbuildmonotone(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_spline1dbuildmonotone(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40384,26 +42362,28 @@ public partial class alglib
 
     public unsafe class pspline2interpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public pspline2interpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~pspline2interpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new pspline2interpolant(null);
-            return new pspline2interpolant(_i_x_obj_copy_pspline2interpolant(ptr));
+            return new pspline2interpolant(_i_x_obj_copy_pspline2interpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_pspline2interpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_pspline2interpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -40415,26 +42395,28 @@ public partial class alglib
 
     public unsafe class pspline3interpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public pspline3interpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~pspline3interpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new pspline3interpolant(null);
-            return new pspline3interpolant(_i_x_obj_copy_pspline3interpolant(ptr));
+            return new pspline3interpolant(_i_x_obj_copy_pspline3interpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_pspline3interpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_pspline3interpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -40462,8 +42444,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_pspline2build(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_pspline2build(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40505,8 +42489,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_pspline3build(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_pspline3build(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40548,8 +42534,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_pspline2buildperiodic(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_pspline2buildperiodic(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40591,8 +42579,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_pspline3buildperiodic(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_pspline3buildperiodic(&_s_errormsg, &_d_xy, &_d_n, &_d_st, &_d_pt, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -40643,7 +42633,10 @@ public partial class alglib
             }
             ap.assert(p.ptr==_d_p, "ALGLIB: internal error (reference changed for non-out X-object)");
             n = _d_n.intval;
-            x_vector_to_array(ref _d_t, ref t);
+            if( _d_t.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_t, ref t);
+            if( t == null )
+                t = new double[0];
         }
         finally
         {
@@ -40684,7 +42677,10 @@ public partial class alglib
             }
             ap.assert(p.ptr==_d_p, "ALGLIB: internal error (reference changed for non-out X-object)");
             n = _d_n.intval;
-            x_vector_to_array(ref _d_t, ref t);
+            if( _d_t.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_t, ref t);
+            if( t == null )
+                t = new double[0];
         }
         finally
         {
@@ -41166,12 +43162,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_matrix_create_empty(ref _d_x2, DT_REAL);
-            x2 = null;
-            x_vector_create_empty(ref _d_idx2, DT_INT);
-            idx2 = null;
-            _error_code = _i_ser_parametricrdpfixed(&_s_errormsg, &_d_x, &_d_n, &_d_d, &_d_stopm, &_d_stopeps, &_d_x2, &_d_idx2, &_d_nsections);
+            fixed(double* _fp_x = x){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_matrix_create_empty(ref _d_x2, DT_REAL);
+                x2 = null;
+                x_vector_create_empty(ref _d_idx2, DT_INT);
+                idx2 = null;
+                _error_code = _i_ser_parametricrdpfixed(&_s_errormsg, &_d_x, &_d_n, &_d_d, &_d_stopm, &_d_stopeps, &_d_x2, &_d_idx2, &_d_nsections);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41179,7 +43177,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'parametricrdpfixed' call");
             }
-            x_matrix_to_array(ref _d_x2, ref x2);
+            if( _d_x2.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_x2, ref x2);
+            if( x2 == null )
+                x2 = new double[0,0];
             x_vector_to_array(ref _d_idx2, ref idx2);
             nsections = _d_nsections.intval;
         }
@@ -41205,26 +43206,28 @@ public partial class alglib
 
     public unsafe class spline3dinterpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public spline3dinterpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~spline3dinterpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new spline3dinterpolant(null);
-            return new spline3dinterpolant(_i_x_obj_copy_spline3dinterpolant(ptr));
+            return new spline3dinterpolant(_i_x_obj_copy_spline3dinterpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_spline3dinterpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_spline3dinterpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -41376,10 +43379,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_b, DT_REAL);
-            b = null;
-            _error_code = _i_ser_spline3dresampletrilinear(&_s_errormsg, &_d_a, &_d_oldzcount, &_d_oldycount, &_d_oldxcount, &_d_newzcount, &_d_newycount, &_d_newxcount, &_d_b);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_create_empty(ref _d_b, DT_REAL);
+                b = null;
+                _error_code = _i_ser_spline3dresampletrilinear(&_s_errormsg, &_d_a, &_d_oldzcount, &_d_oldycount, &_d_oldxcount, &_d_newzcount, &_d_newycount, &_d_newxcount, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41387,7 +43392,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline3dresampletrilinear' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
         }
         finally
         {
@@ -41424,11 +43432,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_z, z, X_CREATE);
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline3dbuildtrilinearv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_z, &_d_l, &_d_f, &_d_d, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_z = z, _fp_f = f){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_z, _fp_z, ap.len(z));
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_spline3dbuildtrilinearv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_z, &_d_l, &_d_f, &_d_d, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41472,8 +43482,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline3dcalcvbuf(&_s_errormsg, &_d_c, &_d_x, &_d_y, &_d_z, &_d_f);
+            fixed(double* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_spline3dcalcvbuf(&_s_errormsg, &_d_c, &_d_x, &_d_y, &_d_z, &_d_f);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41482,7 +43494,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'spline3dcalcvbuf' call");
             }
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_f, ref f);
+            if( _d_f.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_f, ref f);
+            if( f == null )
+                f = new double[0];
         }
         finally
         {
@@ -41524,7 +43539,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'spline3dcalcv' call");
             }
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_f, ref f);
+            if( _d_f.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_f, ref f);
+            if( f == null )
+                f = new double[0];
         }
         finally
         {
@@ -41573,7 +43591,10 @@ public partial class alglib
             l = _d_l.intval;
             d = _d_d.intval;
             stype = _d_stype.intval;
-            x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( _d_tbl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( tbl == null )
+                tbl = new double[0,0];
         }
         finally
         {
@@ -41620,7 +43641,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'polynomialbar2cheb' call");
             }
             ap.assert(p.ptr==_d_p, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_t, ref t);
+            if( _d_t.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_t, ref t);
+            if( t == null )
+                t = new double[0];
         }
         finally
         {
@@ -41652,8 +43676,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_t, t, X_CREATE);
-            _error_code = _i_ser_polynomialcheb2bar(&_s_errormsg, &_d_t, &_d_n, &_d_a, &_d_b, &_d_p);
+            fixed(double* _fp_t = t){
+                x_vector_attach_to_array(ref _d_t, _fp_t, ap.len(t));
+                _error_code = _i_ser_polynomialcheb2bar(&_s_errormsg, &_d_t, &_d_n, &_d_a, &_d_b, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41715,7 +43741,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'polynomialbar2pow' call");
             }
             ap.assert(p.ptr==_d_p, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_a, ref a);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0];
         }
         finally
         {
@@ -41760,8 +43789,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_polynomialpow2bar(&_s_errormsg, &_d_a, &_d_n, &_d_c, &_d_s, &_d_p);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                _error_code = _i_ser_polynomialpow2bar(&_s_errormsg, &_d_a, &_d_n, &_d_c, &_d_s, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41817,9 +43848,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_polynomialbuild(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_p);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_polynomialbuild(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41875,8 +43908,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_polynomialbuildeqdist(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            fixed(double* _fp_y = y){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_polynomialbuildeqdist(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41929,8 +43964,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_polynomialbuildcheb1(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            fixed(double* _fp_y = y){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_polynomialbuildcheb1(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -41983,8 +44020,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_polynomialbuildcheb2(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            fixed(double* _fp_y = y){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_polynomialbuildcheb2(&_s_errormsg, &_d_a, &_d_b, &_d_y, &_d_n, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42038,8 +44077,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_polynomialcalceqdist(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            fixed(double* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_polynomialcalceqdist(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42091,8 +44132,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_polynomialcalccheb1(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            fixed(double* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_polynomialcalccheb1(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42144,8 +44187,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_polynomialcalccheb2(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            fixed(double* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_polynomialcalccheb2(&_s_errormsg, &_d_result, &_d_a, &_d_b, &_d_f, &_d_n, &_d_t);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42450,26 +44495,28 @@ public partial class alglib
 
     public unsafe class lsfitstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public lsfitstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~lsfitstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new lsfitstate(null);
-            return new lsfitstate(_i_x_obj_copy_lsfitstate(ptr));
+            return new lsfitstate(_i_x_obj_copy_lsfitstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_lsfitstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_lsfitstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -42540,13 +44587,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_create_empty(ref _d_x2, DT_REAL);
-            x2 = null;
-            x_vector_create_empty(ref _d_y2, DT_REAL);
-            y2 = null;
-            _error_code = _i_ser_lstfitpiecewiselinearrdpfixed(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_x2, &_d_y2, &_d_nsections);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_create_empty(ref _d_x2, DT_REAL);
+                x2 = null;
+                x_vector_create_empty(ref _d_y2, DT_REAL);
+                y2 = null;
+                _error_code = _i_ser_lstfitpiecewiselinearrdpfixed(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_x2, &_d_y2, &_d_nsections);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42554,8 +44603,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'lstfitpiecewiselinearrdpfixed' call");
             }
-            x_vector_to_array(ref _d_x2, ref x2);
-            x_vector_to_array(ref _d_y2, ref y2);
+            if( _d_x2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x2, ref x2);
+            if( x2 == null )
+                x2 = new double[0];
+            if( _d_y2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y2, ref y2);
+            if( y2 == null )
+                y2 = new double[0];
             nsections = _d_nsections.intval;
         }
         finally
@@ -42592,13 +44647,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_create_empty(ref _d_x2, DT_REAL);
-            x2 = null;
-            x_vector_create_empty(ref _d_y2, DT_REAL);
-            y2 = null;
-            _error_code = _i_ser_lstfitpiecewiselinearrdp(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_eps, &_d_x2, &_d_y2, &_d_nsections);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_create_empty(ref _d_x2, DT_REAL);
+                x2 = null;
+                x_vector_create_empty(ref _d_y2, DT_REAL);
+                y2 = null;
+                _error_code = _i_ser_lstfitpiecewiselinearrdp(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_eps, &_d_x2, &_d_y2, &_d_nsections);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42606,8 +44663,14 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'lstfitpiecewiselinearrdp' call");
             }
-            x_vector_to_array(ref _d_x2, ref x2);
-            x_vector_to_array(ref _d_y2, ref y2);
+            if( _d_x2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x2, ref x2);
+            if( x2 == null )
+                x2 = new double[0];
+            if( _d_y2.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y2, ref y2);
+            if( y2 == null )
+                y2 = new double[0];
             nsections = _d_nsections.intval;
         }
         finally
@@ -42645,12 +44708,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_polynomialfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_polynomialfit(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_p, &_d_rep);
-            else    _error_code = _i_smp_polynomialfit(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_p, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_polynomialfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_polynomialfit(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_p, &_d_rep);
+                else    _error_code = _i_smp_polynomialfit(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_p, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42735,16 +44800,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_xc, xc, X_CREATE);
-            x_vector_from_array(ref _d_yc, yc, X_CREATE);
-            x_vector_from_array(ref _d_dc, dc, X_CREATE);
-            x_polynomialfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_polynomialfitwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_p, &_d_rep);
-            else    _error_code = _i_smp_polynomialfitwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_p, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_xc = xc, _fp_yc = yc){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_xc, _fp_xc, ap.len(xc));
+                x_vector_attach_to_array(ref _d_yc, _fp_yc, ap.len(yc));
+                x_vector_from_array(ref _d_dc, dc, X_CREATE);
+                x_polynomialfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_polynomialfitwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_p, &_d_rep);
+                else    _error_code = _i_smp_polynomialfitwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_p, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42921,10 +44988,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_lsfitreport_init(ref _d_rep);
-            _error_code = _i_ser_logisticfit4(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_a, &_d_b, &_d_c, &_d_d, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_lsfitreport_init(ref _d_rep);
+                _error_code = _i_ser_logisticfit4(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_a, &_d_b, &_d_c, &_d_d, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -42975,10 +45044,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_lsfitreport_init(ref _d_rep);
-            _error_code = _i_ser_logisticfit4ec(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_a, &_d_b, &_d_c, &_d_d, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_lsfitreport_init(ref _d_rep);
+                _error_code = _i_ser_logisticfit4ec(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_a, &_d_b, &_d_c, &_d_d, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43028,10 +45099,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_lsfitreport_init(ref _d_rep);
-            _error_code = _i_ser_logisticfit5(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_lsfitreport_init(ref _d_rep);
+                _error_code = _i_ser_logisticfit5(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43084,10 +45157,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_lsfitreport_init(ref _d_rep);
-            _error_code = _i_ser_logisticfit5ec(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_lsfitreport_init(ref _d_rep);
+                _error_code = _i_ser_logisticfit5ec(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43144,10 +45219,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_lsfitreport_init(ref _d_rep);
-            _error_code = _i_ser_logisticfit45x(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_is4pl, &_d_lambdav, &_d_epsx, &_d_rscnt, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_lsfitreport_init(ref _d_rep);
+                _error_code = _i_ser_logisticfit45x(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_cnstrleft, &_d_cnstrright, &_d_is4pl, &_d_lambdav, &_d_epsx, &_d_rscnt, &_d_a, &_d_b, &_d_c, &_d_d, &_d_g, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43202,16 +45279,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_xc, xc, X_CREATE);
-            x_vector_from_array(ref _d_yc, yc, X_CREATE);
-            x_vector_from_array(ref _d_dc, dc, X_CREATE);
-            x_barycentricfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_barycentricfitfloaterhormannwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_b, &_d_rep);
-            else    _error_code = _i_smp_barycentricfitfloaterhormannwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_b, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_xc = xc, _fp_yc = yc){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_xc, _fp_xc, ap.len(xc));
+                x_vector_attach_to_array(ref _d_yc, _fp_yc, ap.len(yc));
+                x_vector_from_array(ref _d_dc, dc, X_CREATE);
+                x_barycentricfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_barycentricfitfloaterhormannwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_b, &_d_rep);
+                else    _error_code = _i_smp_barycentricfitfloaterhormannwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_b, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43269,12 +45348,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_barycentricfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_barycentricfitfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_b, &_d_rep);
-            else    _error_code = _i_smp_barycentricfitfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_b, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_barycentricfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_barycentricfitfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_b, &_d_rep);
+                else    _error_code = _i_smp_barycentricfitfloaterhormann(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_b, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43333,16 +45414,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_xc, xc, X_CREATE);
-            x_vector_from_array(ref _d_yc, yc, X_CREATE);
-            x_vector_from_array(ref _d_dc, dc, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfitcubicwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfitcubicwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_xc = xc, _fp_yc = yc){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_xc, _fp_xc, ap.len(xc));
+                x_vector_attach_to_array(ref _d_yc, _fp_yc, ap.len(yc));
+                x_vector_from_array(ref _d_dc, dc, X_CREATE);
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitcubicwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitcubicwc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43439,16 +45522,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_xc, xc, X_CREATE);
-            x_vector_from_array(ref _d_yc, yc, X_CREATE);
-            x_vector_from_array(ref _d_dc, dc, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfithermitewc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfithermitewc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_xc = xc, _fp_yc = yc){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_xc, _fp_xc, ap.len(xc));
+                x_vector_attach_to_array(ref _d_yc, _fp_yc, ap.len(yc));
+                x_vector_from_array(ref _d_dc, dc, X_CREATE);
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfithermitewc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfithermitewc(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_n, &_d_xc, &_d_yc, &_d_dc, &_d_k, &_d_m, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43540,12 +45625,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfitcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfitcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfitcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfitcubic(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43625,12 +45712,14 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_spline1dfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_spline1dfithermite(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
-            else    _error_code = _i_smp_spline1dfithermite(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_spline1dfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_spline1dfithermite(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+                else    _error_code = _i_smp_spline1dfithermite(&_s_errormsg, &_d_x, &_d_y, &_d_n, &_d_m, &_d_info, &_d_s, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43710,15 +45799,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_matrix_from_array(ref _d_fmatrix, fmatrix, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            x_lsfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_lsfitlinearw(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
-            else    _error_code = _i_smp_lsfitlinearw(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+            fixed(double* _fp_y = y, _fp_w = w, _fp_fmatrix = fmatrix){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_matrix_attach_to_array(ref _d_fmatrix, _fp_fmatrix, ap.rows(fmatrix), ap.cols(fmatrix));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                x_lsfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_lsfitlinearw(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+                else    _error_code = _i_smp_lsfitlinearw(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43727,7 +45818,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lsfitlinearw' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
             rep = null;
             x_lsfitreport_to_record(ref _d_rep, ref rep);
         }
@@ -43804,16 +45898,18 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_matrix_from_array(ref _d_fmatrix, fmatrix, X_CREATE);
-            x_matrix_from_array(ref _d_cmatrix, cmatrix, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            x_lsfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_lsfitlinearwc(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
-            else    _error_code = _i_smp_lsfitlinearwc(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+            fixed(double* _fp_y = y, _fp_w = w, _fp_fmatrix = fmatrix, _fp_cmatrix = cmatrix){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_matrix_attach_to_array(ref _d_fmatrix, _fp_fmatrix, ap.rows(fmatrix), ap.cols(fmatrix));
+                x_matrix_attach_to_array(ref _d_cmatrix, _fp_cmatrix, ap.rows(cmatrix), ap.cols(cmatrix));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                x_lsfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_lsfitlinearwc(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+                else    _error_code = _i_smp_lsfitlinearwc(&_s_errormsg, &_d_y, &_d_w, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43822,7 +45918,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lsfitlinearwc' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
             rep = null;
             x_lsfitreport_to_record(ref _d_rep, ref rep);
         }
@@ -43905,14 +46004,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_from_array(ref _d_fmatrix, fmatrix, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            x_lsfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_lsfitlinear(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
-            else    _error_code = _i_smp_lsfitlinear(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+            fixed(double* _fp_y = y, _fp_fmatrix = fmatrix){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_matrix_attach_to_array(ref _d_fmatrix, _fp_fmatrix, ap.rows(fmatrix), ap.cols(fmatrix));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                x_lsfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_lsfitlinear(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+                else    _error_code = _i_smp_lsfitlinear(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_n, &_d_m, &_d_info, &_d_c, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -43921,7 +46022,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lsfitlinear' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
             rep = null;
             x_lsfitreport_to_record(ref _d_rep, ref rep);
         }
@@ -43996,15 +46100,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_from_array(ref _d_fmatrix, fmatrix, X_CREATE);
-            x_matrix_from_array(ref _d_cmatrix, cmatrix, X_CREATE);
-            x_vector_create_empty(ref _d_c, DT_REAL);
-            c = null;
-            x_lsfitreport_init(ref _d_rep);
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_lsfitlinearc(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
-            else    _error_code = _i_smp_lsfitlinearc(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+            fixed(double* _fp_y = y, _fp_fmatrix = fmatrix, _fp_cmatrix = cmatrix){
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_matrix_attach_to_array(ref _d_fmatrix, _fp_fmatrix, ap.rows(fmatrix), ap.cols(fmatrix));
+                x_matrix_attach_to_array(ref _d_cmatrix, _fp_cmatrix, ap.rows(cmatrix), ap.cols(cmatrix));
+                x_vector_create_empty(ref _d_c, DT_REAL);
+                c = null;
+                x_lsfitreport_init(ref _d_rep);
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_lsfitlinearc(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+                else    _error_code = _i_smp_lsfitlinearc(&_s_errormsg, &_d_y, &_d_fmatrix, &_d_cmatrix, &_d_n, &_d_m, &_d_k, &_d_info, &_d_c, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44013,7 +46119,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lsfitlinearc' call");
             }
             info = _d_info.intval;
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
             rep = null;
             x_lsfitreport_to_record(ref _d_rep, ref rep);
         }
@@ -44098,11 +46207,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatewf(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatewf(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44167,10 +46278,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatef(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_diffstep, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatef(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_diffstep, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44235,11 +46348,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatewfg(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_cheapfg, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatewfg(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_cheapfg, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44304,10 +46419,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatefg(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_cheapfg, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatefg(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_cheapfg, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44371,11 +46488,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_w, w, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatewfgh(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_w = w, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_w, _fp_w, ap.len(w));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatewfgh(&_s_errormsg, &_d_x, &_d_y, &_d_w, &_d_c, &_d_n, &_d_m, &_d_k, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44439,10 +46558,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_lsfitcreatefgh(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_state);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_c = c){
+                x_matrix_attach_to_array(ref _d_x, _fp_x, ap.rows(x), ap.cols(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_lsfitcreatefgh(&_s_errormsg, &_d_x, &_d_y, &_d_c, &_d_n, &_d_m, &_d_k, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44611,8 +46732,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_lsfitsetscale(&_s_errormsg, &_d_state, &_d_s);
+            fixed(double* _fp_s = s){
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_lsfitsetscale(&_s_errormsg, &_d_state, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44649,9 +46772,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_bndl, bndl, X_CREATE);
-            x_vector_from_array(ref _d_bndu, bndu, X_CREATE);
-            _error_code = _i_ser_lsfitsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            fixed(double* _fp_bndl = bndl, _fp_bndu = bndu){
+                x_vector_attach_to_array(ref _d_bndl, _fp_bndl, ap.len(bndl));
+                x_vector_attach_to_array(ref _d_bndu, _fp_bndu, ap.len(bndu));
+                _error_code = _i_ser_lsfitsetbc(&_s_errormsg, &_d_state, &_d_bndl, &_d_bndu);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -44690,9 +46815,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_c, c, X_CREATE);
-            x_vector_from_array(ref _d_ct, ct, X_CREATE);
-            _error_code = _i_ser_lsfitsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            fixed(double* _fp_c = c){
+                x_matrix_attach_to_array(ref _d_c, _fp_c, ap.rows(c), ap.cols(c));
+                x_vector_from_array(ref _d_ct, ct, X_CREATE);
+                _error_code = _i_ser_lsfitsetlc(&_s_errormsg, &_d_state, &_d_c, &_d_ct, &_d_k);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45073,7 +47200,10 @@ public partial class alglib
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
             info = _d_info.intval;
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
             rep = null;
             x_lsfitreport_to_record(ref _d_rep, ref rep);
         }
@@ -45156,10 +47286,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_create_empty(ref _d_cx, DT_REAL);
-            cx = null;
-            _error_code = _i_ser_nsfitspheremcc(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rhi);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_create_empty(ref _d_cx, DT_REAL);
+                cx = null;
+                _error_code = _i_ser_nsfitspheremcc(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rhi);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45167,7 +47299,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'nsfitspheremcc' call");
             }
-            x_vector_to_array(ref _d_cx, ref cx);
+            if( _d_cx.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_cx, ref cx);
+            if( cx == null )
+                cx = new double[0];
             rhi = _d_rhi;
         }
         finally
@@ -45200,10 +47335,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_create_empty(ref _d_cx, DT_REAL);
-            cx = null;
-            _error_code = _i_ser_nsfitspheremic(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rlo);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_create_empty(ref _d_cx, DT_REAL);
+                cx = null;
+                _error_code = _i_ser_nsfitspheremic(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rlo);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45211,7 +47348,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'nsfitspheremic' call");
             }
-            x_vector_to_array(ref _d_cx, ref cx);
+            if( _d_cx.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_cx, ref cx);
+            if( cx == null )
+                cx = new double[0];
             rlo = _d_rlo;
         }
         finally
@@ -45245,10 +47385,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_create_empty(ref _d_cx, DT_REAL);
-            cx = null;
-            _error_code = _i_ser_nsfitspheremzc(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rlo, &_d_rhi);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_create_empty(ref _d_cx, DT_REAL);
+                cx = null;
+                _error_code = _i_ser_nsfitspheremzc(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_cx, &_d_rlo, &_d_rhi);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45256,7 +47398,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'nsfitspheremzc' call");
             }
-            x_vector_to_array(ref _d_cx, ref cx);
+            if( _d_cx.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_cx, ref cx);
+            if( cx == null )
+                cx = new double[0];
             rlo = _d_rlo;
             rhi = _d_rhi;
         }
@@ -45295,10 +47440,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_create_empty(ref _d_cx, DT_REAL);
-            cx = null;
-            _error_code = _i_ser_nsfitspherex(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_problemtype, &_d_epsx, &_d_aulits, &_d_penalty, &_d_cx, &_d_rlo, &_d_rhi);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_create_empty(ref _d_cx, DT_REAL);
+                cx = null;
+                _error_code = _i_ser_nsfitspherex(&_s_errormsg, &_d_xy, &_d_npoints, &_d_nx, &_d_problemtype, &_d_epsx, &_d_aulits, &_d_penalty, &_d_cx, &_d_rlo, &_d_rhi);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45306,7 +47453,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'nsfitspherex' call");
             }
-            x_vector_to_array(ref _d_cx, ref cx);
+            if( _d_cx.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_cx, ref cx);
+            if( cx == null )
+                cx = new double[0];
             rlo = _d_rlo;
             rhi = _d_rhi;
         }
@@ -45331,26 +47481,28 @@ public partial class alglib
 
     public unsafe class spline2dinterpolant : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public spline2dinterpolant(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~spline2dinterpolant()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new spline2dinterpolant(null);
-            return new spline2dinterpolant(_i_x_obj_copy_spline2dinterpolant(ptr));
+            return new spline2dinterpolant(_i_x_obj_copy_spline2dinterpolant(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_spline2dinterpolant(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_spline2dinterpolant(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -45583,10 +47735,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_b, DT_REAL);
-            b = null;
-            _error_code = _i_ser_spline2dresamplebicubic(&_s_errormsg, &_d_a, &_d_oldheight, &_d_oldwidth, &_d_b, &_d_newheight, &_d_newwidth);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_b, DT_REAL);
+                b = null;
+                _error_code = _i_ser_spline2dresamplebicubic(&_s_errormsg, &_d_a, &_d_oldheight, &_d_oldwidth, &_d_b, &_d_newheight, &_d_newwidth);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45594,7 +47748,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline2dresamplebicubic' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -45627,10 +47784,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_b, DT_REAL);
-            b = null;
-            _error_code = _i_ser_spline2dresamplebilinear(&_s_errormsg, &_d_a, &_d_oldheight, &_d_oldwidth, &_d_b, &_d_newheight, &_d_newwidth);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_b, DT_REAL);
+                b = null;
+                _error_code = _i_ser_spline2dresamplebilinear(&_s_errormsg, &_d_a, &_d_oldheight, &_d_oldwidth, &_d_b, &_d_newheight, &_d_newwidth);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45638,7 +47797,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'spline2dresamplebilinear' call");
             }
-            x_matrix_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0,0];
         }
         finally
         {
@@ -45673,10 +47835,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline2dbuildbilinearv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_f, &_d_d, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_f = f){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_spline2dbuildbilinearv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_f, &_d_d, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45722,10 +47886,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline2dbuildbicubicv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_f, &_d_d, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_f = f){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_spline2dbuildbicubicv(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_f, &_d_d, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45767,8 +47933,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline2dcalcvbuf(&_s_errormsg, &_d_c, &_d_x, &_d_y, &_d_f);
+            fixed(double* _fp_f = f){
+                x_vector_attach_to_array(ref _d_f, _fp_f, ap.len(f));
+                _error_code = _i_ser_spline2dcalcvbuf(&_s_errormsg, &_d_c, &_d_x, &_d_y, &_d_f);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45777,7 +47945,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'spline2dcalcvbuf' call");
             }
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_f, ref f);
+            if( _d_f.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_f, ref f);
+            if( f == null )
+                f = new double[0];
         }
         finally
         {
@@ -45818,7 +47989,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'spline2dcalcv' call");
             }
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_f, ref f);
+            if( _d_f.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_f, ref f);
+            if( f == null )
+                f = new double[0];
         }
         finally
         {
@@ -45863,7 +48037,10 @@ public partial class alglib
             m = _d_m.intval;
             n = _d_n.intval;
             d = _d_d.intval;
-            x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( _d_tbl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( tbl == null )
+                tbl = new double[0,0];
         }
         finally
         {
@@ -45896,10 +48073,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline2dbuildbilinear(&_s_errormsg, &_d_x, &_d_y, &_d_f, &_d_m, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_f = f){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_matrix_attach_to_array(ref _d_f, _fp_f, ap.rows(f), ap.cols(f));
+                _error_code = _i_ser_spline2dbuildbilinear(&_s_errormsg, &_d_x, &_d_y, &_d_f, &_d_m, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -45944,10 +48123,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            x_matrix_from_array(ref _d_f, f, X_CREATE);
-            _error_code = _i_ser_spline2dbuildbicubic(&_s_errormsg, &_d_x, &_d_y, &_d_f, &_d_m, &_d_n, &_d_c);
+            fixed(double* _fp_x = x, _fp_y = y, _fp_f = f){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                x_matrix_attach_to_array(ref _d_f, _fp_f, ap.rows(f), ap.cols(f));
+                _error_code = _i_ser_spline2dbuildbicubic(&_s_errormsg, &_d_x, &_d_y, &_d_f, &_d_m, &_d_n, &_d_c);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -46002,7 +48183,10 @@ public partial class alglib
             ap.assert(c.ptr==_d_c, "ALGLIB: internal error (reference changed for non-out X-object)");
             m = _d_m.intval;
             n = _d_n.intval;
-            x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( _d_tbl.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_tbl, ref tbl);
+            if( tbl == null )
+                tbl = new double[0,0];
         }
         finally
         {
@@ -46030,26 +48214,28 @@ public partial class alglib
 
     public unsafe class rbfcalcbuffer : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public rbfcalcbuffer(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~rbfcalcbuffer()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new rbfcalcbuffer(null);
-            return new rbfcalcbuffer(_i_x_obj_copy_rbfcalcbuffer(ptr));
+            return new rbfcalcbuffer(_i_x_obj_copy_rbfcalcbuffer(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_rbfcalcbuffer(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_rbfcalcbuffer(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -46061,26 +48247,28 @@ public partial class alglib
 
     public unsafe class rbfmodel : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public rbfmodel(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~rbfmodel()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new rbfmodel(null);
-            return new rbfmodel(_i_x_obj_copy_rbfmodel(ptr));
+            return new rbfmodel(_i_x_obj_copy_rbfmodel(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_rbfmodel(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_rbfmodel(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -46355,8 +48543,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            _error_code = _i_ser_rbfsetpoints(&_s_errormsg, &_d_s, &_d_xy, &_d_n);
+            fixed(double* _fp_xy = xy){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                _error_code = _i_ser_rbfsetpoints(&_s_errormsg, &_d_s, &_d_xy, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -46405,9 +48595,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_xy, xy, X_CREATE);
-            x_vector_from_array(ref _d_s, s, X_CREATE);
-            _error_code = _i_ser_rbfsetpointsandscales(&_s_errormsg, &_d_r, &_d_xy, &_d_n, &_d_s);
+            fixed(double* _fp_xy = xy, _fp_s = s){
+                x_matrix_attach_to_array(ref _d_xy, _fp_xy, ap.rows(xy), ap.cols(xy));
+                x_vector_attach_to_array(ref _d_s, _fp_s, ap.len(s));
+                _error_code = _i_ser_rbfsetpointsandscales(&_s_errormsg, &_d_r, &_d_xy, &_d_n, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -46977,10 +49169,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_rbfcalc(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_rbfcalc(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -46989,7 +49183,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfcalc' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47019,9 +49216,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_rbfcalcbuf(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rbfcalcbuf(&_s_errormsg, &_d_s, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47030,7 +49229,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfcalcbuf' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47061,9 +49263,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_rbftscalcbuf(&_s_errormsg, &_d_s, &_d_buf, &_d_x, &_d_y);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_rbftscalcbuf(&_s_errormsg, &_d_s, &_d_buf, &_d_x, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47073,7 +49277,10 @@ public partial class alglib
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
             ap.assert(buf.ptr==_d_buf, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47106,11 +49313,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x0, x0, X_CREATE);
-            x_vector_from_array(ref _d_x1, x1, X_CREATE);
-            x_matrix_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            _error_code = _i_ser_rbfgridcalc2(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
+            fixed(double* _fp_x0 = x0, _fp_x1 = x1){
+                x_vector_attach_to_array(ref _d_x0, _fp_x0, ap.len(x0));
+                x_vector_attach_to_array(ref _d_x1, _fp_x1, ap.len(x1));
+                x_matrix_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                _error_code = _i_ser_rbfgridcalc2(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47119,7 +49328,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfgridcalc2' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_matrix_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0,0];
         }
         finally
         {
@@ -47153,13 +49365,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x0, x0, X_CREATE);
-            x_vector_from_array(ref _d_x1, x1, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rbfgridcalc2v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
-            else    _error_code = _i_smp_rbfgridcalc2v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
+            fixed(double* _fp_x0 = x0, _fp_x1 = x1){
+                x_vector_attach_to_array(ref _d_x0, _fp_x0, ap.len(x0));
+                x_vector_attach_to_array(ref _d_x1, _fp_x1, ap.len(x1));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rbfgridcalc2v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
+                else    _error_code = _i_smp_rbfgridcalc2v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47168,7 +49382,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfgridcalc2v' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47208,14 +49425,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x0, x0, X_CREATE);
-            x_vector_from_array(ref _d_x1, x1, X_CREATE);
-            x_vector_from_array(ref _d_flagy, flagy, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rbfgridcalc2vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_flagy, &_d_y);
-            else    _error_code = _i_smp_rbfgridcalc2vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_flagy, &_d_y);
+            fixed(double* _fp_x0 = x0, _fp_x1 = x1){fixed(bool* _fp_flagy = flagy){
+                x_vector_attach_to_array(ref _d_x0, _fp_x0, ap.len(x0));
+                x_vector_attach_to_array(ref _d_x1, _fp_x1, ap.len(x1));
+                x_vector_attach_to_array(ref _d_flagy, _fp_flagy, ap.len(flagy));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rbfgridcalc2vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_flagy, &_d_y);
+                else    _error_code = _i_smp_rbfgridcalc2vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_flagy, &_d_y);
+            }}
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47224,7 +49443,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfgridcalc2vsubset' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47266,14 +49488,16 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x0, x0, X_CREATE);
-            x_vector_from_array(ref _d_x1, x1, X_CREATE);
-            x_vector_from_array(ref _d_x2, x2, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rbfgridcalc3v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_y);
-            else    _error_code = _i_smp_rbfgridcalc3v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_y);
+            fixed(double* _fp_x0 = x0, _fp_x1 = x1, _fp_x2 = x2){
+                x_vector_attach_to_array(ref _d_x0, _fp_x0, ap.len(x0));
+                x_vector_attach_to_array(ref _d_x1, _fp_x1, ap.len(x1));
+                x_vector_attach_to_array(ref _d_x2, _fp_x2, ap.len(x2));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rbfgridcalc3v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_y);
+                else    _error_code = _i_smp_rbfgridcalc3v(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_y);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47282,7 +49506,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfgridcalc3v' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47325,15 +49552,17 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x0, x0, X_CREATE);
-            x_vector_from_array(ref _d_x1, x1, X_CREATE);
-            x_vector_from_array(ref _d_x2, x2, X_CREATE);
-            x_vector_from_array(ref _d_flagy, flagy, X_CREATE);
-            x_vector_create_empty(ref _d_y, DT_REAL);
-            y = null;
-            if( _alglib_mode == alglibmode.serial )
-                _error_code = _i_ser_rbfgridcalc3vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_flagy, &_d_y);
-            else    _error_code = _i_smp_rbfgridcalc3vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_flagy, &_d_y);
+            fixed(double* _fp_x0 = x0, _fp_x1 = x1, _fp_x2 = x2){fixed(bool* _fp_flagy = flagy){
+                x_vector_attach_to_array(ref _d_x0, _fp_x0, ap.len(x0));
+                x_vector_attach_to_array(ref _d_x1, _fp_x1, ap.len(x1));
+                x_vector_attach_to_array(ref _d_x2, _fp_x2, ap.len(x2));
+                x_vector_attach_to_array(ref _d_flagy, _fp_flagy, ap.len(flagy));
+                x_vector_create_empty(ref _d_y, DT_REAL);
+                y = null;
+                if( _alglib_mode == alglibmode.serial )
+                    _error_code = _i_ser_rbfgridcalc3vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_flagy, &_d_y);
+                else    _error_code = _i_smp_rbfgridcalc3vsubset(&_s_errormsg, &_d_s, &_d_x0, &_d_n0, &_d_x1, &_d_n1, &_d_x2, &_d_n2, &_d_flagy, &_d_y);
+            }}
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47342,7 +49571,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rbfgridcalc3vsubset' call");
             }
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_y, ref y);
+            if( _d_y.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_y, ref y);
+            if( y == null )
+                y = new double[0];
         }
         finally
         {
@@ -47399,9 +49631,15 @@ public partial class alglib
             ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
             nx = _d_nx.intval;
             ny = _d_ny.intval;
-            x_matrix_to_array(ref _d_xwr, ref xwr);
+            if( _d_xwr.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_xwr, ref xwr);
+            if( xwr == null )
+                xwr = new double[0,0];
             nc = _d_nc.intval;
-            x_matrix_to_array(ref _d_v, ref v);
+            if( _d_v.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_v, ref v);
+            if( v == null )
+                v = new double[0,0];
             modelversion = _d_modelversion.intval;
         }
         finally
@@ -47716,8 +49954,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_hermitesum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            fixed(double* _fp_c = c){
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_hermitesum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -47763,7 +50003,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'hermitecoefficients' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -48951,8 +51194,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_laguerresum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            fixed(double* _fp_c = c){
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_laguerresum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -48998,7 +51243,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'laguerrecoefficients' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -49197,8 +51445,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_legendresum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            fixed(double* _fp_c = c){
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_legendresum(&_s_errormsg, &_d_result, &_d_c, &_d_n, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49244,7 +51494,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'legendrecoefficients' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -49367,8 +51620,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_c, c, X_CREATE);
-            _error_code = _i_ser_chebyshevsum(&_s_errormsg, &_d_result, &_d_c, &_d_r, &_d_n, &_d_x);
+            fixed(double* _fp_c = c){
+                x_vector_attach_to_array(ref _d_c, _fp_c, ap.len(c));
+                _error_code = _i_ser_chebyshevsum(&_s_errormsg, &_d_result, &_d_c, &_d_r, &_d_n, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49414,7 +51669,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'chebyshevcoefficients' call");
             }
-            x_vector_to_array(ref _d_c, ref c);
+            if( _d_c.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_c, ref c);
+            if( c == null )
+                c = new double[0];
         }
         finally
         {
@@ -49443,10 +51701,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_b, DT_REAL);
-            b = null;
-            _error_code = _i_ser_fromchebyshev(&_s_errormsg, &_d_a, &_d_n, &_d_b);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_create_empty(ref _d_b, DT_REAL);
+                b = null;
+                _error_code = _i_ser_fromchebyshev(&_s_errormsg, &_d_a, &_d_n, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49454,7 +51714,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'fromchebyshev' call");
             }
-            x_vector_to_array(ref _d_b, ref b);
+            if( _d_b.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_b, ref b);
+            if( b == null )
+                b = new double[0];
         }
         finally
         {
@@ -49752,8 +52015,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_wilcoxonsignedranktest(&_s_errormsg, &_d_x, &_d_n, &_d_e, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_wilcoxonsignedranktest(&_s_errormsg, &_d_x, &_d_n, &_d_e, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49801,8 +52066,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_onesamplesigntest(&_s_errormsg, &_d_x, &_d_n, &_d_median, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_onesamplesigntest(&_s_errormsg, &_d_x, &_d_n, &_d_median, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49940,8 +52207,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_studentttest1(&_s_errormsg, &_d_x, &_d_n, &_d_mean, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_studentttest1(&_s_errormsg, &_d_x, &_d_n, &_d_mean, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -49984,9 +52253,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_studentttest2(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_studentttest2(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50030,9 +52301,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_unequalvariancettest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_unequalvariancettest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50082,9 +52355,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_mannwhitneyutest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_mannwhitneyutest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50130,8 +52405,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_jarqueberatest(&_s_errormsg, &_d_x, &_d_n, &_d_p);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_jarqueberatest(&_s_errormsg, &_d_x, &_d_n, &_d_p);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50178,9 +52455,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_vector_from_array(ref _d_y, y, X_CREATE);
-            _error_code = _i_ser_ftest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x, _fp_y = y){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_vector_attach_to_array(ref _d_y, _fp_y, ap.len(y));
+                _error_code = _i_ser_ftest(&_s_errormsg, &_d_x, &_d_n, &_d_y, &_d_m, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50223,8 +52502,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_onesamplevariancetest(&_s_errormsg, &_d_x, &_d_n, &_d_variance, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_onesamplevariancetest(&_s_errormsg, &_d_x, &_d_n, &_d_variance, &_d_bothtails, &_d_lefttail, &_d_righttail);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50271,10 +52552,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_create_empty(ref _d_s, DT_REAL);
-            s = null;
-            _error_code = _i_ser_rmatrixschur(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_s);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_create_empty(ref _d_s, DT_REAL);
+                s = null;
+                _error_code = _i_ser_rmatrixschur(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_s);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50283,8 +52566,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixschur' call");
             }
             result = _d_result!=0;
-            x_matrix_to_array(ref _d_a, ref a);
-            x_matrix_to_array(ref _d_s, ref s);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_s.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_s, ref s);
+            if( s == null )
+                s = new double[0,0];
         }
         finally
         {
@@ -50328,13 +52617,15 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_vector_create_empty(ref _d_d, DT_REAL);
-            d = null;
-            x_matrix_create_empty(ref _d_z, DT_REAL);
-            z = null;
-            _error_code = _i_ser_smatrixgevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isuppera, &_d_b, &_d_isupperb, &_d_zneeded, &_d_problemtype, &_d_d, &_d_z);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_vector_create_empty(ref _d_d, DT_REAL);
+                d = null;
+                x_matrix_create_empty(ref _d_z, DT_REAL);
+                z = null;
+                _error_code = _i_ser_smatrixgevd(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isuppera, &_d_b, &_d_isupperb, &_d_zneeded, &_d_problemtype, &_d_d, &_d_z);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50343,8 +52634,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixgevd' call");
             }
             result = _d_result!=0;
-            x_vector_to_array(ref _d_d, ref d);
-            x_matrix_to_array(ref _d_z, ref z);
+            if( _d_d.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_d, ref d);
+            if( d == null )
+                d = new double[0];
+            if( _d_z.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_z, ref z);
+            if( z == null )
+                z = new double[0,0];
         }
         finally
         {
@@ -50383,11 +52680,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_matrix_from_array(ref _d_b, b, X_CREATE);
-            x_matrix_create_empty(ref _d_r, DT_REAL);
-            r = null;
-            _error_code = _i_ser_smatrixgevdreduce(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isuppera, &_d_b, &_d_isupperb, &_d_problemtype, &_d_r, &_d_isupperr);
+            fixed(double* _fp_a = a, _fp_b = b){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_matrix_attach_to_array(ref _d_b, _fp_b, ap.rows(b), ap.cols(b));
+                x_matrix_create_empty(ref _d_r, DT_REAL);
+                r = null;
+                _error_code = _i_ser_smatrixgevdreduce(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isuppera, &_d_b, &_d_isupperb, &_d_problemtype, &_d_r, &_d_isupperr);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50396,8 +52695,14 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'smatrixgevdreduce' call");
             }
             result = _d_result!=0;
-            x_matrix_to_array(ref _d_a, ref a);
-            x_matrix_to_array(ref _d_r, ref r);
+            if( _d_a.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_a, ref a);
+            if( a == null )
+                a = new double[0,0];
+            if( _d_r.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_r, ref r);
+            if( r == null )
+                r = new double[0,0];
             isupperr = _d_isupperr!=0;
         }
         finally
@@ -50437,8 +52742,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_inva, inva, X_CREATE);
-            _error_code = _i_ser_rmatrixinvupdatesimple(&_s_errormsg, &_d_inva, &_d_n, &_d_updrow, &_d_updcolumn, &_d_updval);
+            fixed(double* _fp_inva = inva){
+                x_matrix_attach_to_array(ref _d_inva, _fp_inva, ap.rows(inva), ap.cols(inva));
+                _error_code = _i_ser_rmatrixinvupdatesimple(&_s_errormsg, &_d_inva, &_d_n, &_d_updrow, &_d_updcolumn, &_d_updval);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50446,7 +52753,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixinvupdatesimple' call");
             }
-            x_matrix_to_array(ref _d_inva, ref inva);
+            if( _d_inva.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_inva, ref inva);
+            if( inva == null )
+                inva = new double[0,0];
         }
         finally
         {
@@ -50476,9 +52786,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_inva, inva, X_CREATE);
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_rmatrixinvupdaterow(&_s_errormsg, &_d_inva, &_d_n, &_d_updrow, &_d_v);
+            fixed(double* _fp_inva = inva, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_inva, _fp_inva, ap.rows(inva), ap.cols(inva));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixinvupdaterow(&_s_errormsg, &_d_inva, &_d_n, &_d_updrow, &_d_v);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50486,7 +52798,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixinvupdaterow' call");
             }
-            x_matrix_to_array(ref _d_inva, ref inva);
+            if( _d_inva.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_inva, ref inva);
+            if( inva == null )
+                inva = new double[0,0];
         }
         finally
         {
@@ -50517,9 +52832,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_inva, inva, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            _error_code = _i_ser_rmatrixinvupdatecolumn(&_s_errormsg, &_d_inva, &_d_n, &_d_updcolumn, &_d_u);
+            fixed(double* _fp_inva = inva, _fp_u = u){
+                x_matrix_attach_to_array(ref _d_inva, _fp_inva, ap.rows(inva), ap.cols(inva));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                _error_code = _i_ser_rmatrixinvupdatecolumn(&_s_errormsg, &_d_inva, &_d_n, &_d_updcolumn, &_d_u);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50527,7 +52844,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixinvupdatecolumn' call");
             }
-            x_matrix_to_array(ref _d_inva, ref inva);
+            if( _d_inva.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_inva, ref inva);
+            if( inva == null )
+                inva = new double[0,0];
         }
         finally
         {
@@ -50558,10 +52878,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_inva, inva, X_CREATE);
-            x_vector_from_array(ref _d_u, u, X_CREATE);
-            x_vector_from_array(ref _d_v, v, X_CREATE);
-            _error_code = _i_ser_rmatrixinvupdateuv(&_s_errormsg, &_d_inva, &_d_n, &_d_u, &_d_v);
+            fixed(double* _fp_inva = inva, _fp_u = u, _fp_v = v){
+                x_matrix_attach_to_array(ref _d_inva, _fp_inva, ap.rows(inva), ap.cols(inva));
+                x_vector_attach_to_array(ref _d_u, _fp_u, ap.len(u));
+                x_vector_attach_to_array(ref _d_v, _fp_v, ap.len(v));
+                _error_code = _i_ser_rmatrixinvupdateuv(&_s_errormsg, &_d_inva, &_d_n, &_d_u, &_d_v);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50569,7 +52891,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'rmatrixinvupdateuv' call");
             }
-            x_matrix_to_array(ref _d_inva, ref inva);
+            if( _d_inva.last_action==ACT_NEW_LOCATION )
+                x_matrix_to_array(ref _d_inva, ref inva);
+            if( inva == null )
+                inva = new double[0,0];
         }
         finally
         {
@@ -50608,9 +52933,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
-            _error_code = _i_ser_rmatrixludet(&_s_errormsg, &_d_result, &_d_a, &_d_pivots, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
+                _error_code = _i_ser_rmatrixludet(&_s_errormsg, &_d_result, &_d_a, &_d_pivots, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50662,8 +52989,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_rmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_rmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50715,11 +53044,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            _d_result.x = 0;
-            _d_result.y = 0;
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
-            _error_code = _i_ser_cmatrixludet(&_s_errormsg, &_d_result, &_d_a, &_d_pivots, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                _d_result.x = 0;
+                _d_result.y = 0;
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                x_vector_from_array(ref _d_pivots, pivots, X_CREATE);
+                _error_code = _i_ser_cmatrixludet(&_s_errormsg, &_d_result, &_d_a, &_d_pivots, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50772,10 +53103,12 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            _d_result.x = 0;
-            _d_result.y = 0;
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_cmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(alglib.complex* _fp_a = a){
+                _d_result.x = 0;
+                _d_result.y = 0;
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_cmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50827,8 +53160,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_spdmatrixcholeskydet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_spdmatrixcholeskydet(&_s_errormsg, &_d_result, &_d_a, &_d_n);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50880,8 +53215,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_matrix_from_array(ref _d_a, a, X_CREATE);
-            _error_code = _i_ser_spdmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            fixed(double* _fp_a = a){
+                x_matrix_attach_to_array(ref _d_a, _fp_a, ap.rows(a), ap.cols(a));
+                _error_code = _i_ser_spdmatrixdet(&_s_errormsg, &_d_result, &_d_a, &_d_n, &_d_isupper);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -50988,11 +53325,13 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_a, a, X_CREATE);
-            x_vector_create_empty(ref _d_x, DT_COMPLEX);
-            x = null;
-            x_polynomialsolverreport_init(ref _d_rep);
-            _error_code = _i_ser_polynomialsolve(&_s_errormsg, &_d_a, &_d_n, &_d_x, &_d_rep);
+            fixed(double* _fp_a = a){
+                x_vector_attach_to_array(ref _d_a, _fp_a, ap.len(a));
+                x_vector_create_empty(ref _d_x, DT_COMPLEX);
+                x = null;
+                x_polynomialsolverreport_init(ref _d_rep);
+                _error_code = _i_ser_polynomialsolve(&_s_errormsg, &_d_a, &_d_n, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51000,7 +53339,10 @@ public partial class alglib
                 else
                     throw new alglibexception("ALGLIB: unknown error during 'polynomialsolve' call");
             }
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new alglib.complex[0];
             rep = null;
             x_polynomialsolverreport_to_record(ref _d_rep, ref rep);
         }
@@ -51026,26 +53368,28 @@ public partial class alglib
 
     public unsafe class nleqstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public nleqstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~nleqstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new nleqstate(null);
-            return new nleqstate(_i_x_obj_copy_nleqstate(ptr));
+            return new nleqstate(_i_x_obj_copy_nleqstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_nleqstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_nleqstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -51169,8 +53513,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_nleqcreatelm(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_nleqcreatelm(&_s_errormsg, &_d_n, &_d_m, &_d_x, &_d_state);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51474,7 +53820,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'nleqresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_nleqreport_to_record(ref _d_rep, ref rep);
         }
@@ -51506,9 +53855,11 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            x_nleqreport_init_from(ref _d_rep, rep);
-            _error_code = _i_ser_nleqresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                x_nleqreport_init_from(ref _d_rep, rep);
+                _error_code = _i_ser_nleqresultsbuf(&_s_errormsg, &_d_state, &_d_x, &_d_rep);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51517,7 +53868,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'nleqresultsbuf' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             x_nleqreport_to_record(ref _d_rep, ref rep);
         }
         finally
@@ -51547,8 +53901,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_nleqrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_nleqrestartfrom(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51578,26 +53934,28 @@ public partial class alglib
 
     public unsafe class lincgstate : alglibobject
     {
-        public void *ptr;
+        private void *_ptr;
         public lincgstate(void *x)
         {
-            ptr = x;
+            _ptr = x;
         }
         ~lincgstate()
         {
             _deallocate();
         }
+        public void* ptr { get { return _ptr; } }
         public override alglib.alglibobject make_copy()
         {
-            if( ptr==null )
+            if( _ptr==null )
                 return new lincgstate(null);
-            return new lincgstate(_i_x_obj_copy_lincgstate(ptr));
+            return new lincgstate(_i_x_obj_copy_lincgstate(_ptr));
         }
         public override void _deallocate()
         {
-            if( ptr!=null )
-                _i_x_obj_free_lincgstate(ptr);
-            ptr = null;
+            if( _ptr!=null )
+                _i_x_obj_free_lincgstate(_ptr);
+            _ptr = null;
+            System.GC.SuppressFinalize(this);
         }
     }
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -51724,8 +54082,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_x, x, X_CREATE);
-            _error_code = _i_ser_lincgsetstartingpoint(&_s_errormsg, &_d_state, &_d_x);
+            fixed(double* _fp_x = x){
+                x_vector_attach_to_array(ref _d_x, _fp_x, ap.len(x));
+                _error_code = _i_ser_lincgsetstartingpoint(&_s_errormsg, &_d_state, &_d_x);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51873,8 +54233,10 @@ public partial class alglib
         // Pack, call, unpack
         try
         {
-            x_vector_from_array(ref _d_b, b, X_CREATE);
-            _error_code = _i_ser_lincgsolvesparse(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_b);
+            fixed(double* _fp_b = b){
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                _error_code = _i_ser_lincgsolvesparse(&_s_errormsg, &_d_state, &_d_a, &_d_isupper, &_d_b);
+            }
             if( _error_code!=X_OK )
             {
                 if( _error_code==X_ASSERTION_FAILED )
@@ -51924,7 +54286,10 @@ public partial class alglib
                     throw new alglibexception("ALGLIB: unknown error during 'lincgresults' call");
             }
             ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
-            x_vector_to_array(ref _d_x, ref x);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
             rep = null;
             x_lincgreport_to_record(ref _d_rep, ref rep);
         }
@@ -52063,6 +54428,8 @@ public partial class alglib
     // of appropriate types.
     //
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private unsafe delegate void _d_x_activate_core();
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate int _d_x_malloc(out IntPtr p, long size);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private unsafe delegate int _d_x_free(IntPtr p);
@@ -52078,6 +54445,7 @@ public partial class alglib
     public  unsafe delegate void _d_x_set_dbg_flag(long flag_id, long flag_val);
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public  unsafe delegate long _d_x_get_dbg_value(long id);
+    private static _d_x_activate_core           x_activate_core = null;
     private static _d_x_malloc                  x_malloc        = null;
     private static _d_x_free                    x_free          = null;
     private static _d_x_setnworkers             x_setnworkers   = null;
@@ -53797,6 +56165,9 @@ public partial class alglib
         private unsafe delegate int _d_ssasetpoweruplength(byte **error_msg, void **s, x_int *pwlen);
         private static _d_ssasetpoweruplength _i_ser_ssasetpoweruplength = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_ssasetmemorylimit(byte **error_msg, void **s, x_int *memlimit);
+        private static _d_ssasetmemorylimit _i_ser_ssasetmemorylimit = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_ssaaddsequence(byte **error_msg, void **s, x_vector *x, x_int *n);
         private static _d_ssaaddsequence _i_ser_ssaaddsequence = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -55105,6 +57476,7 @@ public partial class alglib
     //
     private static void LoadALGLIBFunctions(IntPtr hTmpDL)
     {
+        x_activate_core             =          (_d_x_activate_core)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_activate_core"),typeof(_d_x_activate_core));
         x_malloc                    =                 (_d_x_malloc)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_malloc"),       typeof(_d_x_malloc));
         x_free                      =                   (_d_x_free)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_free"),         typeof(_d_x_free));
         x_setnworkers               =            (_d_x_setnworkers)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_setnworkers"),  typeof(_d_x_setnworkers));
@@ -55878,6 +58250,7 @@ public partial class alglib
             _i_ser_ssasetwindow = (_d_ssasetwindow)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetwindow"), typeof(_d_ssasetwindow));
             _i_ser_ssasetseed = (_d_ssasetseed)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetseed"), typeof(_d_ssasetseed));
             _i_ser_ssasetpoweruplength = (_d_ssasetpoweruplength)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetpoweruplength"), typeof(_d_ssasetpoweruplength));
+            _i_ser_ssasetmemorylimit = (_d_ssasetmemorylimit)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssasetmemorylimit"), typeof(_d_ssasetmemorylimit));
             _i_ser_ssaaddsequence = (_d_ssaaddsequence)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaaddsequence"), typeof(_d_ssaaddsequence));
             _i_ser_ssaappendpointandupdate = (_d_ssaappendpointandupdate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaappendpointandupdate"), typeof(_d_ssaappendpointandupdate));
             _i_ser_ssaappendsequenceandupdate = (_d_ssaappendsequenceandupdate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_ssaappendsequenceandupdate"), typeof(_d_ssaappendsequenceandupdate));
@@ -56404,7 +58777,6 @@ public partial class alglib
             _i_ser_lincgsetrupdatefreq = (_d_lincgsetrupdatefreq)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_lincgsetrupdatefreq"), typeof(_d_lincgsetrupdatefreq));
             _i_ser_lincgsetxrep = (_d_lincgsetxrep)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_lincgsetxrep"), typeof(_d_lincgsetxrep));
 
-        x_set_dbg_flag(-99, 1000*1000000);
     }
     
 }

@@ -130,6 +130,7 @@
     <Compile Include="FilterFir.cs" />
     <Compile Include="NeuralGlassFitSi.cs" />
     <Compile Include="spread.cs" />
+    <Compile Include="ssa_v2_1_2.cs" />
     <Compile Include="ssa_v2_1FRec.cs" />
     <Compile Include="ssa_v2_1N2.cs" />
     <Compile Include="ssa_v2_1N1.cs" />
