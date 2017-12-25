@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Altaxo.Collections;
+using MoreLinq;
 using RusAlgo.Helper;
 //using System.Linq;
 //using MoreLinq;
@@ -24,22 +26,29 @@ namespace TickSpeed
         public string Objname { get; set; }
         public IContext Context { get; set; }
 
-        public IList<double> glass;
+        //public IList<double> glass { get; set; }
         //private static IList<double> Glass { get; set; }
         public IList<double> Execute(ISecurity source)
         {
             var ctx = Context;
             var count = source.Bars.Count;
+            
             var maxlev = source.GetSellQueue(0).Count;
-            var numArray = new double[source.Bars.Count];
+            var numArray = 0.0;
             if (count < 10 || maxlev == 0)
                 return null;
-            if (glass.IsNull())
+            var temp = (List<double>)ctx.LoadGlobalObject(Objname);
+            if (temp.IsNull())
             {
+                var glass = new double[count];
+
                 for (int i = 0; i < count; i++)
                 {
                     glass[i] = 0.0;
                 }
+                var rew = glass.ToList();
+                ctx.StoreGlobalObject(Objname, rew);
+                temp = (List<double>)ctx.LoadGlobalObject(Objname);
             }
             //if (TradeHelper.IsNull(Glass) || Reset)
             //{
@@ -72,30 +81,32 @@ namespace TickSpeed
             //}
 
             //return Glass.TakeLast(count).ToArray();
-            for (int i = 0; i < count; i++)
+            //for (int i = 0; i < count; i++)
+            //{
+            var nSell = 0.0;
+            var nBuy = 0.0;
+            var sellQueue = source.GetSellQueue(0);
+            var buyQueue = source.GetBuyQueue(0);
+            for (var j = 0; j < Level; j++)
             {
-                var nSell = 0.0;
-                var nBuy = 0.0;
-                var sellQueue = source.GetSellQueue(0);
-                var buyQueue = source.GetBuyQueue(0);
-                for (var j = 0; j < Level; j++)
-                {
-                    nSell += sellQueue[j].Quantity;
-                    nBuy += buyQueue[j].Quantity;
-                }
-                if (Reverse)
-                {
-                    numArray[i] = (nBuy - nSell) / (nBuy + nSell);
-                }
-                else
-                {
-                    numArray[i] = (nSell - nBuy) / (nBuy + nSell);
-                }
-                
+                nSell += sellQueue[j].Quantity;
+                nBuy += buyQueue[j].Quantity;
             }
-            glass.Add(numArray.Last());
-            ctx.StoreGlobalObject(Objname, glass);
-            return glass;
+            if (Reverse)
+            {
+                numArray = (nBuy - nSell) / (nBuy + nSell);
+            }
+            else
+            {
+                numArray = (nSell - nBuy) / (nBuy + nSell);
+            }
+                
+            //}
+            
+            temp.Add(numArray);
+            
+            ctx.StoreGlobalObject(Objname, temp);
+            return temp;
         }
         
     }
