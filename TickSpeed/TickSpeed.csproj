@@ -138,6 +138,8 @@
     <Compile Include="ssa_v2_1.cs" />
     <Compile Include="ssa_v2.cs" />
     <Compile Include="Norm101.cs" />
+    <Compile Include="WinNormSqr.cs" />
+    <Compile Include="WinNormMedian.cs" />
     <Compile Include="Znorm.cs" />
     <Compile Include="Zscore.cs" />
     <Compile Include="PeakFinder.cs" />

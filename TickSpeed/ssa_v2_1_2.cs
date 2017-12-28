@@ -102,7 +102,10 @@ namespace TickSpeed
                 // режим обновления
                 for (int i = data_inside; i < count; i++)
                 {
+                    var svd = DateTime.Now;
                     alglib.ssaappendpointandupdate(worker, myDoubles[i], i == count - 1 ? update_freq : 0.0);
+                    var gvd = (DateTime.Now - svd).TotalMilliseconds.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    Context.Log("svd exec for " + gvd + " msec", MessageType.Info, toMessageWindow: true);
                     alglib.ssaappendpointandupdate(analyzer, myDoubles[i], 0.0);
                 }
             }
