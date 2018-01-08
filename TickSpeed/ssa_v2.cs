@@ -49,14 +49,17 @@ namespace TickSpeed
             alglib.ssasetalgoprecomputed(analyzer, dummy_basis, current_window, current_k);
         }
 
-        //[HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
         public double Numdec { get; set; }
 
-        //[HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "5", Name = "NumCompRec", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public double Numrec { get; set; }
 
-        //[HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
+        [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numfor { get; set; }
+
+        [HandlerParameter(Name = "Reset", Default = "true", NotOptimized = false)]
+        public bool Reset { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
         {
@@ -78,6 +81,10 @@ namespace TickSpeed
             bool need_full_analysis = false;
             alglib.ssasetwindow(worker, window_size);
             alglib.ssasetalgotopkrealtime(worker, k);
+            if (Reset)
+            {
+                data_inside = 0;
+            }
             if (data_inside > 0)
             {
                 // режим обновления
