@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TSLab.Script.Handlers;
 using MathNet.Filtering.FIR;
 using MathNet.Filtering.IIR;
@@ -36,6 +37,9 @@ namespace TickSpeed
             ////}
             //var f = new OnlineIirFilter(koeff);
             //var result = f.ProcessSamples(values);
+            var t = result.ToList();
+            V2.Interpolation.InterpolateNan(ref t);
+            result = t.ToArray();
             alglib.filterlrma(ref result, Win);
             
             return result;
