@@ -1,31 +1,125 @@
-/**************************************************************************
-ALGLIB dev (source code generated 2017-12-22)
+/*************************************************************************
+ALGLIB 3.13.0 (source code generated 2017-12-29)
 Copyright (c) Sergey Bochkanov (ALGLIB project).
 
 >>> SOURCE LICENSE >>>
-This software is a private code owned by ALGLIB Project.  If  you  somehow
-received it without explicit written approval of ALGLIB Project,  then you
-CAN NOT use it and  should  immediately  delete  all  files  bearing  this
-notice.
+This  program  is  a  Commercial Edition  of the ALGLIB package  licensed
+to LLC Consulting agency D&K (Licensee), agreement ID is AGR-20171017-1
 
-If you did receive it from ALGLIB Project, then:
-* you may NOT modify it without explicit written consent of ALGLIB Project.
-* you may NOT distribute it to  other  parties  without  explicit  written
-  consent of ALGLIB Project.
-* you may NOT  include  it  into  your  application  and  distribute  such
-  applications without explicit written consent of ALGLIB Project.
+As of 2018-01-08:
+* DEV-3 license plan is purchased (up to 3 developers in same company)
+* following developers are registered for this license:
+  * vadimb@list.ru
 
-In all circumstances:
-* you may NOT use, copy or distribute it except as explicitly approved  by
-  ALGLIB Project.
-* you may NOT rent or lease it to any third party.
-* you may NOT remove any copyright notice from the software.
-* you may NOT disable/remove code which checks  for  presence  of  license
-  keys (if such code is included in software).
+========================== GENERAL INFORMATION ==========================
 
-$NON-GPL$
+1. Only Licensee and  its Sublicensees  can  use/distribute  it according
+to  the  ALGLIB  License  Agreement (see  below) between  Licensor  (Sole
+Proprietor Bochkanov Sergey Anatolyevich) and Licensee.
+
+2. All developers working  for  Licensee  should  register  themselves at
+alglib.net. Quick access link for Licensee's account can be found at  the
+section 9 of scanned copy of ALGLIB License Agreement or in e-mails  from
+ALGLIB Project.
+
+3. This  source  code  may  contain  modifications  made  by  Licensee or
+Sublicensees  which  fall under the terms of the ALGLIB License Agreement
+too.
+
+4. Text  below  is  an excerpt from complete ALGLIB License Agreement,  a
+part which governs usage and redistribution rights granted  to  Licensee.
+See agreement-v6.pdf at the root of ALGLIB distribution for complete text
+of license agreement.
+
+================ ALGLIB LICENSE AGREEMENT ( APPENDIX A ) ================
+
+DEFINITIONS:
+* "ALGLIB" – software delivered by Licensor  to  Licensee  under  present
+  Agreement. ALGLIB may include  Binary  Components  (delivered  only  in
+  binary form) and Source  Code  Components  (with  optional  precompiled
+  binary form).
+  ALGLIB  may  include  optional  third-party  components, which may have
+  their own licensing terms. Specific list of components  and  additional
+  licensing terms (if there are any) is included in the license.txt  file
+  in the root of archive containing ALGLIB. If you  decide  not  to  link
+  ALGLIB with these optional components, their  licensing  terms  do  not
+  apply to you.
+* "Application"  -  program  developed  by  Licensee  (either  standalone
+  application or software development library) which includes  ALGLIB  as
+  one of its parts .
+* "Sublicensee"  -  any  party  (including  resellers)   which   receives
+  Application from Licensee or another Sublicensee.
+* "Application License Agreement"  -  agreement  which   governs   usage/
+  redistribution of the Application.
+  
+LICENSE GRANT:
+Subject to the License Restrictions below, Licensor  grants  to  Licensee
+the following non-exclusive royalty-free licenses:
+A. To modify Source Code Components of ALGLIB and to use modified version
+   on the terms of this Agreement.
+B. To  develop  Applications  which  use  ALGLIB  and  to distribute such
+   Applications in Binary and/or Source Code forms,  with  ALGLIB  either
+   statically or dynamically linked. This right is granted provided that:
+   * distribution of Source Code forms of Application/ALGLIB is performed
+     subject to additional conditions set by clause H (this clause is not
+     applied to binary-only distribution)
+   * such Applications add significant  primary  functionality  different
+     from that of the ALGLIB.
+   * such Applications do not expose ALGLIB API (application  programming
+     interface) either directly or indirectly
+   * Sublicensee  has  no   right   to  use  ALGLIB  except  as  part  of
+     the Application
+   * any  subsequent  redistribution   respects    conditions    of   the
+     present Agreement
+   * all developers working for Licensee  should  register  at  company's
+     account at www.alglib.net (in order to find login link, see  section
+     9 of scanned copy of ALGLIB License Agreement -or find it in e-mails
+     from ALGLIB Project).
+C. To use Resellers for distribution of the  Application  (in  Binary  or
+   Source Code forms), provided that the only activity Reseller  performs
+   with Application is redistribution.
+   
+LICENSE RESTRICTIONS:
+D. Licensee/Sublicensee may NOT use, copy or distribute ALGLIB except  as
+   provided in this Agreement.
+D2. Licensee/Sublicensee may NOT rent or lease ALGLIB to any third party.
+E. Licensee/Sublicensee may NOT disassemble, reverse engineer, decompile,
+   modify Binary Components of ALGLIB or compiled forms  of  Source  Code
+   components.
+F. Licensee/Sublicensee  may  NOT  remove  any  copyright notice from the
+   Source Code / Binary Components.
+G. Licensee/Sublicensee may NOT  disable/remove  code  which  checks  for
+   presence of license keys (if such code is included in ALGLIB) from the
+   Source Code / Binary Components.
+H. Distribution of  Source  Code  forms  of  Application/ALGLIB  must  be
+   performed subject to additional conditions:
+   * Source Code Components of ALGLIB are distributed only as part of the
+     Application. They are not  publicly  distributed.  Sublicensee  must
+     explicitly accept Application License Agreement in order  to  access
+     ALGLIB source code.
+   * Sublicensee has no right to redistribute Application/ALGLIB (in  any
+     form, Binary or Source Code), unless Sublicensee is Reseller who  is
+     fully compliant with conditions set by clause C.
+   * Sublicensee has no right to modify ALGLIB Source  Code,  except  for
+     the purpose of fixing bugs
+   * Sublicensee has no right to workaround "use ALGLIB only as  part  of
+     the Application" limitation by sequentially modifying Application in
+     a way which effectively creates new program with different  purpose.
+     Application   License  Agreement  may  (a)  explicitly  forbid  such
+     modifications, or (b) allow only limited set of "safe" modifications
+     (developing plugins, fixing bugs, modifying only specific  parts  of
+     the Application).
+     
+COPYRIGHT:
+Title to the ALGLIB and all copies  thereof  remain  with  Licensor.  The
+ALGLIB is copyrighted and is protected  by  Russian  copyright  laws  and
+international treaty provisions. You will not remove any copyright notice
+from the ALGLIB files. You agree to prevent any unauthorized  copying  of
+the ALGLIB. Except as expressly provided herein, Licensor does not  grant
+any express or implied right to you under Licensor  patents,  copyrights,
+trademarks, or trade secret information.
 >>> END OF LICENSE >>>
-**************************************************************************/
+*************************************************************************/
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -1863,9 +1957,9 @@ public partial class alglib
                     string os = GetOSName();
                     string libname = "";
                     if( os=="linux" )
-                        libname = "alglibdev_"+(IntPtr.Size*8).ToString()+"hpc.so";
+                        libname = "alglib313_"+(IntPtr.Size*8).ToString()+"hpc.so";
                     if( os=="windows" )
-                        libname = "alglibdev_"+(IntPtr.Size*8).ToString()+"hpc.dll";
+                        libname = "alglib313_"+(IntPtr.Size*8).ToString()+"hpc.dll";
                     if( libname=="" )
                         throw new System.Exception("ALGLIB: unknown OS - '"+os+"'");
                     libname = LocateLibrary(libname);
@@ -5847,6 +5941,86 @@ public partial class alglib
     public static void sparsecreatesksbuf(int m, int n, int[] d, int[] u, sparsematrix s)
     {
     _core_sparsecreatesksbuf( m,  n,  d,  u,  s, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_sparsecreatesksband(int m, int n, int bw, out sparsematrix s, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_int _d_bw = new x_int(bw);
+        void *_d_s = null;
+        s = null;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_sparsecreatesksband(&_s_errormsg, &_d_m, &_d_n, &_d_bw, &_d_s);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'sparsecreatesksband' call");
+            }
+            s = new sparsematrix(_d_s);
+        }
+        finally
+        {
+            if( _d_s!=null && s==null)
+                _i_x_obj_free_sparsematrix(_d_s); // on exception clean up X objects which were not attached to C# objects
+        }
+        // This function returns no value.
+    }
+    public static void sparsecreatesksband(int m, int n, int bw, out sparsematrix s)
+    {
+    _core_sparsecreatesksband( m,  n,  bw, out  s, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_sparsecreatesksbandbuf(int m, int n, int bw, sparsematrix s, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        x_int _d_m = new x_int(m);
+        x_int _d_n = new x_int(n);
+        x_int _d_bw = new x_int(bw);
+        void *_d_s = s.ptr;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_sparsecreatesksbandbuf(&_s_errormsg, &_d_m, &_d_n, &_d_bw, &_d_s);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'sparsecreatesksbandbuf' call");
+            }
+            ap.assert(s.ptr==_d_s, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void sparsecreatesksbandbuf(int m, int n, int bw, sparsematrix s)
+    {
+    _core_sparsecreatesksbandbuf( m,  n,  bw,  s, alglibmode.serial);
     return;
     }
     private static unsafe void _core_sparsecopy(sparsematrix s0, out sparsematrix s1, alglibmode _alglib_mode)
@@ -14154,7 +14328,7 @@ public partial class alglib
     
     
     //
-    // Subpackage densesolver
+    // Subpackage directdensesolvers
     //
     
 
@@ -19492,6 +19666,42 @@ public partial class alglib
     public static void minqpsetscale(minqpstate state, double[] s)
     {
     _core_minqpsetscale( state,  s, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_minqpsetscaleautodiag(minqpstate state, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_state = state.ptr;
+        
+        // Pack, call, unpack
+        try
+        {
+
+            _error_code = _i_ser_minqpsetscaleautodiag(&_s_errormsg, &_d_state);
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'minqpsetscaleautodiag' call");
+            }
+            ap.assert(state.ptr==_d_state, "ALGLIB: internal error (reference changed for non-out X-object)");
+        }
+        finally
+        {
+            // No dynamically allocated data to clear
+        }
+        // This function returns no value.
+    }
+    public static void minqpsetscaleautodiag(minqpstate state)
+    {
+    _core_minqpsetscaleautodiag( state, alglibmode.serial);
     return;
     }
     private static unsafe void _core_minqpsetalgocholesky(minqpstate state, alglibmode _alglib_mode)
@@ -53928,6 +54138,166 @@ public partial class alglib
     
     
     //
+    // Subpackage directsparsesolvers
+    //
+    
+
+    [StructLayout(LayoutKind.Sequential, Pack=8)]
+    private struct x_sparsesolverreport
+    {
+        public x_int terminationtype;
+    }
+
+    public class sparsesolverreport : alglibobject
+    {
+        public int terminationtype;
+        public override alglib.alglibobject make_copy()
+        {
+            sparsesolverreport dst = new sparsesolverreport();
+            dst.terminationtype = terminationtype;
+            return dst;
+        }
+    }
+
+    // This function initializes X-structure (its previous content is ignored)
+    private static void x_sparsesolverreport_init(ref x_sparsesolverreport x)
+    {
+        x.terminationtype.longval = 0;
+    }
+
+    // This function finalizes fields of X-structure (however, memory occupied by structure itself is not freed)
+    // After destruction structure becomes unusable and should be re-initialized if you want to use it
+    private static void x_sparsesolverreport_clear(ref x_sparsesolverreport x)
+    {
+    }
+
+    // This function initializes X-structure by appropriate C# instance
+    // (previous content of X structure is ignored)
+    private static void x_sparsesolverreport_init_from(ref x_sparsesolverreport x, sparsesolverreport v)
+    {
+        x.terminationtype.longval = v.terminationtype;
+    }
+
+    // This function initializes C# structure by appropriate X instance
+    // (previous content of C# structure is ignored).
+    // This function may accept null v, in this case v is automatically allocated with new().
+    private static void x_sparsesolverreport_to_record(ref x_sparsesolverreport x, ref sparsesolverreport v)
+    {
+        if( v==null )
+            v = new sparsesolverreport();
+        v.terminationtype = x.terminationtype.intval; // long is silently truncated to int
+    }
+    private static unsafe void _core_sparsesolvesks(sparsematrix a, int n, bool isupper, double[] b, out sparsesolverreport rep, out double[] x, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_a = a.ptr;
+        x_int _d_n = new x_int(n);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        x_vector _d_b = new x_vector();
+        x_sparsesolverreport _d_rep = new x_sparsesolverreport();
+        x_vector _d_x = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_b = b){
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_sparsesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_sparsesolvesks(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_rep, &_d_x);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'sparsesolvesks' call");
+            }
+            ap.assert(a.ptr==_d_a, "ALGLIB: internal error (reference changed for non-out X-object)");
+            rep = null;
+            x_sparsesolverreport_to_record(ref _d_rep, ref rep);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_b);
+            x_sparsesolverreport_clear(ref _d_rep);
+            x_vector_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void sparsesolvesks(sparsematrix a, int n, bool isupper, double[] b, out sparsesolverreport rep, out double[] x)
+    {
+    _core_sparsesolvesks( a,  n,  isupper,  b, out  rep, out  x, alglibmode.serial);
+    return;
+    }
+    private static unsafe void _core_sparsecholeskysolvesks(sparsematrix a, int n, bool isupper, double[] b, out sparsesolverreport rep, out double[] x, alglibmode _alglib_mode)
+    {
+        // primary initialization
+        if( hAlglibDL==IntPtr.Zero )
+            activatealglibcore();
+        
+        // Locals
+        byte *_s_errormsg = null;
+        int _error_code = 0;
+        void *_d_a = a.ptr;
+        x_int _d_n = new x_int(n);
+        byte _d_isupper = (byte)(isupper ? 1 : 0);
+        x_vector _d_b = new x_vector();
+        x_sparsesolverreport _d_rep = new x_sparsesolverreport();
+        x_vector _d_x = new x_vector();
+        
+        // Pack, call, unpack
+        try
+        {
+            fixed(double* _fp_b = b){
+                x_vector_attach_to_array(ref _d_b, _fp_b, ap.len(b));
+                x_sparsesolverreport_init(ref _d_rep);
+                x_vector_create_empty(ref _d_x, DT_REAL);
+                x = null;
+                _error_code = _i_ser_sparsecholeskysolvesks(&_s_errormsg, &_d_a, &_d_n, &_d_isupper, &_d_b, &_d_rep, &_d_x);
+            }
+            if( _error_code!=X_OK )
+            {
+                if( _error_code==X_ASSERTION_FAILED )
+                    throw new alglibexception(Marshal.PtrToStringAnsi((IntPtr)_s_errormsg));
+                else
+                    throw new alglibexception("ALGLIB: unknown error during 'sparsecholeskysolvesks' call");
+            }
+            ap.assert(a.ptr==_d_a, "ALGLIB: internal error (reference changed for non-out X-object)");
+            rep = null;
+            x_sparsesolverreport_to_record(ref _d_rep, ref rep);
+            if( _d_x.last_action==ACT_NEW_LOCATION )
+                x_vector_to_array(ref _d_x, ref x);
+            if( x == null )
+                x = new double[0];
+        }
+        finally
+        {
+            x_vector_clear(ref _d_b);
+            x_sparsesolverreport_clear(ref _d_rep);
+            x_vector_clear(ref _d_x);
+        }
+        // This function returns no value.
+    }
+    public static void sparsecholeskysolvesks(sparsematrix a, int n, bool isupper, double[] b, out sparsesolverreport rep, out double[] x)
+    {
+    _core_sparsecholeskysolvesks( a,  n,  isupper,  b, out  rep, out  x, alglibmode.serial);
+    return;
+    }
+    
+    
+    //
     // Subpackage lincg
     //
     
@@ -54694,6 +55064,12 @@ public partial class alglib
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_sparsecreatesksbuf(byte **error_msg, x_int *m, x_int *n, x_vector *d, x_vector *u, void **s);
         private static _d_sparsecreatesksbuf _i_ser_sparsecreatesksbuf = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_sparsecreatesksband(byte **error_msg, x_int *m, x_int *n, x_int *bw, void **s);
+        private static _d_sparsecreatesksband _i_ser_sparsecreatesksband = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_sparsecreatesksbandbuf(byte **error_msg, x_int *m, x_int *n, x_int *bw, void **s);
+        private static _d_sparsecreatesksbandbuf _i_ser_sparsecreatesksbandbuf = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_sparsecopy(byte **error_msg, void **s0, void **s1);
         private static _d_sparsecopy _i_ser_sparsecopy = null;
@@ -55498,6 +55874,9 @@ public partial class alglib
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_minqpsetscale(byte **error_msg, void **state, x_vector *s);
         private static _d_minqpsetscale _i_ser_minqpsetscale = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_minqpsetscaleautodiag(byte **error_msg, void **state);
+        private static _d_minqpsetscaleautodiag _i_ser_minqpsetscaleautodiag = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_minqpsetalgocholesky(byte **error_msg, void **state);
         private static _d_minqpsetalgocholesky _i_ser_minqpsetalgocholesky = null;
@@ -57438,6 +57817,12 @@ public partial class alglib
         private unsafe delegate int _d_nleqrestartfrom(byte **error_msg, void **state, x_vector *x);
         private static _d_nleqrestartfrom _i_ser_nleqrestartfrom = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_sparsesolvesks(byte **error_msg, void **a, x_int *n, byte *isupper, x_vector *b, x_sparsesolverreport *rep, x_vector *x);
+        private static _d_sparsesolvesks _i_ser_sparsesolvesks = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        private unsafe delegate int _d_sparsecholeskysolvesks(byte **error_msg, void **a, x_int *n, byte *isupper, x_vector *b, x_sparsesolverreport *rep, x_vector *x);
+        private static _d_sparsecholeskysolvesks _i_ser_sparsecholeskysolvesks = null;
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private unsafe delegate int _d_lincgcreate(byte **error_msg, x_int *n, void **state);
         private static _d_lincgcreate _i_ser_lincgcreate = null;
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -57583,6 +57968,8 @@ public partial class alglib
             _i_ser_sparsecreatecrsbuf = (_d_sparsecreatecrsbuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecreatecrsbuf"), typeof(_d_sparsecreatecrsbuf));
             _i_ser_sparsecreatesks = (_d_sparsecreatesks)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecreatesks"), typeof(_d_sparsecreatesks));
             _i_ser_sparsecreatesksbuf = (_d_sparsecreatesksbuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecreatesksbuf"), typeof(_d_sparsecreatesksbuf));
+            _i_ser_sparsecreatesksband = (_d_sparsecreatesksband)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecreatesksband"), typeof(_d_sparsecreatesksband));
+            _i_ser_sparsecreatesksbandbuf = (_d_sparsecreatesksbandbuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecreatesksbandbuf"), typeof(_d_sparsecreatesksbandbuf));
             _i_ser_sparsecopy = (_d_sparsecopy)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecopy"), typeof(_d_sparsecopy));
             _i_ser_sparsecopybuf = (_d_sparsecopybuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecopybuf"), typeof(_d_sparsecopybuf));
             _i_ser_sparseswap = (_d_sparseswap)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparseswap"), typeof(_d_sparseswap));
@@ -57931,6 +58318,7 @@ public partial class alglib
             _i_ser_minqpsetstartingpoint = (_d_minqpsetstartingpoint)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetstartingpoint"), typeof(_d_minqpsetstartingpoint));
             _i_ser_minqpsetorigin = (_d_minqpsetorigin)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetorigin"), typeof(_d_minqpsetorigin));
             _i_ser_minqpsetscale = (_d_minqpsetscale)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetscale"), typeof(_d_minqpsetscale));
+            _i_ser_minqpsetscaleautodiag = (_d_minqpsetscaleautodiag)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetscaleautodiag"), typeof(_d_minqpsetscaleautodiag));
             _i_ser_minqpsetalgocholesky = (_d_minqpsetalgocholesky)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetalgocholesky"), typeof(_d_minqpsetalgocholesky));
             _i_ser_minqpsetalgobleic = (_d_minqpsetalgobleic)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetalgobleic"), typeof(_d_minqpsetalgobleic));
             _i_ser_minqpsetalgodenseaul = (_d_minqpsetalgodenseaul)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_minqpsetalgodenseaul"), typeof(_d_minqpsetalgodenseaul));
@@ -58764,6 +59152,8 @@ public partial class alglib
             _i_ser_nleqresults = (_d_nleqresults)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_nleqresults"), typeof(_d_nleqresults));
             _i_ser_nleqresultsbuf = (_d_nleqresultsbuf)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_nleqresultsbuf"), typeof(_d_nleqresultsbuf));
             _i_ser_nleqrestartfrom = (_d_nleqrestartfrom)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_nleqrestartfrom"), typeof(_d_nleqrestartfrom));
+            _i_ser_sparsesolvesks = (_d_sparsesolvesks)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsesolvesks"), typeof(_d_sparsesolvesks));
+            _i_ser_sparsecholeskysolvesks = (_d_sparsecholeskysolvesks)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_sparsecholeskysolvesks"), typeof(_d_sparsecholeskysolvesks));
         _i_x_obj_copy_lincgstate = (_d_x_obj_copy_lincgstate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_copy_lincgstate"), typeof(_d_x_obj_copy_lincgstate));
         _i_x_obj_free_lincgstate = (_d_x_obj_free_lincgstate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "x_obj_free_lincgstate"), typeof(_d_x_obj_free_lincgstate));
             _i_ser_lincgcreate = (_d_lincgcreate)Marshal.GetDelegateForFunctionPointer(DynamicAddr(hTmpDL, "alglib_lincgcreate"), typeof(_d_lincgcreate));
