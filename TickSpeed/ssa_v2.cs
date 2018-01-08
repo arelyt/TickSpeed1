@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using TSLab.Script.Handlers;
 
 namespace TickSpeed
@@ -63,6 +64,7 @@ namespace TickSpeed
 
         public IList<double> Execute(IList<double> myDoubles)
         {
+            var t = DateTime.Now;
             // вырожденные случаи
             if (myDoubles == null)
                 return myDoubles;
@@ -135,7 +137,8 @@ namespace TickSpeed
             last_result = new double[count];
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
-
+            var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+            Context.Log("ssaCompare exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
 
