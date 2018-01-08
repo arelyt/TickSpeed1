@@ -138,7 +138,7 @@ namespace TickSpeed
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("ssaCompare exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            Context.Log("ssaV2exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
 
