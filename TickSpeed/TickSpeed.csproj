@@ -135,8 +135,8 @@
     <Compile Include="SsaCompareCycle.cs" />
     <Compile Include="ssa_v2_2.cs" />
     <Compile Include="ssa_v2_1FRec.cs" />
-    <Compile Include="ssa_v2_1N2.cs" />
-    <Compile Include="ssa_v2_1N1.cs" />
+    <Compile Include="ssa_v2_4.cs" />
+    <Compile Include="ssa_v2_3.cs" />
     <Compile Include="ssa_v2_1.cs" />
     <Compile Include="ssa_v2.cs" />
     <Compile Include="Norm101.cs" />
