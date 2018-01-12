@@ -72,14 +72,14 @@ namespace TickSpeed
         [HandlerParameter(true, "2", Name = "QWin", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         // количество последних окон, которые перезаписываются при анализе
         public int overwrite_windows3 { get; set; }
-    
+
 
         public IList<double> Execute(IList<double> myDoubles)
         {
             // Проверка на то, что конструктор класса и индикатор отработали хотя бы  10 сек
             var t = DateTime.Now;
             var ctx = Context;
-            if ((t - _timestart).Seconds < 10 )
+            if ((t - _timestart).Seconds < 10)
             {
                 return myDoubles;
             }
@@ -152,7 +152,7 @@ namespace TickSpeed
             // Прогнозируем только каждые Counter пересчетов и если Numfor не ноль
             if (Numfor > 0)
             {
-                
+
                 if (count % Counter == 0 || ctx.LoadObject("forecast").IsNull())
                 {
                     double[] fc;
@@ -162,7 +162,7 @@ namespace TickSpeed
                     fc_last3 = fc;
                     ctx.StoreObject("forecast", fc_last3);
                 }
-               
+
                 var vv = (IList<double>)ctx.LoadObject("forecast");
                 if (count - count_last != 0)
                 {
@@ -171,7 +171,7 @@ namespace TickSpeed
                 // Наползающий на остаток прогноза реал
                 for (int i = 0; i < Numfor - (count - count_last); i++)
                     result[count + i] = vv[count - count_last + i];
-                
+
             }
 
             // кэшировать сглаженный тренд, предсказание не кешируем
