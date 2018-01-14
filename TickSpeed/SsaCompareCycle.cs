@@ -43,7 +43,7 @@ namespace TickSpeed
             //var values = new double[count-(int)Numfor];
 
             var res = new List<double>();
-            for (var i = 0; i < 3*(int)Numdec+Numfor; i++)
+            for (var i = 0; i < (int)Numdec+Numfor-1; i++)
             {
                 res.Add(myDoubles[i]);
             }
@@ -51,11 +51,11 @@ namespace TickSpeed
             
             // 
             var t = DateTime.Now;
-            for (int i = 3 * (int) Numdec; i < count - Numfor; i++)
+            for (int i = (int)Numdec + (int)Numfor - 1; i < count - Numfor-1; i++)
             {
-                var values = new double[3 * (int) Numdec];
-                Array.Copy(myDoubles.ToArray(), i - 3 * (int) Numdec, values, 0, 3 * (int) Numdec);
-                var result = new double[3 * (int)Numdec];
+                var values = new double[(int) Numdec+(int)Numfor-1];
+                Array.Copy(myDoubles.ToArray(), i - (int) Numdec + (int)Numfor - 1, values, 0, (int) Numdec-1);
+                var result = new double[2 * ((int)Numdec-1)];
 
                 MWClient client = new MWHttpClient();
                 try
