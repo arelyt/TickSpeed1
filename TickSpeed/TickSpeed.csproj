@@ -107,6 +107,7 @@
     <Compile Include="AbsCumDeltaVolume.cs" />
     <Compile Include="Lrma.cs" />
     <Compile Include="LoadGlobalObject.cs" />
+    <Compile Include="TakeLastAndShift.cs" />
     <Compile Include="ShiftLeft.cs" />
     <Compile Include="LoadLocalObject.cs" />
     <Compile Include="NarxSiFun.cs" />
