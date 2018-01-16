@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MoreLinq;
 using TSLab.Script.Handlers;
 using TSLab.Utils;
 using vvTSLtools;
@@ -12,11 +13,15 @@ namespace TickSpeed
 #pragma warning disable 612
     [HandlerName("DiffStack")]
 #pragma warning restore 612
-    public class DifferStackClass : IDouble2DoubleHandler
+    public class DifferStackClass : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
-        private double[] _val;
+        public IContext Context {get; set;}
+        [HandlerParameter(true, "stack", Name = "ObjName", NotOptimized = false)]
+        public string Objname { get; set; }
+
         public IList<double> Execute(IList<double> myDoubles)
         {
+            var ctx = Context;
             var count = myDoubles.Count;
             if (count < 2)
                 return null;
@@ -27,8 +32,10 @@ namespace TickSpeed
             {
                 values[i] = myDoubles[i] - myDoubles[i - 1];
             }
+            double[] _val = (double[])ctx.LoadObject(Objname);
             if (_val.IsNull())
             {
+                ctx.StoreObject(Objname, values);
                 _val = values;
             }
             else
@@ -36,11 +43,12 @@ namespace TickSpeed
                 var delta = values.Length - _val.Length;
                 var bl = values.Skip(count - delta).Take(delta).ToList();
                 _val.AddRange(bl);
-                if (_val.Length != count)
-                {
-                    Array.Resize(ref _val, count);
-                }
-                Array.Copy(_val, values, _val.Length);
+                //if (_val.Length != count)
+                //{
+                //    Array.Resize(ref _val, count);
+                //}
+                //Array.Copy(_val, values, _val.Length);
+                ctx.StoreObject(Objname, _val.TakeLast(count));
                 
             }
             return _val.ToList();
