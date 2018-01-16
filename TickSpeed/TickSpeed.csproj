@@ -105,6 +105,7 @@
     <Compile Include="alglib_hpc.cs" />
     <Compile Include="CandleOI.cs" />
     <Compile Include="AbsCumDeltaVolume.cs" />
+    <Compile Include="DifferStack.cs" />
     <Compile Include="Lrma.cs" />
     <Compile Include="LoadGlobalObject.cs" />
     <Compile Include="TakeLastAndShift.cs" />
