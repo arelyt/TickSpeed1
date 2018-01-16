@@ -16,7 +16,7 @@ namespace TickSpeed
         public IContext Context {get; set;}
         [HandlerParameter(true, "stack", Name = "ObjName", NotOptimized = false)]
         public string Objname { get; set; }
-        [HandlerParameter(true, Name = "Diff", NotOptimized = false)]
+        [HandlerParameter(true, Name = "Diff", Default = "true", NotOptimized = false)]
         public bool Diff { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
