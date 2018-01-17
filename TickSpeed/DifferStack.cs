@@ -18,7 +18,7 @@ namespace TickSpeed
         public string Objname { get; set; }
         [HandlerParameter(true, Name = "Diff", Default = "true", NotOptimized = false)]
         public bool Diff { get; set; }
-        [HandlerParameter(true, Name = "Reset", Default = "true", NotOptimized = false)]
+        [HandlerParameter(true, Name = "Reset", Default = "false", NotOptimized = false)]
         public bool Reset { get; set; }
 
         public IList<double> Execute(IList<double> myDoubles)
