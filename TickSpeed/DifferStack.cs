@@ -25,7 +25,7 @@ namespace TickSpeed
         {
             var ctx = Context;
             var count = myDoubles.Count;
-            if (count < 100 || Reset)
+            if (count < 100)
                 return myDoubles;
             var values = new double[count];
             values[0] = 0;
@@ -43,7 +43,7 @@ namespace TickSpeed
                     values[i] = myDoubles[i];
                 }
             }
-            if (ctx.LoadObject(Objname).IsNull())
+            if (ctx.LoadObject(Objname).IsNull() || Reset)
             {
                 ctx.StoreObject(Objname, values);
                 var val = (double[])ctx.LoadObject(Objname);
