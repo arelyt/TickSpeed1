@@ -8,11 +8,11 @@ namespace TickSpeed
     // Инкрементальный SSA.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("SSA_V2_1")]
+    [HandlerName("SSA_V2_5ls")]
 #pragma warning restore 612
 
 
-    public class IncrementalSSA1 : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
+    public class IncrementalSSA5ls : IOneSourceHandler, IDoubleInputs, IDoubleReturns, IStreamHandler, IContextUses
     {
         // частота обновления при поступлении новой точки
         const double update_freq = 1.0;
@@ -21,10 +21,10 @@ namespace TickSpeed
         const int overwrite_windows = 2;
 
         // worker - модель, которая строит базис, возможно - в фоновом режиме
-        private static alglib.ssamodel worker1;
+        private static alglib.ssamodel worker5;
 
         // analyzer - модель, которая делает анализ на основе базиса, построенного worker
-        private static alglib.ssamodel analyzer1;
+        private static alglib.ssamodel analyzer5;
 
         // последний сглаженный результат
         private static double[] last_result;
@@ -33,21 +33,21 @@ namespace TickSpeed
         private static int data_inside;
 
         // инициализация моделей
-        static IncrementalSSA1()
+        static IncrementalSSA5ls()
         {
             double[,] dummy_basis = new double[,] { { 1 } };
             data_inside = 0;
             last_result = new double[0];
-            alglib.ssacreate(out worker1);
-            alglib.ssacreate(out analyzer1);
+            alglib.ssacreate(out worker5);
+            alglib.ssacreate(out analyzer5);
             int current_window = 1;
             int current_k = 1;
-            alglib.ssasetwindow(worker1, current_window);
-            alglib.ssasetwindow(analyzer1, current_window);
-            alglib.ssasetalgotopkrealtime(worker1, current_k);
-            alglib.ssasetpoweruplength(worker1, 5);
+            alglib.ssasetwindow(worker5, current_window);
+            alglib.ssasetwindow(analyzer5, current_window);
+            alglib.ssasetalgotopkrealtime(worker5, current_k);
+            alglib.ssasetpoweruplength(worker5, 5);
             //alglib.ssasetalgotopkdirect(worker, current_k);
-            alglib.ssasetalgoprecomputed(analyzer1, dummy_basis, current_window, current_k);
+            alglib.ssasetalgoprecomputed(analyzer5, dummy_basis, current_window, current_k);
         }
 
         [HandlerParameter(true, "60", Name = "Win", Max = "1000", Min = "1", Step = "1", NotOptimized = false)]
@@ -59,19 +59,27 @@ namespace TickSpeed
         [HandlerParameter(true, "1", Name = "NumForForecast", Max = "10", Min = "1", Step = "1", NotOptimized = false)]
         public int Numfor { get; set; }
 
+        [HandlerParameter(true, "0", Name = "LeftShift", Max = "1000", Min = "0", Step = "1", NotOptimized = false)]
+        public int Leftshift { get; set; }
+
         [HandlerParameter(Name = "Reset", Default = "true", NotOptimized = false)]
         public bool Reset { get; set; }
 
-        public IList<double> Execute(IList<double> myDoubles)
+        public IList<double> Execute(IList<double> myvoubles)
         {
             var t = DateTime.Now;
             // вырожденные случаи
-            if (myDoubles == null)
-                return myDoubles;
-            int count = myDoubles.Count;
+            if (myvoubles == null)
+                return myvoubles;
+            int count = myvoubles.Count;
             if (count < Numdec + 2)
-                return myDoubles;
-
+                return myvoubles;
+            var myDoubles = new double[count-Numfor];
+            for (var i = 0; i < count - Numfor; i++)
+            {
+                myDoubles[i] = myvoubles[i];
+            }
+            count = count - Numfor;
             // нормализация параметров
             int window_size = Math.Max((int)Math.Round(Numdec), 1);
             int k = Math.Max((int)Math.Round(Numrec), 1);
@@ -81,8 +89,9 @@ namespace TickSpeed
             double[,] new_basis;
             double[] sv;
             bool need_full_analysis = false;
-            alglib.ssasetwindow(worker1, window_size);
-            alglib.ssasetalgotopkrealtime(worker1, k);
+            alglib.ssasetwindow(worker5, window_size);
+            alglib.ssasetalgotopkrealtime(worker5, k);
+            
             if (Reset)
             {
                 data_inside = 0;
@@ -92,8 +101,8 @@ namespace TickSpeed
                 // режим обновления
                 for (int i = data_inside; i < count; i++)
                 {
-                    alglib.ssaappendpointandupdate(worker1, myDoubles[i], i == count - 1 ? update_freq : 0.0);
-                    alglib.ssaappendpointandupdate(analyzer1, myDoubles[i], 0.0);
+                    alglib.ssaappendpointandupdate(worker5, myDoubles[i], i == count - 1 ? update_freq : 0.0);
+                    alglib.ssaappendpointandupdate(analyzer5, myDoubles[i], 0.0);
                 }
             }
             else
@@ -102,21 +111,21 @@ namespace TickSpeed
                 double[] vals = new double[count];
                 for (int i = 0; i < count; i++)
                     vals[i] = myDoubles[i];
-                alglib.ssacleardata(worker1);
-                alglib.ssacleardata(analyzer1);
-                alglib.ssaaddsequence(worker1, vals, count);
-                alglib.ssaaddsequence(analyzer1, vals, count);
+                alglib.ssacleardata(worker5);
+                alglib.ssacleardata(analyzer5);
+                alglib.ssaaddsequence(worker5, vals, count);
+                alglib.ssaaddsequence(analyzer5, vals, count);
                 last_result = new double[0];
                 need_full_analysis = true;
             }
             data_inside = count;
-            alglib.ssagetbasis(worker1, out new_basis, out sv, out dummy0, out dummy1);
-            alglib.ssasetalgoprecomputed(analyzer1, new_basis, window_size, k);
+            alglib.ssagetbasis(worker5, out new_basis, out sv, out dummy0, out dummy1);
+            alglib.ssasetalgoprecomputed(analyzer5, new_basis, window_size, k);
 
             // анализ
             int alen = need_full_analysis ? count : Math.Max(count - last_result.Length + window_size, overwrite_windows * window_size + window_size); // +window_size позволяет сгладить шум в начале окна
             double[] last_trend, last_noise;
-            alglib.ssaanalyzelast(analyzer1, alen, out last_trend, out last_noise);
+            alglib.ssaanalyzelast(analyzer5, alen, out last_trend, out last_noise);
 
             // результат
             int olen = need_full_analysis ? count : alen - window_size;
@@ -128,7 +137,7 @@ namespace TickSpeed
             if (Numfor > 0)
             {
                 double[] fc;
-                alglib.ssaforecastavglast(analyzer1, 5, Numfor, out fc);
+                alglib.ssaforecastlast(analyzer5, Numfor, out fc);
                 for (int i = 0; i < Numfor; i++)
                     result[count + i] = fc[i];
             }
@@ -138,7 +147,7 @@ namespace TickSpeed
             for (int i = 0; i < count; i++)
                 last_result[i] = result[i];
             var g = (DateTime.Now - t).TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
-            Context.Log("ssaV2_1exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
+            Context.Log("ssaV2_4 exec for " + g + " msec", MessageType.Info, toMessageWindow: true);
             return result;
         }
 

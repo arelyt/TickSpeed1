@@ -108,6 +108,7 @@
     <Compile Include="DifferStack.cs" />
     <Compile Include="Lrma.cs" />
     <Compile Include="LoadGlobalObject.cs" />
+    <Compile Include="ssa_v2_5ls.cs" />
     <Compile Include="TakeLastAndShift.cs" />
     <Compile Include="ShiftLeft.cs" />
     <Compile Include="LoadLocalObject.cs" />
