@@ -20,7 +20,7 @@ namespace TickSpeed
         [HandlerParameter(Name = "Дробь_дельта", Default = "true", NotOptimized = true)]
         public bool Delta { get; set; }
 
-        [HandlerParameter(Name = "minusplus", Default = "true", NotOptimized = true)]
+        [HandlerParameter(Name = "minusplus", Default = "false", NotOptimized = true)]
         public bool Sign { get; set; }
 
         [HandlerParameter(Name = "Шаг дельты", Default = "50", Min = "2", Max = "2000", Step = "1")]
