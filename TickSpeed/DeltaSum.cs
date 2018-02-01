@@ -10,7 +10,7 @@ namespace TickSpeed
     // Скорость сделок на покупку/продажу в секунду.
     [HandlerCategory("Arelyt")]
 #pragma warning disable 612
-    [HandlerName("DeltaLine")]
+    [HandlerName("DeltaSum")]
 #pragma warning restore 612
     public class DeltaSumClass : IBar2DoubleHandler
     {
