@@ -20,6 +20,9 @@ namespace TickSpeed
         [HandlerParameter(Name = "Дробь_дельта", Default = "true", NotOptimized = true)]
         public bool Delta { get; set; }
 
+        [HandlerParameter(Name = "minusplus", Default = "true", NotOptimized = true)]
+        public bool Sign { get; set; }
+
         [HandlerParameter(Name = "Шаг дельты", Default = "50", Min = "2", Max = "2000", Step = "1")]
         public int Step { get; set; }
 
@@ -63,12 +66,26 @@ namespace TickSpeed
                 int sec = 1;
                 int sumB = 0;
                 int sumS = 0;
-                while (sumB + sumS < Step && i > 10)
+
+                if (Sign)
                 {
-                    sumB = DeltaSumClass.Summ(sec, i, freqB);
-                    sumS = DeltaSumClass.Summ(sec, i, freqS);
-                    sec++;
+                    while (sumB - sumS < Step && i > 10)
+                    {
+                        sumB = DeltaSumClass.Summ(sec, i, freqB);
+                        sumS = DeltaSumClass.Summ(sec, i, freqS);
+                        sec++;
+                    }
                 }
+                else
+                {
+                    while (sumB + sumS < Step && i > 10)
+                    {
+                        sumB = DeltaSumClass.Summ(sec, i, freqB);
+                        sumS = DeltaSumClass.Summ(sec, i, freqS);
+                        sec++;
+                    }
+                }
+                
 
                 if (Delta)
                 {
