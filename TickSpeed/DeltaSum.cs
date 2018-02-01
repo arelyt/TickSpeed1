@@ -22,12 +22,12 @@ namespace TickSpeed
         public IList<double> Execute(ISecurity security)
         {
             var count = security.Bars.Count;
-            var values = new double[count];
+            //var values = new double[count];
             if (count < 2)
                 return null;
 
             var _cumdelta = 0;
-            values[0] = 1;
+            //values[0] = 1;
             var _indi = 0;
             var freqB = new int[count];
             var freqS = new int[count];
@@ -67,7 +67,7 @@ namespace TickSpeed
 
 
             
-            return values;
+            return sumBS.ToList();
         }
 
         private static int Summ(int intsec, int N, int[] freq)
