@@ -18,6 +18,8 @@ namespace TickSpeed
         public int Level { get; set; }
         [HandlerParameter(Name = "Reverse", Default = "true", NotOptimized = false)]
         public bool Reverse { get; set; }
+        [HandlerParameter(Name = "Metoddelta", Default = "true", NotOptimized = false)]
+        public bool Methoddelta { get; set; }
         //private static IList<double> Glass { get; set; }
         public IList<double> Execute(ISecurity source)
         {
@@ -70,11 +72,26 @@ namespace TickSpeed
                 }
                 if (Reverse)
                 {
-                    numArray[i] = (nBuy / (nBuy + nSell) - 1);
+                    if (Methoddelta)
+                    {
+                        numArray[i] = (nSell - nBuy) / (nBuy + nSell);
+                    }
+                    else
+                    {
+                        numArray[i] = (nBuy / (nBuy + nSell) - 1);
+                    }
                 }
                 else
                 {
-                    numArray[i] = (nSell / (nBuy + nSell) - 1);
+                    if (Methoddelta)
+                    {
+                        numArray[i] = (nBuy - nSell) / (nBuy + nSell);
+                    }
+                    else
+                    {
+                        numArray[i] = (nSell / (nBuy + nSell) - 1);
+                    }
+                    
                 }
                 
             }
